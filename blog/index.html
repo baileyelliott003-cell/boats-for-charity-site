@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blog — Boats for Charity</title>
+  <meta name="description" content="Boats for Charity blog: articles about boat donation, tax questions, and how each vessel turns into real help.">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/styles.v140.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <img src="/assets/logo.png" alt="Boats for Charity logo" class="logo">
+      <button id="menuToggle" class="hamburger" aria-label="Toggle navigation" aria-controls="primaryNav" aria-expanded="false">☰ Menu</button>
+      <nav id="primaryNav" class="nav" aria-label="Primary" hidden>
+        <a href="/index.html#how">How It Works</a>
+        <a href="/index.html#why">Why Donate</a>
+        <a href="/index.html#accept">What We Accept</a>
+        <a href="/index.html#mission">Mission</a>
+        <a href="/blog/" class="active">Blog</a>
+        <a href="/index.html#faq">FAQ</a>
+        <a href="/index.html#donate" class="btn btn-primary" aria-label="Donate a Boat">Donate a Boat</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="section">
+    <div class="wrap" style="max-width: 760px;">
+      <p class="tiny"><a href="/index.html">&larr; Back to home</a></p>
+      <h1>Boats for Charity Blog</h1>
+      <p>Guides, stories, and answers about boat donation, tax questions, and how your vessel can turn into real help.</p>
+
+      <div id="blog-list">
+        <p>Loading posts…</p>
+      </div>
+
+      <article id="blog-post" class="blog-post" style="display:none; margin-top:2rem;">
+        <p class="tiny"><a href="/blog/">&larr; Back to all posts</a></p>
+        <h1 id="post-title"></h1>
+        <p class="tiny" id="post-date"></p>
+        <div id="post-body"></div>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="foot-brand">
+        <img src="/assets/logo.png" alt="Boats for Charity logo" class="logo small">
+        <div>
+          <strong>Boats for Charity</strong><br>
+          <span>Turning Boats into Blessings</span>
+        </div>
+      </div>
+      <div class="foot-links">
+        <a href="/index.html#donate" class="btn btn-primary">Donate a Boat</a>
+        <a href="mailto:info@boatsforcharity.org">Contact</a> • <a href="tel:+15034068631">Call 503‑406‑8631</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const BLOG_DATA_URL = "/data/blog.json";
+
+    let posts = [];
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function formatDate(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return "";
+      return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    }
+
+    function renderList() {
+      const listEl = document.getElementById("blog-list");
+      const postEl = document.getElementById("blog-post");
+      listEl.style.display = "block";
+      postEl.style.display = "none";
+
+      if (!posts.length) {
+        listEl.innerHTML = "<p>No posts yet. Check back soon.</p>";
+        return;
+      }
+
+      const html = posts.map(post => {
+        const date = formatDate(post.date);
+        const summary = (post.summary || "").substring(0, 260);
+        const slug = encodeURIComponent(post.slug || "");
+        return `
+          <article class="card blog-card" style="margin-bottom:1.5rem;">
+            <h2><a href="/blog/#${slug}">${escapeHtml(post.title || "")}</a></h2>
+            <p class="tiny">${date ? "Posted " + date : ""}</p>
+            <p>${escapeHtml(summary)}</p>
+            <p><a href="/blog/#${slug}" class="btn btn-ghost">Read more</a></p>
+          </article>
+        `;
+      }).join("");
+
+      listEl.innerHTML = html;
+    }
+
+    function renderPost(slug) {
+      const listEl = document.getElementById("blog-list");
+      const postEl = document.getElementById("blog-post");
+      const titleEl = document.getElementById("post-title");
+      const dateEl = document.getElementById("post-date");
+      const bodyEl = document.getElementById("post-body");
+
+      const decoded = decodeURIComponent(slug || "");
+      const post = posts.find(p => p.slug === decoded);
+
+      if (!post) {
+        // Fallback to list
+        renderList();
+        return;
+      }
+
+      listEl.style.display = "none";
+      postEl.style.display = "block";
+
+      titleEl.textContent = post.title || "";
+      dateEl.textContent = formatDate(post.date);
+      // body is markdown – for now, show as simple paragraphs with basic line breaks
+      const bodyHtml = (post.body || "")
+        .split(/\n\n+/)
+        .map(p => "<p>" + p.replace(/\n/g, "<br>") + "</p>")
+        .join("");
+      bodyEl.innerHTML = bodyHtml;
+    }
+
+    function handleHashChange() {
+      const slug = window.location.hash.replace(/^#/, "");
+      if (slug) {
+        renderPost(slug);
+      } else {
+        renderList();
+      }
+    }
+
+    fetch(BLOG_DATA_URL)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to load blog data");
+        return res.json();
+      })
+      .then(data => {
+        posts = Array.isArray(data.posts) ? data.posts.slice() : [];
+        // sort newest first by date
+        posts.sort((a, b) => {
+          const da = new Date(a.date || 0).getTime();
+          const db = new Date(b.date || 0).getTime();
+          return db - da;
+        });
+        handleHashChange();
+        window.addEventListener("hashchange", handleHashChange);
+      })
+      .catch(err => {
+        console.error(err);
+        const listEl = document.getElementById("blog-list");
+        listEl.innerHTML = "<p>Sorry, we couldn't load the blog posts right now.</p>";
+      });
+
+    // Simple mobile nav toggle reuse
+    document.addEventListener("DOMContentLoaded", function () {
+      const toggle = document.getElementById("menuToggle");
+      const nav = document.getElementById("primaryNav");
+      if (toggle && nav) {
+        toggle.addEventListener("click", function () {
+          const hidden = nav.hasAttribute("hidden");
+          if (hidden) {
+            nav.removeAttribute("hidden");
+            toggle.setAttribute("aria-expanded", "true");
+          } else {
+            nav.setAttribute("hidden", "");
+            toggle.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+    });
+  </script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</body>
+</html>
