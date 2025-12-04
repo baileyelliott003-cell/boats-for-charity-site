@@ -1,0 +1,17 @@
+/* 
+  Cache-Control: no-cache
+
+/thanks.html
+  Cache-Control: no-cache
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/script.v122.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/styles.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/styles.v140.css
+  Cache-Control: public, max-age=31536000, immutable
