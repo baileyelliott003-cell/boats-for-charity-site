@@ -2,5 +2,7 @@
   "@context": "https://schema.org",
   "@type": "Nonprofit",
   "name": "Boats for Charity",
-  "url": "https://boatsforcharity.org"
+  "url": "https://boatsforcharity.org",
+  "description": "Boats for Charity facilitates boat donations without towing or transport.",
+  "areaServed": "United States"
 }
