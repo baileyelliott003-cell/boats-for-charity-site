@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://boatsforcharity.org/sitemap.xml
