@@ -1,204 +1,154 @@
-/* Boats for Charity — mobile-first, accessible styles */
+/* Boats for Charity - basic stylesheet fallback
+   This file restores layout/typography when the original CSS is missing.
+   Replace with your production CSS if available.
+*/
 :root{
-  --navy:#0b243b;
-  --teal:#22a6a1;
-  --ink:#111827;
-  --bg:#ffffff;
-  --muted:#6b7280;
-  --ring: 0 0 0 3px rgba(34,166,161,.35);
+  --maxw: 980px;
+  --pad: 18px;
+  --radius: 14px;
+  --shadow: 0 10px 30px rgba(0,0,0,.08);
+  --text: #0f172a;
+  --muted: #475569;
+  --bg: #ffffff;
+  --bg2: #f8fafc;
+  --line: rgba(15,23,42,.12);
+  --accent: #0ea5e9;
+  --accent2:#22c55e;
 }
-
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-img{max-width:100%;height:auto}
-a{color:var(--teal);text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:1100px;margin:auto;padding:0 20px}
-:focus-visible{outline:3px solid var(--teal); outline-offset:3px}
-
-.skip-link{position:absolute;left:-1000px;top:auto;width:1px;height:1px;overflow:hidden}
-.skip-link:focus{left:16px;top:16px;width:auto;height:auto;background:#fff;color:#000;padding:8px 12px;border-radius:6px;box-shadow:var(--ring)}
-
-.site-header{background:#fff;border-bottom:1px solid #e5e7eb;z-index:10}
-.site-header .wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
-.logo{width:68px;height:auto}
-.logo.small{width:36px}
-
-.hamburger{display:none;border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:10px 12px;font-weight:700}
-
-.nav a{margin:0 10px;font-weight:600;color:var(--ink)}
-.nav .btn{margin-left:10px}
-
-.hero{background:linear-gradient(180deg, #f8fbfb, #fff);padding:72px 0 56px;text-align:center}
-.hero h1{font-size:clamp(30px,5vw,44px);margin:0 0 8px;color:var(--navy)}
-.hero .sub{color:#374151;font-size:1.15rem}
-.hero-cta{margin-top:18px}
-
-.section{padding:56px 0}
-.section.alt{background:#f8fafc}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 5px 15px rgba(0,0,0,.03)}
-.card h3{margin-top:0;color:var(--navy)}
-
-.benefits{columns:2;column-gap:24px}
-.benefits li{break-inside:avoid;margin:6px 0}
-
-.donate .form{margin-top:12px}
-.form label{display:block;font-weight:600;margin:8px 0}
-.form input,.form textarea{width:100%;padding:12px 14px;border:2px solid #d1d5db;border-radius:10px;font:inherit;background:#fff}
-.form input:focus,.form textarea:focus{outline:none;box-shadow:var(--ring);border-color:var(--teal)}
-.form .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.form-actions{display:flex;align-items:center;gap:12px;margin-top:12px}
-.form-msg{color:var(--muted);margin:0}
-::placeholder{color:#6b7280;opacity:1}
-
-.btn{display:inline-block;padding:12px 16px;border-radius:12px;border:1px solid #d1d5db;font-weight:700;min-height:48px}
-.btn-primary{background:var(--teal);border-color:var(--teal);color:#fff}
-.btn-primary:hover{filter:brightness(0.95);text-decoration:none}
-.btn-ghost{background:transparent;border-color:#d1d5db;color:var(--ink)}
-
-.site-footer{border-top:1px solid #e5e7eb;background:#fff;padding:20px 0}
-.site-footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.foot-brand{display:flex;align-items:center;gap:12px}
-.foot-links a{margin-right:12px}
-.foot-ein{font-size:.85rem;color:var(--muted);width:100%;text-align:center;margin-top:12px}
-
-.tiny{font-size:.9rem;color:var(--muted)}
-
-/* Sticky action bar */
-.action-bar{
-  position:fixed;
-  bottom:0; left:0; right:0;
-  z-index:9999;
-  background:#fffffff0;
-  border-top:1px solid #e5e7eb;
-  backdrop-filter:saturate(140%) blur(6px);
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  padding:10px 14px;
+html,body{margin:0;padding:0}
+body{
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
+  color:var(--text);
+  background:var(--bg);
+  line-height:1.55;
 }
-.action-bar .action{font-size:1rem;text-align:center;border:2px solid #0b243b;color:#0b243b;background:#fff;border-radius:12px;min-height:52px}
-.action-bar .action.donate{background:var(--teal);border-color:var(--teal);color:#fff}
-body{padding-bottom:96px}
-
-/* Toast styles */
-.toast{
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:110px;
-  background:#0b243b;
+img{max-width:100%;height:auto}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{
+  width:100%;
+  max-width:var(--maxw);
+  margin:0 auto;
+  padding:0 var(--pad);
+}
+header, .header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:saturate(180%) blur(10px);
+  border-bottom:1px solid var(--line);
+}
+nav, .nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 0;
+}
+nav a, .nav a{color:var(--text);font-weight:600;opacity:.9}
+nav a:hover, .nav a:hover{opacity:1;text-decoration:none}
+main{padding:28px 0}
+section{margin:26px 0}
+h1{font-size:2.1rem;line-height:1.15;margin:.2rem 0 1rem}
+h2{font-size:1.35rem;margin:1.5rem 0 .65rem}
+h3{font-size:1.05rem;margin:1rem 0 .45rem}
+p{margin:.6rem 0;color:var(--text)}
+small, .muted{color:var(--muted)}
+.card{
+  background:var(--bg);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.hero{
+  background:linear-gradient(180deg, var(--bg2), #fff);
+  border-bottom:1px solid var(--line);
+  padding:34px 0 18px;
+}
+.btn, button, input[type="submit"]{
+  appearance:none;
+  border:0;
+  background:var(--accent);
   color:#fff;
   padding:12px 16px;
-  border-radius:12px;
-  box-shadow:0 10px 24px rgba(0,0,0,.18);
-  z-index:10000;
+  border-radius:999px;
   font-weight:700;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  box-shadow:0 10px 18px rgba(14,165,233,.25);
 }
-
-/* Mobile-first enhancements */
-@media (max-width: 640px){
-  html,body{font-size:18px; line-height:1.75}
-  .site-header{position:static}
-  .site-header .wrap{padding:18px 20px; flex-direction:column; align-items:center; justify-content:center; gap:10px}
-  .logo{width:112px !important; height:auto; display:block; margin:0 auto}
-  .hamburger{display:block;align-self:center}
-  .nav[hidden]{display:none !important}
-  .nav{width:100%; display:grid; grid-template-columns:1fr; gap:10px; text-align:center}
-  .nav a, .nav a.btn{display:block; width:100%; padding:14px 16px !important; border:1px solid #d1d5db; border-radius:12px; background:#fff; color:var(--ink); font-weight:700}
-  .nav a.btn{background:var(--teal); border-color:var(--teal); color:#fff}
-  .hero{padding:48px 0 40px}
-  .hero .sub{font-size:1.1rem}
-  .hero-cta{display:grid; grid-template-columns:1fr; gap:10px}
-  .section{padding:40px 0}
-  .cards{grid-template-columns:1fr}
-  .benefits{columns:1}
-  .form .grid{grid-template-columns:1fr}
-  .form input,.form textarea{font-size:18px; padding:16px 18px}
-  .form-actions{flex-direction:column; align-items:stretch}
-  .btn, .btn-primary, .btn-ghost{width:100%; padding:16px 18px; font-size:1rem}
-  .site-footer .wrap{flex-direction:column; align-items:center; text-align:center}
-  .foot-brand{flex-direction:column}
+.btn:hover, button:hover, input[type="submit"]:hover{filter:brightness(.96)}
+.btn.secondary{
+  background:#0f172a;
+  box-shadow:0 10px 18px rgba(15,23,42,.18);
 }
-
-
-/* === v14: Polished form card styling === */
-section.donate .wrap{display:flex;flex-direction:column;align-items:center}
-form#donationForm{
+.badge{
+  display:inline-block;
+  background:rgba(34,197,94,.12);
+  color:#166534;
+  border:1px solid rgba(34,197,94,.22);
+  padding:4px 10px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:.85rem;
+}
+ul{padding-left:1.1rem}
+li{margin:.25rem 0}
+table{
   width:100%;
-  max-width:720px;
-  margin: 10px auto 0;
-  background:#ffffff;
-  border:1px solid #e5e7eb;
-  border-radius:16px;
-  padding:24px;
-  box-shadow:0 10px 30px rgba(0,0,0,.06);
+  border-collapse:collapse;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
 }
-form#donationForm .grid{
+th,td{
+  text-align:left;
+  padding:12px 10px;
+  border-bottom:1px solid var(--line);
+}
+th{background:var(--bg2)}
+form{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
+  gap:12px;
+  margin-top:12px;
 }
-form#donationForm label{display:block; font-weight:700; color:#0b243b; font-size:0.98rem}
-form#donationForm input, form#donationForm textarea{
+input, textarea, select{
   width:100%;
-  margin-top:6px;
-  padding:13px 14px;
-  border:2px solid #d1d5db;
+  padding:12px 12px;
   border-radius:12px;
-  background:#fff;
+  border:1px solid var(--line);
   font:inherit;
-  transition:border-color .15s ease, box-shadow .15s ease;
+  background:#fff;
 }
-form#donationForm input:focus, form#donationForm textarea:focus{
-  outline:none;
-  border-color:var(--teal);
-  box-shadow:0 0 0 3px rgba(34,166,161,.18);
+textarea{min-height:110px;resize:vertical}
+footer, .footer{
+  border-top:1px solid var(--line);
+  padding:24px 0;
+  background:var(--bg2);
 }
-form#donationForm textarea{min-height:140px; resize:vertical}
-form#donationForm .form-actions{
-  display:flex; align-items:center; gap:12px; margin-top:16px;
+.footer .ein{margin-top:8px;color:var(--muted);font-weight:700}
+.callbar{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  display:flex;
+  gap:10px;
+  z-index:20;
 }
-form#donationForm .btn.btn-primary{
-  padding:14px 18px; font-size:1rem; border-radius:12px; font-weight:800;
+.callbar a{
+  background:#0f172a;
+  color:#fff;
+  padding:10px 14px;
+  border-radius:999px;
+  font-weight:800;
+  box-shadow:0 14px 26px rgba(15,23,42,.25);
 }
-form#donationForm .form-msg{margin:0; font-size:.95rem}
-
-/* Tighter desktop top padding so card sits closer to heading */
-section.donate .wrap > p { margin-bottom:12px }
-
-/* Mobile layout: single column, comfy tap targets */
-@media (max-width: 720px){
-  form#donationForm{padding:20px}
-  form#donationForm .grid{grid-template-columns:1fr; gap:12px}
-  form#donationForm .btn.btn-primary{width:100%}
+@media (max-width:720px){
+  h1{font-size:1.75rem}
+  nav, .nav{flex-wrap:wrap}
 }
-
-/* subtle improvement to headings for consistency */
-.section h2{letter-spacing:.2px}
-
-
-/* --- Mobile hamburger centering fix --- */
-@media (max-width: 768px) {
-    header .wrap {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .hamburger {
-        margin-left: auto;
-        margin-right: auto;
-        display: block;
-        position: relative;
-        left: 0;
-        right: 0;
-        text-align: center;
-    }
-
-    header .logo {
-        max-width: 140px;
-    }
-}
-

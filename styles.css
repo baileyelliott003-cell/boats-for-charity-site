@@ -1,122 +1,70 @@
-/* Boats for Charity — mobile-first, accessible styles */
-:root{
-  --navy:#0b243b;
-  --teal:#22a6a1;
-  --ink:#111827;
-  --bg:#ffffff;
-  --muted:#6b7280;
-  --ring: 0 0 0 3px rgba(34,166,161,.35);
-}
-
+/* Boats for Charity - basic site styling */
+:root{--max:1100px;--pad:18px;--radius:14px;}
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.7 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-img{max-width:100%;height:auto}
-a{color:var(--teal);text-decoration:none}
-a:hover{text-decoration:underline}
-.wrap{max-width:1100px;margin:auto;padding:0 20px}
-:focus-visible{outline:3px solid var(--teal); outline-offset:3px}
-
-.skip-link{position:absolute;left:-1000px;top:auto;width:1px;height:1px;overflow:hidden}
-.skip-link:focus{left:16px;top:16px;width:auto;height:auto;background:#fff;color:#000;padding:8px 12px;border-radius:6px;box-shadow:var(--ring)}
-
-.site-header{background:#fff;border-bottom:1px solid #e5e7eb;z-index:10}
-.site-header .wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
-.logo{width:68px;height:auto}
-.logo.small{width:36px}
-
-.hamburger{display:none;border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:10px 12px;font-weight:700}
-
-.nav a{margin:0 10px;font-weight:600;color:var(--ink)}
-.nav .btn{margin-left:10px}
-
-.hero{background:linear-gradient(180deg, #f8fbfb, #fff);padding:72px 0 56px;text-align:center}
-.hero h1{font-size:clamp(30px,5vw,44px);margin:0 0 8px;color:var(--navy)}
-.hero .sub{color:#374151;font-size:1.15rem}
-.hero-cta{margin-top:18px}
-
-.section{padding:56px 0}
-.section.alt{background:#f8fafc}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 5px 15px rgba(0,0,0,.03)}
-.card h3{margin-top:0;color:var(--navy)}
-
-.benefits{columns:2;column-gap:24px}
-.benefits li{break-inside:avoid;margin:6px 0}
-
-.donate .form{margin-top:12px}
-.form label{display:block;font-weight:600;margin:8px 0}
-.form input,.form textarea{width:100%;padding:12px 14px;border:2px solid #d1d5db;border-radius:10px;font:inherit;background:#fff}
-.form input:focus,.form textarea:focus{outline:none;box-shadow:var(--ring);border-color:var(--teal)}
-.form .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.form-actions{display:flex;align-items:center;gap:12px;margin-top:12px}
-.form-msg{color:var(--muted);margin:0}
-::placeholder{color:#6b7280;opacity:1}
-
-.btn{display:inline-block;padding:12px 16px;border-radius:12px;border:1px solid #d1d5db;font-weight:700;min-height:48px}
-.btn-primary{background:var(--teal);border-color:var(--teal);color:#fff}
-.btn-primary:hover{filter:brightness(0.95);text-decoration:none}
-.btn-ghost{background:transparent;border-color:#d1d5db;color:var(--ink)}
-
-.site-footer{border-top:1px solid #e5e7eb;background:#fff;padding:20px 0}
-.site-footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.foot-brand{display:flex;align-items:center;gap:12px}
-.foot-links a{margin-right:12px}
-
-.tiny{font-size:.9rem;color:var(--muted)}
-
-/* Sticky action bar */
-.action-bar{
-  position:fixed;
-  bottom:0; left:0; right:0;
-  z-index:9999;
-  background:#fffffff0;
-  border-top:1px solid #e5e7eb;
-  backdrop-filter:saturate(140%) blur(6px);
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  padding:10px 14px;
+html,body{margin:0;padding:0}
+body{
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height:1.55;
+  color:#0b1220;
+  background:#ffffff;
 }
-.action-bar .action{font-size:1rem;text-align:center;border:2px solid #0b243b;color:#0b243b;background:#fff;border-radius:12px;min-height:52px}
-.action-bar .action.donate{background:var(--teal);border-color:var(--teal);color:#fff}
-body{padding-bottom:96px}
-
-/* Toast styles */
-.toast{
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:110px;
-  background:#0b243b;
-  color:#fff;
+a{color:inherit}
+.container{max-width:var(--max);margin:0 auto;padding:0 var(--pad)}
+header{
+  border-bottom:1px solid rgba(0,0,0,.08);
+  background:#fff;
+  position:sticky;top:0;z-index:10;
+}
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px var(--pad);
+}
+.brand{display:flex;gap:10px;align-items:center;text-decoration:none;font-weight:700}
+.brand img{height:34px;width:auto;display:block}
+.navlinks{display:flex;gap:14px;flex-wrap:wrap}
+.navlinks a{text-decoration:none;opacity:.9}
+.navlinks a:hover{opacity:1;text-decoration:underline}
+.hero{padding:44px 0 24px;background:linear-gradient(180deg, rgba(0,0,0,.03), transparent)}
+h1{font-size:clamp(28px, 4vw, 44px);line-height:1.12;margin:0 0 10px}
+h2{font-size:clamp(20px, 2.4vw, 28px);margin:28px 0 10px}
+h3{font-size:18px;margin:18px 0 8px}
+p{margin:0 0 12px}
+.lead{font-size:18px;opacity:.9;max-width:70ch}
+.ctaRow{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.btn{
+  display:inline-block;
   padding:12px 16px;
-  border-radius:12px;
-  box-shadow:0 10px 24px rgba(0,0,0,.18);
-  z-index:10000;
-  font-weight:700;
+  border-radius:999px;
+  text-decoration:none;
+  font-weight:650;
+  border:1px solid rgba(0,0,0,.14);
+  background:#0b1220;
+  color:#fff;
 }
-
-/* Mobile-first enhancements */
-@media (max-width: 640px){
-  html,body{font-size:18px; line-height:1.75}
-  .site-header{position:static}
-  .site-header .wrap{padding:18px 20px; flex-direction:column; align-items:center; justify-content:center; gap:10px}
-  .logo{width:112px !important; height:auto; display:block; margin:0 auto}
-  .hamburger{display:block;align-self:center}
-  .nav[hidden]{display:none !important}
-  .nav{width:100%; display:grid; grid-template-columns:1fr; gap:10px; text-align:center}
-  .nav a, .nav a.btn{display:block; width:100%; padding:14px 16px !important; border:1px solid #d1d5db; border-radius:12px; background:#fff; color:var(--ink); font-weight:700}
-  .nav a.btn{background:var(--teal); border-color:var(--teal); color:#fff}
-  .hero{padding:48px 0 40px}
-  .hero .sub{font-size:1.1rem}
-  .hero-cta{display:grid; grid-template-columns:1fr; gap:10px}
-  .section{padding:40px 0}
-  .cards{grid-template-columns:1fr}
-  .benefits{columns:1}
-  .form .grid{grid-template-columns:1fr}
-  .form input,.form textarea{font-size:18px; padding:16px 18px}
-  .form-actions{flex-direction:column; align-items:stretch}
-  .btn, .btn-primary, .btn-ghost{width:100%; padding:16px 18px; font-size:1rem}
-  .site-footer .wrap{flex-direction:column; align-items:center; text-align:center}
-  .foot-brand{flex-direction:column}
+.btn.secondary{background:#fff;color:#0b1220}
+.btn:hover{filter:brightness(0.98)}
+.cardGrid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin:18px 0}
+.card{
+  grid-column:span 6;
+  border:1px solid rgba(0,0,0,.10);
+  border-radius:var(--radius);
+  padding:16px;
+  background:#fff;
+  box-shadow:0 6px 18px rgba(0,0,0,.04);
 }
+.card.full{grid-column:span 12}
+@media (max-width:840px){.card{grid-column:span 12}}
+ul{margin:0 0 12px 18px}
+table{width:100%;border-collapse:collapse;margin:10px 0 18px}
+th,td{border:1px solid rgba(0,0,0,.12);padding:10px;text-align:left;vertical-align:top}
+th{background:rgba(0,0,0,.03)}
+footer{
+  border-top:1px solid rgba(0,0,0,.08);
+  padding:18px 0;
+  margin-top:34px;
+  font-size:14px;
+  opacity:.9;
+}
+.footerRow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.small{font-size:14px;opacity:.85}
+hr{border:0;border-top:1px solid rgba(0,0,0,.10);margin:18px 0}
