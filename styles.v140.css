@@ -61,6 +61,7 @@ a:hover{text-decoration:underline}
 .site-footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .foot-brand{display:flex;align-items:center;gap:12px}
 .foot-links a{margin-right:12px}
+.foot-ein{font-size:.85rem;color:var(--muted);width:100%;text-align:center;margin-top:12px}
 
 .tiny{font-size:.9rem;color:var(--muted)}
 
