@@ -33,7 +33,7 @@
   "logo": "https://boatsforcharity.org/assets/logo.png",
   "taxID": "41-2487552",
   "description": "Boats for Charity is a 501(c)(3) nonprofit boat donation charity based in Oregon (EIN 41-2487552). We help turn unwanted boats into support for families and communities in need.",
-  "telephone": "+15034068631",
+  "telephone": "+18555573703",
   "email": "info@boatsforcharity.org",
   "address": {
     "@type": "PostalAddress",
@@ -64,20 +64,65 @@
         <a href="#why">Why Donate</a>
         <a href="#accept">What We Accept</a>
         <a href="#faq">FAQ</a>
-        <a href="tel:+15034068631" class="nav-phone" aria-label="Call Boats for Charity">📞 503‑406‑8631</a>
+        <a href="tel:+18555573703" class="nav-phone" aria-label="Call Boats for Charity">📞 (855) 557‑3703</a>
         <a href="#donate" class="btn btn-primary" aria-label="Donate a Boat">Donate a Boat</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
+    <section id="donate" class="section donate">
+      <div class="wrap">
+        <h2>Start Your Free Boat Donation</h2>
+        <p>Tell us about the boat — running or not. The more we know about its location, condition, and title status, the faster we can tell you what is possible. It is free and there is no obligation.</p>
+        <p class="call-cta"><a href="tel:+18555573703" class="btn btn-primary call-now">📞 Call Now: (855) 557‑3703</a> <span class="call-cta-or">or fill out the quick form below</span></p>
+
+        <form name="donationForm" id="donationForm" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html" novalidate>
+          <input type="hidden" name="form-name" value="donationForm">
+          <p class="hidden" style="display:none;">
+            <label>Don’t fill this out if you’re human: <input name="bot-field"></label>
+          </p>
+
+          <div class="grid">
+            <label>Full Name
+              <input type="text" name="name" required>
+            </label>
+            <label>Email
+              <input type="email" name="email" required>
+            </label>
+            <label>Phone
+              <input type="tel" name="phone" required>
+            </label>
+            <label>Boat Year/Make/Model
+              <input type="text" name="boat" placeholder="e.g., 1986 Ponderosa 40 Aft Cabin" required>
+            </label>
+            <label>Title/Documentation Status
+              <input type="text" name="title_status" placeholder="Clean title / USCG doc / liens?">
+            </label>
+            <label>Location (City, State)
+              <input type="text" name="location" required>
+            </label>
+          </div>
+          <label>Notes / Condition
+            <textarea name="notes" rows="5" placeholder="Any details we should know?"></textarea>
+          </label>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Get My Free Donation Started</button>
+            <p class="form-msg" role="status" aria-live="polite"></p>
+          </div>
+          <p class="form-reassure tiny">🔒 Free and no obligation. We use your details only to review your boat and contact you — never sold or shared.</p>
+        </form>
+        <p class="tiny">Prefer to talk to a real person? Call <a href="tel:+18555573703">(855) 557‑3703</a> anytime.</p>
+      </div>
+    </section>
+
     <section class="hero">
       <div class="wrap">
         <h1>Donate Your Boat. We Handle Everything.</h1>
         <p class="sub">Running or not, stop paying for storage, moorage, and maintenance on a boat you no longer use. We manage the sale, take care of the paperwork, and put the proceeds to work for families and communities in need.</p>
         <div class="hero-cta">
           <a href="#donate" class="btn btn-primary" aria-label="Start your free boat donation">Start My Free Donation</a>
-          <a href="tel:+15034068631" class="btn btn-ghost">Call 503‑406‑8631</a>
+          <a href="tel:+18555573703" class="btn btn-ghost">Call (855) 557‑3703</a>
         </div>
         <ul class="hero-badges" aria-label="What you get">
           <li>✔ Any boat, any condition</li>
@@ -156,7 +201,7 @@
         <ul class="benefits">
           <li><strong>Relief:</strong> get out from under storage, moorage, and maintenance costs for good.</li>
           <li><strong>Simple:</strong> a short intake, clear next steps, and no chasing buyers.</li>
-          <li><strong>Human help:</strong> call 503‑406‑8631 anytime if you would rather talk than fill out a form.</li>
+          <li><strong>Human help:</strong> call (855) 557‑3703 anytime if you would rather talk than fill out a form.</li>
           <li><strong>Transparent:</strong> clear communication and compliant paperwork from start to finish.</li>
           <li><strong>Any condition:</strong> running or not, we review your vessel case by case.</li>
           <li><strong>Real impact:</strong> proceeds support charitable community programs.</li>
@@ -179,50 +224,6 @@
         <h2>Our Mission</h2>
         <p><strong>Boats for Charity</strong> turns donated boats into resources that strengthen families and communities. We keep the process simple and transparent, then direct proceeds to programs that provide practical help—food, housing, education, and veteran support—so every vessel can carry hope a little farther.</p>
         <p><em>Turning Boats into Blessings</em> isn’t just our tagline; it’s our promise: clear communication, compliant paperwork, and compassionate impact with every donation.</p>
-      </div>
-    </section>
-
-    <section id="donate" class="section donate">
-      <div class="wrap">
-        <h2>Start Your Free Donation</h2>
-        <p>Tell us about the boat. The more we know about its location, condition, and title status, the faster we can tell you what is possible. It is free, there is no obligation, and you can call <a href="tel:+15034068631">503‑406‑8631</a> anytime instead.</p>
-
-        <form name="donationForm" id="donationForm" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html" novalidate>
-          <input type="hidden" name="form-name" value="donationForm">
-          <p class="hidden" style="display:none;">
-            <label>Don’t fill this out if you’re human: <input name="bot-field"></label>
-          </p>
-
-          <div class="grid">
-            <label>Full Name
-              <input type="text" name="name" required>
-            </label>
-            <label>Email
-              <input type="email" name="email" required>
-            </label>
-            <label>Phone
-              <input type="tel" name="phone" required>
-            </label>
-            <label>Boat Year/Make/Model
-              <input type="text" name="boat" placeholder="e.g., 1986 Ponderosa 40 Aft Cabin" required>
-            </label>
-            <label>Title/Documentation Status
-              <input type="text" name="title_status" placeholder="Clean title / USCG doc / liens?">
-            </label>
-            <label>Location (City, State)
-              <input type="text" name="location" required>
-            </label>
-          </div>
-          <label>Notes / Condition
-            <textarea name="notes" rows="5" placeholder="Any details we should know?"></textarea>
-          </label>
-          <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Get My Free Donation Started</button>
-            <p class="form-msg" role="status" aria-live="polite"></p>
-          </div>
-          <p class="form-reassure tiny">🔒 Free and no obligation. We use your details only to review your boat and contact you — never sold or shared.</p>
-        </form>
-        <p class="tiny">Prefer a call? <a href="tel:+15034068631">503‑406‑8631</a></p>
       </div>
     </section>
 
@@ -251,7 +252,7 @@
         </details>
         <details>
           <summary>What if I still have questions?</summary>
-          <p>Call us at <a href="tel:+15034068631">503‑406‑8631</a> or send your details through the form above and a real person will reach out.</p>
+          <p>Call us at <a href="tel:+18555573703">(855) 557‑3703</a> or send your details through the form above and a real person will reach out.</p>
         </details>
       </div>
     </section>
@@ -262,7 +263,7 @@
         <p>It is free, simple, and there is no obligation. Start online in about two minutes or call us now.</p>
         <div class="hero-cta">
           <a href="#donate" class="btn btn-primary">Start My Free Donation</a>
-          <a href="tel:+15034068631" class="btn btn-ghost light">Call 503‑406‑8631</a>
+          <a href="tel:+18555573703" class="btn btn-ghost light">Call (855) 557‑3703</a>
         </div>
       </div>
     </section>
@@ -279,7 +280,7 @@
       </div>
       <div class="foot-links">
         <a href="#donate" class="btn btn-primary">Donate a Boat</a>
-        <a href="mailto:info@boatsforcharity.org">Contact</a> • <a href="tel:+15034068631">Call 503‑406‑8631</a>
+        <a href="mailto:info@boatsforcharity.org">Contact</a> • <a href="tel:+18555573703">Call (855) 557‑3703</a>
       </div>
     
 <p class="tiny" style="margin-top:0.75rem; max-width:40rem;">
@@ -291,7 +292,7 @@
   </footer>
 
   <div id="actionBar" class="action-bar" aria-label="Quick actions">
-    <a class="btn action" href="tel:+15034068631" aria-label="Call Boats for Charity">Call</a>
+    <a class="btn action" href="tel:+18555573703" aria-label="Call Boats for Charity">Call</a>
     <a class="btn action donate" href="#donate" aria-label="Donate a Boat">Donate</a>
   </div>
 </body>

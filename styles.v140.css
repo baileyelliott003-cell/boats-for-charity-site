@@ -240,6 +240,15 @@ section.donate .wrap > p { margin-bottom:12px }
 /* Form reassurance */
 .form-reassure{margin-top:14px;color:var(--muted)}
 
+/* Prominent click-to-call above the form */
+.call-cta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:14px 0 4px}
+.call-now{font-size:1.15rem;padding:14px 22px;border-radius:14px;box-shadow:0 8px 20px rgba(34,166,161,.28);white-space:nowrap}
+.call-cta-or{color:var(--muted);font-weight:600}
+@media (max-width: 640px){
+  .call-cta{flex-direction:column;align-items:stretch;text-align:center}
+  .call-now{width:100%;font-size:1.2rem}
+}
+
 /* Closing CTA band */
 .cta-band{
   background:linear-gradient(135deg,var(--navy),#123a5c);

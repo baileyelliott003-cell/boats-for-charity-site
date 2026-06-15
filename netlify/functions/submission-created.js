@@ -19,7 +19,7 @@ export async function handler(event) {
     const html = `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.6;color:#111827">
         <h2 style="margin:0 0 8px;color:#0b243b">Thank you for your submission</h2>
-        <p>We received your boat donation information and will reach out shortly. If you need help now, call <a href="tel:+15034068631">503-406-8631</a>.</p>
+        <p>We received your boat donation information and will reach out shortly. If you need help now, call <a href="tel:+18555573703">(855) 557-3703</a>.</p>
         <p style="margin:16px 0 0">— Boats for Charity<br><em>Turning Boats into Blessings</em></p>
       </div>
     `;
