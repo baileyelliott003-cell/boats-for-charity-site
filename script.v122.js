@@ -29,6 +29,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Donate button click tracking — sends a lightweight beacon to a Netlify
+  // Function so we can count how many times each "Donate" CTA is clicked.
+  function trackDonateClick(source) {
+    try {
+      const payload = JSON.stringify({ source: source, path: location.pathname });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon('/api/track-donate', new Blob([payload], { type: 'application/json' }));
+      } else {
+        fetch('/api/track-donate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true
+        }).catch(() => {});
+      }
+    } catch (e) { /* tracking must never break the page */ }
+  }
+
+  const donateButtons = document.querySelectorAll('a[href="#donate"], a[href$="/#donate"]');
+  donateButtons.forEach((el) => {
+    el.addEventListener('click', () => {
+      const label = el.dataset.track
+        || el.getAttribute('aria-label')
+        || (el.textContent || '').trim().slice(0, 60)
+        || 'donate';
+      trackDonateClick(label);
+    });
+  });
+
   // Hamburger toggle + desktop reset
   const toggle = document.getElementById('menuToggle');
   const nav = document.getElementById('primaryNav');
