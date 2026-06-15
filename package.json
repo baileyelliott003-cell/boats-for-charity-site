@@ -1,0 +1,13 @@
+{
+  "name": "boatsforcharity",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@netlify/database": "latest",
+    "drizzle-orm": "beta"
+  },
+  "devDependencies": {
+    "@netlify/functions": "latest",
+    "drizzle-kit": "beta"
+  }
+}
