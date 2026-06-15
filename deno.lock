@@ -12,6 +12,7 @@
     "packageJson": {
       "dependencies": [
         "npm:@netlify/database@latest",
+        "npm:@netlify/edge-functions@latest",
         "npm:@netlify/functions@latest",
         "npm:drizzle-kit@beta",
         "npm:drizzle-orm@beta"
