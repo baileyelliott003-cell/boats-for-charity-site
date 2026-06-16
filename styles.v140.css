@@ -249,6 +249,20 @@ section.donate .wrap > p { margin-bottom:12px }
   .call-now{width:100%;font-size:1.2rem}
 }
 
+/* Recently Donated gallery */
+.donated-gallery{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:20px;margin-top:20px;
+}
+.donated-item{margin:0}
+.donated-item img{
+  width:100%;border-radius:14px;border:1px solid #e5e7eb;
+  box-shadow:0 5px 15px rgba(0,0,0,.06);display:block;
+}
+.donated-item figcaption{
+  margin-top:10px;font-weight:600;color:var(--navy);text-align:center;
+}
+
 /* Closing CTA band */
 .cta-band{
   background:linear-gradient(135deg,var(--navy),#123a5c);
