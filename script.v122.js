@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const msg = document.querySelector('.form-msg');
   if (form && form.hasAttribute('data-netlify')) {
     form.addEventListener('submit', (e) => {
-      const required = ['name','email','phone','boat','location'];
+      const required = ['first_name','last_name','phone'];
       for (const key of required) {
         const el = form.querySelector(`[name="${key}"]`);
         if (!el || !el.value) {
