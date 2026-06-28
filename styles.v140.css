@@ -140,6 +140,7 @@ form#donationForm .grid{
   gap:14px;
 }
 form#donationForm label{display:block; font-weight:700; color:#0b243b; font-size:0.98rem}
+form#donationForm .optional{font-weight:600; color:#64748b; font-size:.88rem}
 form#donationForm input, form#donationForm textarea{
   width:100%;
   margin-top:6px;

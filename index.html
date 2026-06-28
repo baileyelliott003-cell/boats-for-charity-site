@@ -74,7 +74,7 @@
     <section id="donate" class="section donate">
       <div class="wrap">
         <h2>Start Your Free Boat Donation</h2>
-        <p>Tell us about the boat — running or not. The more we know about its location, condition, and title status, the faster we can tell you what is possible. It is free and there is no obligation.</p>
+        <p>Share your contact details and we will follow up about the next steps. It is free and there is no obligation.</p>
         <p class="call-cta"><a href="tel:+18555573703" class="btn btn-primary call-now">📞 Call Now: (855) 557‑3703</a> <span class="call-cta-or">or fill out the quick form below</span></p>
 
         <form name="donationForm" id="donationForm" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html" novalidate>
@@ -84,33 +84,24 @@
           </p>
 
           <div class="grid">
-            <label>Full Name
-              <input type="text" name="name" required>
+            <label>First Name
+              <input type="text" name="first_name" autocomplete="given-name" required>
             </label>
-            <label>Email
-              <input type="email" name="email" required>
+            <label>Last Name
+              <input type="text" name="last_name" autocomplete="family-name" required>
+            </label>
+            <label>Email <span class="optional">(optional)</span>
+              <input type="email" name="email" autocomplete="email">
             </label>
             <label>Phone
-              <input type="tel" name="phone" required>
-            </label>
-            <label>Boat Year/Make/Model
-              <input type="text" name="boat" placeholder="e.g., 1986 Ponderosa 40 Aft Cabin" required>
-            </label>
-            <label>Title/Documentation Status
-              <input type="text" name="title_status" placeholder="Clean title / USCG doc / liens?">
-            </label>
-            <label>Location (City, State)
-              <input type="text" name="location" required>
+              <input type="tel" name="phone" autocomplete="tel" required>
             </label>
           </div>
-          <label>Notes / Condition
-            <textarea name="notes" rows="5" placeholder="Any details we should know?"></textarea>
-          </label>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">Get My Free Donation Started</button>
             <p class="form-msg" role="status" aria-live="polite"></p>
           </div>
-          <p class="form-reassure tiny">🔒 Free and no obligation. We use your details only to review your boat and contact you — never sold or shared.</p>
+          <p class="form-reassure tiny">🔒 Free and no obligation. We use your contact details only to follow up — never sold or shared.</p>
         </form>
         <p class="tiny">Prefer to talk to a real person? Call <a href="tel:+18555573703">(855) 557‑3703</a> anytime.</p>
       </div>
@@ -176,7 +167,7 @@
           <article class="card">
             <span class="step-num">1</span>
             <h3>Tell us about your boat</h3>
-            <p>Share your name, phone, the boat details, title status, and location. A few photos help, but are not required. Takes about two minutes.</p>
+            <p>Share your name and phone number, with email optional. We follow up to gather any boat details needed for the next step.</p>
           </article>
           <article class="card">
             <span class="step-num">2</span>
