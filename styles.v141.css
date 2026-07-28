@@ -453,6 +453,54 @@ section.donate .wrap > p { margin-bottom:12px }
   margin-top:10px;font-weight:600;color:var(--navy);text-align:center;
 }
 
+/* Boats currently listed on eBay */
+.ebay-listings .lede{margin-bottom:0}
+.ebay-panel{
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr);
+  gap:26px;
+  align-items:center;
+  margin-top:22px;
+  padding:26px 28px;
+  background:#fff;
+  border:1px solid #dbe5e8;
+  border-radius:16px;
+  box-shadow:0 12px 30px rgba(11,36,59,.07);
+}
+.ebay-panel:before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:6px;
+  background:var(--teal);
+}
+.ebay-panel h3{margin:0 0 8px;color:var(--navy);font-size:1.22rem}
+.ebay-panel p{margin:0;color:#374151}
+.ebay-points{
+  list-style:none;
+  margin:14px 0 0;
+  padding:0;
+  display:grid;
+  gap:6px;
+}
+.ebay-points li{font-weight:600;color:var(--navy)}
+.ebay-cta{display:grid;gap:10px;justify-items:center;text-align:center}
+.btn-ebay{
+  width:100%;
+  padding:16px 20px;
+  font-size:1.05rem;
+  border-radius:14px;
+  font-weight:800;
+  box-shadow:0 8px 20px rgba(34,166,161,.28);
+}
+.ebay-cta .tiny{margin:0}
+
+@media (max-width: 820px){
+  .ebay-panel{grid-template-columns:1fr;padding:22px}
+}
+
 /* Closing CTA band */
 .cta-band{
   background:linear-gradient(135deg,var(--navy),#123a5c);
