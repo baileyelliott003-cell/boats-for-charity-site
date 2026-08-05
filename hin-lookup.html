@@ -21,13 +21,13 @@
 </script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Free Boat HIN Lookup &amp; Hull Number Decoder | Boats for Charity</title>
-<meta name="description" content="Decode a boat's Hull Identification Number (HIN) for free. Learn what your HIN can reveal and find official resources for researching vessel documentation and title information.">
+<title>Free Boat HIN Lookup &amp; Boat Value Tool | Boats for Charity</title>
+<meta name="description" content="Decode your boat's Hull Identification Number for free, learn what the HIN reveals, and request a free human-reviewed boat value estimate from Boats for Charity.">
 <link rel="canonical" href="https://boatsforcharity.org/hin-lookup">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Boats for Charity">
-<meta property="og:title" content="Free Boat HIN Lookup &amp; Hull Number Decoder">
-<meta property="og:description" content="Decode a boat's Hull Identification Number (HIN) for free. Learn what your HIN can reveal and find official resources for researching vessel documentation and title information.">
+<meta property="og:title" content="Free Boat HIN Lookup &amp; Boat Value Tool">
+<meta property="og:description" content="Decode your boat's Hull Identification Number for free, learn what the HIN reveals, and request a free human-reviewed boat value estimate from Boats for Charity.">
 <meta property="og:url" content="https://boatsforcharity.org/hin-lookup">
 <meta property="og:image" content="https://boatsforcharity.org/assets/logo.png">
 <meta name="twitter:card" content="summary">
@@ -52,12 +52,51 @@
 .hin-results .undetermined{color:#4b5563;font-style:italic;font-size:1rem}
 .hin-notes{margin:18px 0 0;padding:0 0 0 20px;font-size:.95rem;color:#374151}
 .hin-notes li{margin:6px 0}
+/* Boat valuation request flow — scoped to this page */
+.val-band{background:#f8fbfb;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb}
+.val-lead{max-width:680px;margin:0 auto;text-align:center}
+.val-lead h2{margin-bottom:6px}
+.val-lead .val-sub{font-size:1.15rem;font-weight:700;color:#0e7490;margin:0 0 12px}
+.val-cta-wrap{margin-top:18px}
+.val-prefill{max-width:680px;margin:14px auto 0;padding:12px 16px;background:#ecfeff;border:1px solid #a5f3fc;border-radius:12px;font-size:.95rem;color:#0f2d4a;text-align:center}
+.val-card{background:#fff;border:1px solid #d1d5db;border-radius:16px;padding:22px;max-width:680px;margin:22px auto 0;text-align:left}
+.val-card fieldset{border:0;padding:0;margin:0 0 18px}
+.val-card legend{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;font-weight:800;color:#0e7490;padding:0;margin-bottom:10px}
+.val-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.val-grid .full{grid-column:1/-1}
+.val-card label{display:block;font-weight:700;color:#0f2d4a;font-size:.95rem}
+.val-card .optional{font-weight:400;color:#4b5563}
+.val-card input,.val-card select,.val-card textarea{width:100%;box-sizing:border-box;margin-top:5px;padding:12px 14px;font-size:1rem;border:1px solid #9ca3af;border-radius:10px;background:#fff;color:#111827;font-family:inherit}
+.val-card textarea{min-height:96px;resize:vertical}
+.val-card input:focus,.val-card select:focus,.val-card textarea:focus{outline:3px solid #0e7490;outline-offset:1px}
+.val-card input[aria-invalid="true"],.val-card select[aria-invalid="true"]{border-color:#dc2626;background:#fef2f2}
+.val-note{font-size:.9rem;color:#374151;margin:0 0 14px}
+.val-consent{font-size:.95rem;color:#0f2d4a;font-weight:600;margin:0 0 14px}
+.val-msg{margin:14px 0 0;padding:12px 14px;border-radius:10px;font-weight:600;background:#fef2f2;color:#991b1b;border:1px solid #fca5a5}
+.val-actions{margin-top:6px}
+.val-actions .btn{width:100%}
+.val-confirm{background:#fff;border:1px solid #a5f3fc;border-left:6px solid #0e7490;border-radius:16px;padding:22px;max-width:680px;margin:0 auto;text-align:left}
+.val-confirm h2{margin-top:0}
+.val-intent{max-width:680px;margin:22px auto 0;text-align:left}
+.val-intent h3{margin:0 0 12px}
+.val-intent-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.val-intent-btn{display:block;width:100%;text-align:left;background:#fff;border:2px solid #d1d5db;border-radius:14px;padding:14px 16px;font-family:inherit;font-size:1rem;color:#0f2d4a;cursor:pointer}
+.val-intent-btn strong{display:block;font-size:1.05rem;margin-bottom:3px}
+.val-intent-btn span{display:block;font-weight:400;font-size:.92rem;color:#374151}
+.val-intent-btn:hover{border-color:#0e7490}
+.val-intent-btn:focus-visible{outline:3px solid #0e7490;outline-offset:2px}
+.val-intent-btn[aria-pressed="true"]{border-color:#0e7490;background:#ecfeff}
+.val-intent-result{margin:18px 0 0;padding:16px;background:#f8fbfb;border:1px solid #d1d5db;border-radius:14px}
+.val-intent-result p{margin:0 0 12px}
+.val-intent-result p:last-child{margin-bottom:0}
 @media (max-width:640px){
   .hin-tool,.hin-results{padding-left:16px;padding-right:16px}
   .hin-actions .btn{width:100%}
+  .val-card{padding:18px 16px}
+  .val-grid,.val-intent-grid{grid-template-columns:1fr}
 }
 </style>
-<script type="application/ld+json">[{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://boatsforcharity.org/"},{"@type":"ListItem","position":2,"name":"Free Boat HIN Lookup","item":"https://boatsforcharity.org/hin-lookup"}]},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is this HIN lookup really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The decoder runs entirely in your browser, there is nothing to sign up for, and your HIN is not sent to us or stored anywhere."}},{"@type":"Question","name":"Can a HIN tell me who owns a boat?","acceptedAnswer":{"@type":"Answer","text":"No. A HIN encodes builder and build-date information only. Ownership lives in state title and registration records or, for federally documented vessels, with the U.S. Coast Guard. Those records are not public in the way vehicle records sometimes are, and Boats for Charity cannot look up an owner for you."}},{"@type":"Question","name":"Does a valid-looking HIN mean the boat is legitimate?","acceptedAnswer":{"@type":"Answer","text":"No. A HIN that matches the required format only tells you the characters are arranged the way the regulation describes. It does not verify that the hull, the plate, or the paperwork is genuine. If something looks altered or re-stamped, ask your state boating agency or law enforcement to inspect it."}},{"@type":"Question","name":"Why does my HIN have fewer or more than 12 characters?","acceptedAnswer":{"@type":"Answer","text":"Since November 1, 1972 a HIN has been 12 characters. Shorter or longer numbers are usually a state-assigned number, a registration number, an engine or trailer serial number, or a misread character. Homebuilt boats and boats built before 1972 may have no HIN at all."}},{"@type":"Question","name":"What do the letters I, O and Q mean in a HIN?","acceptedAnswer":{"@type":"Answer","text":"They should not appear. The regulation excludes I, O and Q from the serial portion because they are easily confused with the numerals 1 and 0. If you decoded one of those letters, look again at the stamping."}},{"@type":"Question","name":"Can I use a HIN to check a boat's title or accident history?","acceptedAnswer":{"@type":"Answer","text":"Not from the number itself. You use the HIN as the search key when you request records from the state agency that titles or registers the boat, or when you search U.S. Coast Guard documentation records. This page links to those official starting points."}},{"@type":"Question","name":"Do I need a HIN to donate a boat?","acceptedAnswer":{"@type":"Answer","text":"It helps, because the HIN is how a specific hull is identified on paperwork. Boats with a missing HIN, a missing title, or an estate situation are still reviewed case by case, so tell us what you have and we will explain the next step."}}]}]</script>
+<script type="application/ld+json">[{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://boatsforcharity.org/"},{"@type":"ListItem","position":2,"name":"Free Boat HIN Lookup","item":"https://boatsforcharity.org/hin-lookup"}]},{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How many characters are in a boat HIN?","acceptedAnswer":{"@type":"Answer","text":"Twelve. Since November 1, 1972 a HIN has been 12 characters, and since August 1, 1984 those 12 characters have followed one required arrangement. A number with more or fewer characters is usually a state-assigned number, a registration number, or an engine or trailer serial number — or a misread character."}},{"@type":"Question","name":"Is a HIN the same as a boat registration number?","acceptedAnswer":{"@type":"Answer","text":"No. The registration number is issued by your state, displayed on the bow, and can change when the boat is re-registered or moves to another state. The HIN is assigned by the builder, is fixed to the hull, and stays with the boat permanently. Both usually appear on your registration card."}},{"@type":"Question","name":"Can I find the year of a boat from the HIN?","acceptedAnswer":{"@type":"Answer","text":"Usually, on a boat certified on or after August 1, 1984. The last two characters give the model year the builder assigned, and characters 9–10 give the month and year digit of certification or manufacture. On older hulls the earlier formats placed that information differently, so the year cannot be read with confidence and should be confirmed with the builder, a surveyor, or your state agency."}},{"@type":"Question","name":"Can I identify the manufacturer from a HIN?","acceptedAnswer":{"@type":"Answer","text":"Yes — the first three characters are the Manufacturer Identification Code. The decoder above shows that code, and the Coast Guard's manufacturer identification resources are the authoritative place to match a MIC to a company, including builders that are no longer in business."}},{"@type":"Question","name":"Can I find the owner of a boat using the HIN?","acceptedAnswer":{"@type":"Answer","text":"No. A HIN encodes builder and build-date information only. Ownership lives in state title and registration records or, for federally documented vessels, with the U.S. Coast Guard. Those records are not public in the way vehicle records sometimes are, and Boats for Charity cannot look up an owner for you."}},{"@type":"Question","name":"Where do I find the HIN on an older boat?","acceptedAnswer":{"@type":"Answer","text":"Start at the starboard side of the transom, then check the aftermost starboard surface, the inside of lockers, and under deck fittings, since a second unexposed HIN is required. On older fiberglass a molded number can weather close to illegible, and a raking light or a pencil rubbing over the area often brings the characters back. Boats built before the 1972 requirement may have no HIN at all."}},{"@type":"Question","name":"Can a damaged or altered HIN be replaced?","acceptedAnswer":{"@type":"Answer","text":"Yes, but only through your state, never by you. States issue an assigned or replacement identification number, usually after an inspection that verifies the hull, and that assigned number then functions as the boat's HIN on the title and registration. Contact your state boating or titling agency for their process. Do not stamp or affix a number to a hull yourself."}},{"@type":"Question","name":"How can I find out what my boat is worth?","acceptedAnswer":{"@type":"Answer","text":"Value depends on year, make and model, length, condition, engines and hours, equipment, trailer, location, and current market activity — none of which a HIN contains. You can request a free human-reviewed estimated market range using the valuation form on this page, and our team emails the range within one to two business days."}},{"@type":"Question","name":"Is this HIN lookup really free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The decoder runs entirely in your browser, there is nothing to sign up for, and your HIN is not sent to us or stored anywhere unless you choose to include it in a valuation request."}},{"@type":"Question","name":"Can I use a HIN to check a boat's title or accident history?","acceptedAnswer":{"@type":"Answer","text":"Not from the number itself. You use the HIN as the search key when you request records from the state agency that titles or registers the boat, or when you search U.S. Coast Guard documentation records. This page links to those official starting points."}},{"@type":"Question","name":"Does a valid-looking HIN mean the boat is legitimate?","acceptedAnswer":{"@type":"Answer","text":"No. A HIN that matches the required format only tells you the characters are arranged the way the regulation describes. It does not verify that the hull, the plate, or the paperwork is genuine. If something looks altered or re-stamped, ask your state boating agency or law enforcement to inspect it."}},{"@type":"Question","name":"Do I need a HIN to donate a boat?","acceptedAnswer":{"@type":"Answer","text":"It helps, because the HIN is how a specific hull is identified on paperwork. Boats with a missing HIN, a missing title, or an estate situation are still reviewed case by case, so tell us what you have and we will explain the next step."}}]}]</script>
 </head>
 <body class="landing-page">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -79,7 +118,7 @@
 
 <section class="hero">
   <div class="wrap">
-    <h1>Free Boat HIN Lookup</h1>
+    <h1>Free Boat HIN Lookup &amp; Hull Identification Number Decoder</h1>
     <p class="sub">Enter a 12-character Hull Identification Number (HIN) to decode information contained in the number and find official resources for researching your boat.</p>
     <form class="hin-tool" id="hinForm" novalidate>
       <label for="hinInput">Hull Identification Number (HIN)</label>
@@ -93,6 +132,192 @@
     <p class="hin-msg" id="hinError" role="alert" hidden></p>
     <div class="hin-results" id="hinResults" role="status" aria-live="polite" hidden></div>
     <p class="hin-help" style="max-width:640px;margin:14px auto 0">A HIN serves the same purpose for a boat that a VIN serves for a car: it is the permanent identifier a builder assigns to one specific hull. Decoding happens in your browser — nothing you type is sent to us or saved.</p>
+  </div>
+</section>
+
+<section class="section val-band" id="boat-value">
+  <div class="wrap">
+    <div class="val-lead">
+      <h2>What's Your Boat Worth?</h2>
+      <p class="val-sub">Get a free human-reviewed estimated market range for your boat.</p>
+      <p>Tell us a little more about your boat and our team will review available market information, condition, equipment and location.</p>
+      <div class="val-cta-wrap">
+        <button type="button" class="btn btn-primary" id="valOpen" aria-expanded="false" aria-controls="valFormWrap">GET MY FREE BOAT VALUE</button>
+      </div>
+    </div>
+
+    <p class="val-prefill" id="valPrefill" hidden></p>
+
+    <div id="valFormWrap" hidden>
+      <form class="val-card" id="valForm" name="boatValuation" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html" novalidate>
+        <input type="hidden" name="form-name" value="boatValuation">
+        <input type="hidden" name="source" value="HIN Lookup Valuation">
+        <input type="hidden" name="client_ref" id="valClientRef" value="">
+        <p style="display:none"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
+
+        <fieldset>
+          <legend>Boat details</legend>
+          <div class="val-grid">
+            <label class="full">Hull Identification Number (HIN) <span class="optional">(optional)</span>
+              <input type="text" name="hin" id="valHin" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24">
+            </label>
+            <label>Manufacturer
+              <input type="text" name="manufacturer" id="valManufacturer" autocomplete="off" required>
+            </label>
+            <label>Model
+              <input type="text" name="model" autocomplete="off" required>
+            </label>
+            <label>Year
+              <input type="number" name="year" id="valYear" inputmode="numeric" min="1900" max="2030" step="1" required>
+            </label>
+            <label>Length (feet)
+              <input type="number" name="length_ft" inputmode="decimal" min="4" max="300" step="0.5" required>
+            </label>
+            <label class="full">Boat type
+              <select name="boat_type" required>
+                <option value="">Select boat type</option>
+                <option>Powerboat</option>
+                <option>Sailboat</option>
+                <option>Pontoon</option>
+                <option>Personal Watercraft</option>
+                <option>Houseboat</option>
+                <option>Other</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Location</legend>
+          <div class="val-grid">
+            <label>ZIP code
+              <input type="text" name="zip" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" required>
+            </label>
+            <label>State <span class="optional">(optional)</span>
+              <select name="state">
+                <option value="">Select state</option>
+                <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option><option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option><option>District of Columbia</option><option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option><option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option><option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option><option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option><option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option><option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option><option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option><option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option><option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option><option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option><option>Wisconsin</option><option>Wyoming</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Engine</legend>
+          <div class="val-grid">
+            <label class="full">Propulsion
+              <select name="propulsion" required>
+                <option value="">Select propulsion</option>
+                <option>Outboard</option>
+                <option>Inboard</option>
+                <option>Sterndrive / I/O</option>
+                <option>Jet</option>
+                <option>Sail / No engine</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>Number of engines
+              <input type="number" name="engine_count" inputmode="numeric" min="0" max="6" step="1">
+            </label>
+            <label>Horsepower (total)
+              <input type="number" name="horsepower" inputmode="numeric" min="0" max="5000" step="1">
+            </label>
+            <label>Engine hours <span class="optional">(optional)</span>
+              <input type="number" name="engine_hours" inputmode="numeric" min="0" max="20000" step="1">
+            </label>
+            <label>Running status
+              <select name="running_status" required>
+                <option value="">Select status</option>
+                <option>Runs</option>
+                <option>Does Not Run</option>
+                <option>Unknown</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Condition &amp; trailer</legend>
+          <div class="val-grid">
+            <label>Overall condition
+              <select name="condition" required>
+                <option value="">Select condition</option>
+                <option>Excellent</option>
+                <option>Good</option>
+                <option>Fair</option>
+                <option>Poor / Project</option>
+              </select>
+            </label>
+            <label>Trailer
+              <select name="trailer" required>
+                <option value="">Select trailer status</option>
+                <option>Included</option>
+                <option>Not Included</option>
+                <option>Not Applicable</option>
+              </select>
+            </label>
+            <label class="full">Anything else we should know? <span class="optional">(optional)</span>
+              <textarea name="notes" rows="4"></textarea>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Contact information</legend>
+          <p class="val-consent">We'll use this information to prepare and send your boat valuation.</p>
+          <div class="val-grid">
+            <label>First name
+              <input type="text" name="first_name" autocomplete="given-name" required>
+            </label>
+            <label>Last name
+              <input type="text" name="last_name" autocomplete="family-name" required>
+            </label>
+            <label>Email
+              <input type="email" name="email" autocomplete="email" required>
+            </label>
+            <label>Phone number
+              <input type="tel" name="phone" autocomplete="tel" required>
+            </label>
+          </div>
+        </fieldset>
+
+        <p class="val-note">A valuation is prepared by a person, not an automated pricing engine. Nothing on this page is an offer to buy your boat.</p>
+        <div class="val-actions">
+          <button type="submit" class="btn btn-primary">REQUEST MY FREE VALUATION</button>
+        </div>
+        <p class="val-msg" id="valError" role="alert" hidden></p>
+      </form>
+    </div>
+
+    <div id="valConfirm" hidden>
+      <div class="val-confirm" role="status" aria-live="polite">
+        <h2>Your Boat Valuation Is Being Prepared</h2>
+        <p>Thanks! We've received your boat information.</p>
+        <p>Our team will review the details you provided along with available market information to prepare an estimated market range for your boat.</p>
+        <p>Please allow 1–2 business days to receive your valuation report.</p>
+        <p>Your report will be sent to the email address you provided.</p>
+      </div>
+
+      <div class="val-intent">
+        <form id="intentForm" name="boatValuationIntent" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks.html">
+          <input type="hidden" name="form-name" value="boatValuationIntent">
+          <input type="hidden" name="source" value="HIN Lookup Valuation">
+          <input type="hidden" name="email" id="intentEmail" value="">
+          <input type="hidden" name="hin" id="intentHin" value="">
+          <input type="hidden" name="client_ref" id="intentClientRef" value="">
+          <input type="hidden" name="intent" id="intentValue" value="">
+          <p style="display:none"><label>Don't fill this out if you're human: <input name="bot-field"></label></p>
+          <h3 id="intentHeading">While we prepare your valuation, what are you considering doing with your boat?</h3>
+          <div class="val-intent-grid" role="group" aria-labelledby="intentHeading">
+            <button type="button" class="val-intent-btn" data-intent="Donate My Boat" aria-pressed="false"><strong>Donate My Boat</strong><span>Making the process simple is my priority.</span></button>
+            <button type="button" class="val-intent-btn" data-intent="Sell My Boat" aria-pressed="false"><strong>Sell My Boat</strong><span>I'm interested in selling.</span></button>
+            <button type="button" class="val-intent-btn" data-intent="Not Sure Yet" aria-pressed="false"><strong>Not Sure Yet</strong><span>I'm comparing my options.</span></button>
+            <button type="button" class="val-intent-btn" data-intent="Just Checking Its Value" aria-pressed="false"><strong>Just Checking Its Value</strong><span>I'm researching the boat.</span></button>
+          </div>
+        </form>
+        <div class="val-intent-result" id="intentResult" role="status" aria-live="polite" hidden></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -131,23 +356,46 @@
 
 <section class="section alt">
   <div class="wrap">
-    <h2>What Is a Hull Identification Number?</h2>
-    <p>A Hull Identification Number is the permanent 12-character identifier a builder assigns to a single hull. Since November 1, 1972, boats manufactured or imported for sale in the United States have been required to carry one, and since August 1, 1984 the arrangement of those 12 characters has followed one fixed pattern: three characters of manufacturer code, five characters of serial number, two characters for the certification or manufacture date, and two characters for the model year. The number is stamped, molded, or plated onto the hull so it stays with the boat through every sale, repower, and repaint.</p>
+    <h2>What Is a Boat HIN?</h2>
+    <p>HIN stands for Hull Identification Number. It is the permanent 12-character identifier a builder assigns to a single hull, and it serves the same purpose for a boat that a VIN serves for a vehicle. Since November 1, 1972, boats manufactured or imported for sale in the United States have been required to carry one, and since August 1, 1984 the arrangement of those 12 characters has followed one fixed pattern: three characters of manufacturer code, five characters of serial number, two characters for the certification or manufacture date, and two characters for the model year. The number is stamped, molded, or plated onto the hull so it stays with the boat through every sale, repower, and repaint. A HIN is not the same thing as a registration number — the state-issued number painted on the bow changes with the boat's registration, while the HIN identifies the hull itself for life.</p>
 
-    <h2>Where Do I Find My Boat's HIN?</h2>
-    <p>Look on the starboard (right) side of the transom, in the upper corner within a couple of inches of the top of the hull or the top of the outboard bracket. On boats without a usable transom the number may sit on the aftermost starboard surface. A duplicate HIN is also required in an unexposed location — under a fitting, inside a locker, beneath the deck — specifically so an altered exterior number can be caught. Your title, registration card, and insurance policy should carry the same number; if the paperwork and the hull disagree, resolve that with your state agency before selling or donating.</p>
+    <h2>Where Is the HIN Located on a Boat?</h2>
+    <p>Look on the starboard (right) side of the transom, in the upper corner within a couple of inches of the top of the hull or the top of the outboard bracket. That is the most common exterior location, though on boats without a usable transom the number may sit on the aftermost starboard surface instead, so treat placement as a strong convention rather than a universal rule. A duplicate HIN is also required in an unexposed location — under a fitting, inside a locker, beneath the deck — specifically so an altered exterior number can be caught. Your title, registration card, and insurance policy should carry the same number; if the paperwork and the hull disagree, resolve that with your state agency before selling or donating.</p>
 
-    <h2>What Can a HIN Tell Me?</h2>
-    <p>From the number alone: which company built the hull, that builder's own serial number for it, the month and year the boat was certified or manufactured, and the model year the builder assigned. That is genuinely useful — it pins down the build date when a seller's memory is vague, and it separates a late-season hull from the next model year. What a HIN does not contain is anything about ownership, value, condition, engine hours, options, accidents, liens, or where the boat has been. Those facts live in records, not in the number.</p>
+    <h2>How to Read a 12-Character Boat HIN</h2>
+    <p>Take the example HIN <strong>ABC12345D404</strong> and split it into its four parts:</p>
+    <ul class="hin-notes">
+      <li><strong>ABC</strong> — characters 1–3 are the Manufacturer Identification Code (MIC), a three-letter code the Coast Guard issues to the company that built the hull.</li>
+      <li><strong>12345</strong> — characters 4–8 are the builder's own serial or production number for that specific hull. The letters I, O and Q are excluded here because they are easily confused with 1 and 0.</li>
+      <li><strong>D4</strong> — characters 9–10 are the certification or manufacture date: a month letter (A = January through L = December, so D = April) followed by the last digit of the year.</li>
+      <li><strong>04</strong> — characters 11–12 are the two-digit model year the builder assigned, which is often one year ahead of the build date.</li>
+    </ul>
+    <p>Historical formats have changed, and that matters when you decode an older hull. The layout above is what federal regulation requires for boats certified on or after August 1, 1984. Between 1972 and 1984 more than one arrangement was in use and the date information did not always sit in the same positions, which is why the decoder above reports the date fields as undetermined instead of guessing when the pattern does not match.</p>
 
-    <h2>Can a HIN Tell Me Who Owns a Boat?</h2>
-    <p>No. There is no public national registry that maps a HIN to a current owner, and the HIN itself encodes nothing about ownership. Ownership sits in the title or registration file of the state where the boat is registered, or in Coast Guard documentation records for the minority of vessels that are federally documented. Access to those files is restricted, and Boats for Charity cannot identify the current owner of a vessel for you. If you need an owner identified for a legal reason — an abandoned boat, an estate, a suspected theft — the right route is the state boating agency, the titling agency, or law enforcement.</p>
+    <h2>What Can a Boat HIN Tell You?</h2>
+    <p>From the number alone: which company built the hull, that builder's own serial or production number for it, the month and year the boat was certified or manufactured, and the model year the builder assigned. That is genuinely useful — a boat manufacturer lookup pins down the builder when a listing is vague, a boat model year lookup separates a late-season hull from the next model year, and a boat serial number lookup gives you the exact hull to reference on paperwork.</p>
+    <p>What a HIN cannot reliably reveal is just as important. It contains nothing about ownership, current value, condition, engine hours, installed options, accident damage, liens, insurance claims, or where the boat has been kept. Those facts live in records, surveys, and inspections — not in the number. A correctly formatted HIN also does not prove a hull or its documents are genuine.</p>
 
-    <h2>Can I Check a Boat's Title With a HIN?</h2>
-    <p>You can use the HIN as the search key, but the check itself happens at an agency, not on this page. Contact the titling agency in the state where the boat is registered and ask what record request they offer; some states will confirm title status or brands to an eligible requester, and some will not. For a federally documented vessel, documentation and any recorded mortgages are handled through the National Vessel Documentation Center. Treat any site that promises a complete boat title, lien, or accident history from a HIN alone with real skepticism — nobody derives that from the number.</p>
+    <h2>Can a HIN Tell You Who Owns a Boat?</h2>
+    <p>No, not from the HIN alone. There is no public national registry that maps a HIN to a current owner, and the HIN itself encodes nothing about ownership. Ownership sits in the title or registration file of the state where the boat is registered, or in Coast Guard documentation records for the minority of vessels that are federally documented. Access to those files is restricted, and Boats for Charity cannot identify the current owner of a vessel for you — we do not operate an ownership lookup and we do not publish personal information. If you need an owner identified for a legal reason — an abandoned boat, an estate, a suspected theft — the right route is the state boating agency, the titling agency, or law enforcement.</p>
 
-    <h2>HIN vs VIN: What's the Difference?</h2>
-    <p>Both are permanent factory identifiers, and people reasonably search for a "boat VIN lookup" when they mean a HIN. The differences matter in practice. A VIN is 17 characters, includes a check digit that can mathematically catch a typo, and is supported by a large ecosystem of vehicle history data. A HIN is 12 characters, has no check digit, and has no equivalent nationwide history database. So a HIN cannot be validated by arithmetic the way a VIN can, and a boat's past has to be researched through agencies and documents rather than a single report.</p>
+    <h2>Can You Check a Boat's History With a HIN?</h2>
+    <p>A HIN is an important identifier, and it is the search key you will be asked for. But the number by itself does not automatically reveal:</p>
+    <ul class="hin-notes">
+      <li>full accident or damage history</li>
+      <li>title history, including salvage or flood brands</li>
+      <li>liens, loans, or unpaid marina balances</li>
+      <li>previous owners</li>
+      <li>insurance claims</li>
+    </ul>
+    <p>To research any of that, contact the titling agency in the state where the boat is registered and ask what record request they offer; some states will confirm title status or brands to an eligible requester, and some will not. For a federally documented vessel, documentation and any recorded mortgages are handled through the <a href="https://www.dco.uscg.mil/nvdc/" rel="nofollow noopener" target="_blank">National Vessel Documentation Center</a>. A marine survey is the practical way to establish physical condition and evidence of past repair. Treat any site that promises a complete boat title, lien, or accident history from a HIN alone with real skepticism — nobody derives that from the number.</p>
+
+    <h2>What's My Boat Worth?</h2>
+    <p>A HIN identifies the hull, but it says nothing about what the boat is worth today. Value comes from the combination of year, make and model, length, overall condition, the engines and their hours, installed equipment and electronics, whether a serviceable trailer is included, where the boat is located, and how active the market is for that type of boat right now. Two hulls with consecutive serial numbers can be worth very different amounts a decade later.</p>
+    <p>That is why our boat value estimator is a person rather than an algorithm. Fill in the <a href="#boat-value">free boat valuation request on this page</a> and our team reviews available market information alongside the condition, equipment, and location details you give us, then sends an estimated market range to your email. There is no charge, no account, and no instant number pretending to be an appraisal.</p>
+
+    <h2>Boat HIN vs VIN — What's the Difference?</h2>
+    <p>Both are permanent factory identifiers, and people reasonably search for a "boat VIN lookup" when they mean a HIN. The differences matter in practice. A VIN is 17 characters, includes a check digit that can mathematically catch a typo, and is supported by a large ecosystem of vehicle history data. A HIN is 12 characters, has no check digit, and has no equivalent nationwide history database. So a HIN cannot be validated by arithmetic the way a VIN can, and a boat's past has to be researched through agencies and documents rather than a single report. One place the two meet: if your boat sits on a trailer, that trailer is a separate vehicle with its own VIN and its own title.</p>
 
     <h2>What If My Boat Doesn't Have a HIN?</h2>
     <p>Boats built before the 1972 requirement, homebuilt boats, and some imported hulls may never have had one, and on older fiberglass a molded number can weather past legibility. States handle this with an assigned or replacement identification number, usually after an inspection that verifies the hull, and that assigned number then functions as the boat's HIN on the title and registration. Ask your state boating agency about their inspection and assignment process. Never stamp a number onto a hull yourself.</p>
@@ -159,19 +407,29 @@
 
 <section class="section">
   <div class="wrap">
-    <h2>Frequently Asked Questions</h2>
-    <h3>Is this HIN lookup really free?</h3>
-    <p>Yes. The decoder runs entirely in your browser, there is nothing to sign up for, and your HIN is not sent to us or stored anywhere.</p>
-    <h3>Can a HIN tell me who owns a boat?</h3>
+    <h2>Free Boat HIN Lookup FAQ</h2>
+    <h3>How many characters are in a boat HIN?</h3>
+    <p>Twelve. Since November 1, 1972 a HIN has been 12 characters, and since August 1, 1984 those 12 characters have followed one required arrangement. A number with more or fewer characters is usually a state-assigned number, a registration number, or an engine or trailer serial number — or a misread character.</p>
+    <h3>Is a HIN the same as a boat registration number?</h3>
+    <p>No. The registration number is issued by your state, displayed on the bow, and can change when the boat is re-registered or moves to another state. The HIN is assigned by the builder, is fixed to the hull, and stays with the boat permanently. Both usually appear on your registration card.</p>
+    <h3>Can I find the year of a boat from the HIN?</h3>
+    <p>Usually, on a boat certified on or after August 1, 1984. The last two characters give the model year the builder assigned, and characters 9–10 give the month and year digit of certification or manufacture. On older hulls the earlier formats placed that information differently, so the year cannot be read with confidence and should be confirmed with the builder, a surveyor, or your state agency.</p>
+    <h3>Can I identify the manufacturer from a HIN?</h3>
+    <p>Yes — the first three characters are the Manufacturer Identification Code. The decoder above shows that code, and the Coast Guard's manufacturer identification resources are the authoritative place to match a MIC to a company, including builders that are no longer in business.</p>
+    <h3>Can I find the owner of a boat using the HIN?</h3>
     <p>No. A HIN encodes builder and build-date information only. Ownership lives in state title and registration records or, for federally documented vessels, with the U.S. Coast Guard. Those records are not public in the way vehicle records sometimes are, and Boats for Charity cannot look up an owner for you.</p>
-    <h3>Does a valid-looking HIN mean the boat is legitimate?</h3>
-    <p>No. A HIN that matches the required format only tells you the characters are arranged the way the regulation describes. It does not verify that the hull, the plate, or the paperwork is genuine. If something looks altered or re-stamped, ask your state boating agency or law enforcement to inspect it.</p>
-    <h3>Why does my HIN have fewer or more than 12 characters?</h3>
-    <p>Since November 1, 1972 a HIN has been 12 characters. Shorter or longer numbers are usually a state-assigned number, a registration number, an engine or trailer serial number, or a misread character. Homebuilt boats and boats built before 1972 may have no HIN at all.</p>
-    <h3>What do the letters I, O and Q mean in a HIN?</h3>
-    <p>They should not appear. The regulation excludes I, O and Q from the serial portion because they are easily confused with the numerals 1 and 0. If you decoded one of those letters, look again at the stamping.</p>
+    <h3>Where do I find the HIN on an older boat?</h3>
+    <p>Start at the starboard side of the transom, then check the aftermost starboard surface, the inside of lockers, and under deck fittings, since a second unexposed HIN is required. On older fiberglass a molded number can weather close to illegible, and a raking light or a pencil rubbing over the area often brings the characters back. Boats built before the 1972 requirement may have no HIN at all.</p>
+    <h3>Can a damaged or altered HIN be replaced?</h3>
+    <p>Yes, but only through your state, never by you. States issue an assigned or replacement identification number, usually after an inspection that verifies the hull, and that assigned number then functions as the boat's HIN on the title and registration. Contact your state boating or titling agency for their process. Do not stamp or affix a number to a hull yourself.</p>
+    <h3>How can I find out what my boat is worth?</h3>
+    <p>Value depends on year, make and model, length, condition, engines and hours, equipment, trailer, location, and current market activity — none of which a HIN contains. You can request a free human-reviewed estimated market range using the valuation form on this page, and our team emails the range within one to two business days.</p>
+    <h3>Is this HIN lookup really free?</h3>
+    <p>Yes. The decoder runs entirely in your browser, there is nothing to sign up for, and your HIN is not sent to us or stored anywhere unless you choose to include it in a valuation request.</p>
     <h3>Can I use a HIN to check a boat's title or accident history?</h3>
     <p>Not from the number itself. You use the HIN as the search key when you request records from the state agency that titles or registers the boat, or when you search U.S. Coast Guard documentation records. This page links to those official starting points.</p>
+    <h3>Does a valid-looking HIN mean the boat is legitimate?</h3>
+    <p>No. A HIN that matches the required format only tells you the characters are arranged the way the regulation describes. It does not verify that the hull, the plate, or the paperwork is genuine. If something looks altered or re-stamped, ask your state boating agency or law enforcement to inspect it.</p>
     <h3>Do I need a HIN to donate a boat?</h3>
     <p>It helps, because the HIN is how a specific hull is identified on paperwork. Boats with a missing HIN, a missing title, or an estate situation are still reviewed case by case, so tell us what you have and we will explain the next step.</p>
   </div>
@@ -181,7 +439,7 @@
   <div class="wrap">
     <h2>Related Resources</h2>
     <p>If you are researching a boat because you are deciding what to do with it, these guides cover the practical side: <a href="/guides/how-to-donate-a-boat">How to Donate a Boat</a>, the <a href="/guides/boat-donation-paperwork">boat donation paperwork checklist</a> where the HIN is the first item, <a href="/guides/donate-a-boat-without-a-title">Donate a Boat Without a Title</a> for hulls with missing documents, and <a href="/guides/boat-donation-vs-selling">donating versus selling</a>.</p>
-    <p>Because titling and registration rules are set locally, the <a href="/boat-donation-by-state.html">boat donation by state</a> directory is the fastest way to find notes for where your boat lives. When you are ready to talk to a person, use the <a href="/#donate">boat donation form</a> or call (855) 557-3703.</p>
+    <p>Because titling and registration rules are set locally, the <a href="/boat-donation-by-state.html">boat donation by state</a> directory is the fastest way to find notes for where your boat lives. If you are weighing what the boat is actually worth against the effort of selling it, start with the <a href="#boat-value">free boat valuation request</a> above and the <a href="/sell-vs-donate-boat.html">sell versus donate comparison</a>. When you are ready to talk to a person, use the <a href="/#donate">boat donation form</a> or call (855) 557-3703.</p>
   </div>
 </section>
 </main>
@@ -210,6 +468,11 @@
     return String(s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
+  }
+
+  // Reuses the gtag instance already loaded in <head>; never throws if absent.
+  function track(name, params) {
+    try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {}
   }
 
   function showError(message) {
@@ -293,6 +556,7 @@
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
+    track('hin_lookup_submitted');
     var raw = input.value || '';
     var hin = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
     if (!hin) {
@@ -303,7 +567,11 @@
       showError('That doesn’t appear to be a valid 12-character HIN (you entered ' + hin.length + ' character' + (hin.length === 1 ? '' : 's') + '). Check the number on the starboard side of the transom and try again.');
       return;
     }
-    render(hin, decode(hin));
+    var decoded = decode(hin);
+    render(hin, decoded);
+    track('hin_decode_success');
+    // Hand the decoded values to the valuation flow so known fields carry over.
+    document.dispatchEvent(new CustomEvent('hin:decoded', { detail: { hin: hin, mic: decoded.mic, modelYear: decoded.modelYear === UNDETERMINED ? '' : decoded.modelYear } }));
   });
 
   form.addEventListener('reset', function () {
@@ -311,6 +579,140 @@
     results.hidden = true;
     results.innerHTML = '';
   });
+})();
+
+/* Boat valuation request + owner intent.
+   Posts to Netlify Forms with the same AJAX pattern the site already relies on,
+   so leads land alongside donation submissions with no new infrastructure. */
+(function () {
+  var openBtn = document.getElementById('valOpen');
+  var wrap = document.getElementById('valFormWrap');
+  var form = document.getElementById('valForm');
+  if (!openBtn || !wrap || !form) return;
+
+  var prefillNote = document.getElementById('valPrefill');
+  var errorBox = document.getElementById('valError');
+  var confirmBlock = document.getElementById('valConfirm');
+  var intentForm = document.getElementById('intentForm');
+  var intentResult = document.getElementById('intentResult');
+  var submitBtn = form.querySelector('button[type="submit"]');
+
+  function track(name, params) {
+    try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch (e) {}
+  }
+
+  function post(target) {
+    return fetch('/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams(new FormData(target)).toString()
+    });
+  }
+
+  // A short client-side reference lets the intent submission be matched back to
+  // the valuation lead without updating the original submission.
+  function clientRef() {
+    var existing = document.getElementById('valClientRef').value;
+    if (existing) return existing;
+    var ref = 'HL-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+    document.getElementById('valClientRef').value = ref;
+    return ref;
+  }
+
+  document.addEventListener('hin:decoded', function (e) {
+    var d = e.detail || {};
+    var hinField = document.getElementById('valHin');
+    var micField = document.getElementById('valManufacturer');
+    var yearField = document.getElementById('valYear');
+    var carried = [];
+    if (d.hin) { hinField.value = d.hin; carried.push('HIN'); }
+    if (d.mic && !micField.value) { micField.value = d.mic; carried.push('manufacturer code (' + d.mic + ')'); }
+    if (d.modelYear && !yearField.value) { yearField.value = d.modelYear; carried.push('model year'); }
+    if (carried.length) {
+      prefillNote.textContent = 'We carried your ' + carried.join(', ') + ' over to the valuation request below. Please confirm or correct anything that looks wrong.';
+      prefillNote.hidden = false;
+    }
+  });
+
+  openBtn.addEventListener('click', function () {
+    wrap.hidden = false;
+    openBtn.setAttribute('aria-expanded', 'true');
+    clientRef();
+    track('valuation_cta_clicked');
+    var first = form.querySelector('input:not([type=hidden]), select');
+    if (first) first.focus({ preventScroll: true });
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  function firstInvalid() {
+    var fields = form.querySelectorAll('input[required], select[required]');
+    var found = null;
+    for (var i = 0; i < fields.length; i++) {
+      var f = fields[i];
+      var bad = !f.value.trim() || (f.checkValidity && !f.checkValidity());
+      f.setAttribute('aria-invalid', bad ? 'true' : 'false');
+      if (bad && !found) found = f;
+    }
+    return found;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var invalid = firstInvalid();
+    if (invalid) {
+      errorBox.textContent = 'Please complete the highlighted required fields so our team can review your boat accurately.';
+      errorBox.hidden = false;
+      invalid.focus();
+      return;
+    }
+    errorBox.hidden = true;
+    clientRef();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'SENDING…';
+
+    post(form).then(function (res) {
+      if (!res.ok) throw new Error('submit failed');
+      document.getElementById('intentEmail').value = form.querySelector('[name=email]').value;
+      document.getElementById('intentHin').value = document.getElementById('valHin').value;
+      document.getElementById('intentClientRef').value = document.getElementById('valClientRef').value;
+      wrap.hidden = true;
+      openBtn.closest('.val-lead').hidden = true;
+      prefillNote.hidden = true;
+      confirmBlock.hidden = false;
+      confirmBlock.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      track('valuation_submitted');
+    }).catch(function () {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'REQUEST MY FREE VALUATION';
+      errorBox.textContent = 'We could not send your request just now. Please try again, or call (855) 557-3703 and we will take the details over the phone.';
+      errorBox.hidden = false;
+    });
+  });
+
+  var INTENT_RESPONSES = {
+    'Donate My Boat': '<p>Thanks — we\'ve noted that you\'re considering donating. Your valuation is still being prepared, and you can start a donation review now if you\'d like.</p><p><a class="btn btn-primary" href="/#donate" data-track="hin-valuation-intent-donate">Start My Free Boat Donation</a></p>',
+    'Sell My Boat': '<p>Thanks — we\'ve noted that you\'re interested in selling. We\'ll take that into account when reviewing your request.</p>',
+    'Not Sure Yet': '<p>We\'ll help you understand your options.</p><p>Our <a href="/guides/boat-donation-vs-selling">donating versus selling</a> guide compares the two paths, and a real person will walk through your boat with you if you\'d rather talk.</p>',
+    'Just Checking Its Value': '<p>No problem — your valuation request is still being prepared.</p>'
+  };
+
+  var buttons = intentForm.querySelectorAll('.val-intent-btn');
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      var btn = this;
+      var intent = btn.getAttribute('data-intent');
+      for (var j = 0; j < buttons.length; j++) buttons[j].setAttribute('aria-pressed', String(buttons[j] === btn));
+      document.getElementById('intentValue').value = intent;
+      intentResult.innerHTML = INTENT_RESPONSES[intent] || '';
+      intentResult.hidden = false;
+      track('intent_selected', { intent: intent });
+      var donateCta = intentResult.querySelector('a[href="/#donate"]');
+      if (donateCta) {
+        donateCta.addEventListener('click', function () { track('donation_cta_clicked', { from: 'hin_valuation_intent' }); });
+      }
+      post(intentForm).catch(function () { /* intent is a nice-to-have; never block the user */ });
+    });
+  }
 })();
 </script>
 </body>
