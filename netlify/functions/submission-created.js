@@ -9,14 +9,26 @@ export async function handler(event) {
     const formName = payload && payload.payload ? payload.payload.form_name : "";
     const donorEmail = (data.email || "").trim();
 
-    // Only respond to our specific form
-    if (formName !== "donationForm" || !donorEmail) {
-      return { statusCode: 200, body: "No action (not donationForm or missing email)" };
+    // Only respond to our specific forms
+    if (!donorEmail || (formName !== "donationForm" && formName !== "boatValuation")) {
+      return { statusCode: 200, body: "No action (unhandled form or missing email)" };
     }
 
     // Compose email
-    const subject = "We received your boat donation information — Boats for Charity";
-    const html = `
+    const isValuation = formName === "boatValuation";
+    const subject = isValuation
+      ? "We received your boat valuation request — Boats for Charity"
+      : "We received your boat donation information — Boats for Charity";
+    const html = isValuation
+      ? `
+      <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.6;color:#111827">
+        <h2 style="margin:0 0 8px;color:#0b243b">Your boat valuation is being prepared</h2>
+        <p>Thanks! We received your boat information. Our team will review the details you provided along with available market information to prepare an estimated market range for your boat.</p>
+        <p>Please allow 1&ndash;2 business days to receive your valuation report. If you need help sooner, call <a href="tel:+18555573703">(855) 557-3703</a>.</p>
+        <p style="margin:16px 0 0">&mdash; Boats for Charity<br><em>Turning Boats into Blessings</em></p>
+      </div>
+    `
+      : `
       <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.6;color:#111827">
         <h2 style="margin:0 0 8px;color:#0b243b">Thank you for your submission</h2>
         <p>We received your boat donation information and will reach out shortly. If you need help now, call <a href="tel:+18555573703">(855) 557-3703</a>.</p>
