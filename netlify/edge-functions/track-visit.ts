@@ -71,4 +71,7 @@ export const config: Config = {
     "^.*\\.(js|mjs|css|map|png|jpe?g|gif|svg|webp|ico|xml|txt|json|woff2?|ttf|eot|pdf)$",
   ],
   method: "GET",
+  // Visit tracking is non-critical. If the edge runtime fails, serve the page
+  // instead of replacing it with Netlify's generic 500 response.
+  onError: "bypass",
 };
