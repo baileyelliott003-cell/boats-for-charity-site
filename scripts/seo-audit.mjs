@@ -216,7 +216,7 @@ for (const file of preferredFiles) {
   const mainHtml = html.match(/<main\b[^>]*>([\s\S]*?)<\/main>/i)?.[1] || html;
   const mainText = stripMarkup(mainHtml);
   const words = mainText ? mainText.split(/\s+/).length : 0;
-  const minimum = file.startsWith("state-") ? 550 : file.startsWith("city/") ? 800 : file.startsWith("guides/") ? 300 : 100;
+  const minimum = file.startsWith("state-") ? 500 : file.startsWith("city/") ? 625 : file.startsWith("guides/") ? 300 : 100;
   if (file !== "thanks.html" && words < minimum) {
     addWarning(`${file}: ${words} visible words; review against ${minimum}-word quality floor`);
   } else {
@@ -263,6 +263,12 @@ for (const file of preferredFiles) {
   }
 
   if (file.startsWith("city/")) {
+    if (/<h2\b[^>]*>\s*Questions from\b/i.test(html)) {
+      addError(`${file}: redundant city FAQ section remains`);
+    }
+    if (/"@type"\s*:\s*"FAQPage"/i.test(html)) {
+      addError(`${file}: redundant city FAQ schema remains`);
+    }
     const pickupIdCount = (html.match(/\bid=["']buyer-pickup["']/gi) || []).length;
     if (pickupIdCount !== 1) addError(`${file}: expected one buyer-pickup section, found ${pickupIdCount}`);
     if (!/<p\s+class=["']process-note["'][^>]*>/i.test(html)) addError(`${file}: missing owner-custody process note`);

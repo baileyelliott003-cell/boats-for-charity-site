@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT = path.resolve(process.argv[2] ?? SCRIPT_ROOT);
 const REPORT_PATH = path.join(ROOT, "artifacts", "content-quality-audit.json");
-const EDITORIAL_SIMILARITY_LIMIT = 0.42;
+const EDITORIAL_SIMILARITY_LIMIT = 0.35;
+const WIDELY_REPEATED_EDITORIAL_PAGE_LIMIT = 7;
 
 const ENTITY_MAP = new Map([
   ["amp", "&"],
@@ -46,7 +47,7 @@ function editorialHtml(value) {
     .replace(/<form\b[\s\S]*?<\/form>/gi, " ")
     .replace(/<section\b[^>]*class=["'][^"']*\bdonate\b[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, " ")
     .replace(/<ul\b[^>]*class=["'][^"']*\btrust\b[^"']*["'][^>]*>[\s\S]*?<\/ul>/gi, " ")
-    .replace(/<(?:p|div)\b[^>]*class=["'][^"']*\bprocess-note\b[^"']*["'][^>]*>[\s\S]*?<\/\1>/gi, " ");
+    .replace(/<(p|div)\b[^>]*class=["'][^"']*\bprocess-note\b[^"']*["'][^>]*>[\s\S]*?<\/\1>/gi, " ");
 }
 
 function listHtml(directory) {
@@ -176,6 +177,7 @@ const records = files.map(({ absolute, relative }) => {
     description,
     wordCount: prose.split(/\s+/).filter(Boolean).length,
     blocks,
+    editorialBlocks,
     headings,
     normalized,
     shingles: shingleSet(normalized),
@@ -192,7 +194,7 @@ const records = files.map(({ absolute, relative }) => {
 const duplicateBlocks = [];
 const blockIndex = new Map();
 for (const record of records) {
-  for (const block of record.blocks) {
+  for (const block of record.editorialBlocks) {
     if (block.type === "li" || block.text.split(/\s+/).length < 9) continue;
     const key = normalize(block.text, localTermsFor(record.relative, fs.readFileSync(path.join(ROOT, record.relative), "utf8")));
     if (!blockIndex.has(key)) blockIndex.set(key, { sample: block.text, pages: new Set() });
@@ -230,7 +232,7 @@ for (const groupName of ["state", "city", "guide"]) {
 similarities.sort((a, b) => b.score - a.score);
 editorialSimilarities.sort((a, b) => b.score - a.score);
 
-const publicRecords = records.map(({ blocks, normalized, shingles, editorialNormalized, editorialShingles, ...record }) => record);
+const publicRecords = records.map(({ blocks, editorialBlocks, normalized, shingles, editorialNormalized, editorialShingles, ...record }) => record);
 const report = {
   generatedAt: new Date().toISOString(),
   summary: {
@@ -242,11 +244,12 @@ const report = {
     schemaDescriptionMismatches: records.filter((record) => record.schemaDescriptionMismatch).length,
     invalidJsonLd: records.filter((record) => record.invalidJsonLd).length,
     duplicateBlocksOnThreeOrMorePages: duplicateBlocks.length,
+    widelyRepeatedEditorialBlocks: duplicateBlocks.filter((item) => item.count >= WIDELY_REPEATED_EDITORIAL_PAGE_LIMIT).length,
     statePairsAbove50Percent: similarities.filter((item) => item.family === "state" && item.score >= 0.5).length,
     cityPairsAbove50Percent: similarities.filter((item) => item.family === "city" && item.score >= 0.5).length,
-    stateEditorialPairsAbove42Percent: editorialSimilarities.filter((item) => item.family === "state" && item.score >= EDITORIAL_SIMILARITY_LIMIT).length,
-    cityEditorialPairsAbove42Percent: editorialSimilarities.filter((item) => item.family === "city" && item.score >= EDITORIAL_SIMILARITY_LIMIT).length,
-    guideEditorialPairsAbove42Percent: editorialSimilarities.filter((item) => item.family === "guide" && item.score >= EDITORIAL_SIMILARITY_LIMIT).length,
+    stateEditorialPairsAbove35Percent: editorialSimilarities.filter((item) => item.family === "state" && item.score >= EDITORIAL_SIMILARITY_LIMIT).length,
+    cityEditorialPairsAbove35Percent: editorialSimilarities.filter((item) => item.family === "city" && item.score >= EDITORIAL_SIMILARITY_LIMIT).length,
+    guideEditorialPairsAbove35Percent: editorialSimilarities.filter((item) => item.family === "guide" && item.score >= EDITORIAL_SIMILARITY_LIMIT).length,
   },
   duplicateBlocks,
   topSimilarities: similarities.slice(0, 250),
@@ -258,7 +261,7 @@ fs.mkdirSync(path.dirname(REPORT_PATH), { recursive: true });
 fs.writeFileSync(REPORT_PATH, `${JSON.stringify(report, null, 2)}\n`);
 
 console.log(JSON.stringify(report.summary, null, 2));
-console.log("\nMost repeated blocks:");
+console.log("\nMost repeated editorial blocks:");
 for (const item of duplicateBlocks.slice(0, 12)) console.log(`${item.count} pages: ${item.sample.slice(0, 180)}`);
 console.log("\nMost similar page pairs:");
 for (const item of similarities.slice(0, 15)) console.log(`${item.family} ${item.score}: ${item.left} <> ${item.right}`);
@@ -272,10 +275,14 @@ if (report.summary.schemaDescriptionMismatches) releaseBlockers.push(`${report.s
 if (report.summary.invalidJsonLd) releaseBlockers.push(`${report.summary.invalidJsonLd} invalid JSON-LD block(s)`);
 for (const familyName of ["state", "city", "guide"]) {
   const count = editorialSimilarities.filter((item) => item.family === familyName && item.score >= EDITORIAL_SIMILARITY_LIMIT).length;
-  if (count) releaseBlockers.push(`${count} ${familyName} editorial pair(s) are at least 42% similar`);
+  if (count) releaseBlockers.push(`${count} ${familyName} editorial pair(s) are at least 35% similar`);
 }
 const repeatedHeadingPages = records.filter((record) => record.repeatedHeadings.length);
 if (repeatedHeadingPages.length) releaseBlockers.push(`${repeatedHeadingPages.length} page(s) repeat a heading`);
+const widelyRepeatedEditorialBlocks = duplicateBlocks.filter((item) => item.count >= WIDELY_REPEATED_EDITORIAL_PAGE_LIMIT);
+if (widelyRepeatedEditorialBlocks.length) {
+  releaseBlockers.push(`${widelyRepeatedEditorialBlocks.length} editorial block(s) repeat across ${WIDELY_REPEATED_EDITORIAL_PAGE_LIMIT}+ pages`);
+}
 
 if (releaseBlockers.length) {
   console.error("\nContent release blockers:");
@@ -283,4 +290,4 @@ if (releaseBlockers.length) {
   process.exit(1);
 }
 
-console.log("PASS: no content-risk, schema, repeated-heading, or 42%+ editorial-similarity blockers.");
+console.log("PASS: no content-risk, schema, repeated-heading, widely repeated editorial, or 35%+ editorial-similarity blockers.");

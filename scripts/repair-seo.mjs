@@ -461,6 +461,37 @@ function syncStructuredData(html, route) {
   );
 }
 
+function removeCityFaq(html) {
+  const faqSection = /\s*<section class="section alt"><div class="wrap">\s*<h2>Questions from\b[\s\S]*?<\/section>/i;
+  let output = html.replace(faqSection, "");
+
+  function withoutFaqPage(value) {
+    if (Array.isArray(value)) {
+      return value.map(withoutFaqPage).filter((item) => item !== null);
+    }
+    if (!value || typeof value !== "object") return value;
+    if (value["@type"] === "FAQPage") return null;
+    for (const [key, child] of Object.entries(value)) {
+      if (child && typeof child === "object") value[key] = withoutFaqPage(child);
+    }
+    return value;
+  }
+
+  output = output.replace(
+    /(<script\b[^>]*type=["']application\/ld\+json["'][^>]*>)([\s\S]*?)(<\/script>)/gi,
+    (whole, open, raw, close) => {
+      try {
+        const filtered = withoutFaqPage(JSON.parse(raw));
+        if (filtered === null || (Array.isArray(filtered) && filtered.length === 0)) return "";
+        return `${open}${JSON.stringify(filtered)}${close}`;
+      } catch {
+        return whole;
+      }
+    },
+  );
+  return output;
+}
+
 function rewriteLinks(html) {
   let output = html.replace(/\b(href|action)=(['"])(.*?)\2/gi, (match, name, quote, value) => {
     return `${name}=${quote}${normalizeInternalTarget(value)}${quote}`;
@@ -525,7 +556,7 @@ function refreshStateSections() {
         <article class="card"><h3>${escapeHtmlText(content.localQuestion)}</h3><p>You may submit it for individual review. ${escapeHtmlText(content.comparison)} Give the exact marina, yard, mooring, residence, or storage address; describe whether the boat is afloat, blocked, lifted, or trailered; and disclose access limits, balances, liens, and facility deadlines.</p></article>
         <article class="card"><h3>Which ${stateName} ownership records should I gather?</h3><p>${escapeHtmlText(content.paperwork)} Do not sign a title, cancel storage or insurance, or release the boat on the strength of an inquiry alone.</p></article>
       </div>
-      <p>Use the <a href="/guides/boat-donation-paperwork/">boat donation paperwork guide</a> for the full records checklist, the <a href="/guides/how-to-donate-a-boat/">step-by-step guide</a> for the review sequence, or the <a href="/faq">FAQ</a> for tax and acceptance questions.</p>
+      <nav class="state-link-grid compact" aria-label="Related ${stateName} boat donation resources"><a href="/guides/boat-donation-paperwork/">Paperwork checklist</a><a href="/guides/how-to-donate-a-boat/">Review steps</a><a href="/faq">Tax and acceptance FAQ</a></nav>
     </div>
   </section>`;
     const questionExpression = /<section class="section alt"\s+data-seo-module="state-(?:question|questions)"[^>]*>[\s\S]*?<\/section>/i;
@@ -598,7 +629,6 @@ function addStateCityLinks(html, stateName) {
   const section = `  <section class="section alt in-state-cities" data-seo-module="state-cities">
     <div class="wrap">
       <h2>Boat Donation Guides for ${stateName} Cities</h2>
-      <p>Use the guide nearest the boat's storage location for added context about waterways, marina or yard access, and seasonal conditions. These are planning resources, not local offices or pickup locations.</p>
       <div class="cards">${snapshots}</div>${additionalCities}
     </div>
   </section>
@@ -659,7 +689,10 @@ function repairHtml(relative) {
   }
 
   const cityRecord = cityRecords.find((record) => record.file === relative);
-  if (cityRecord) html = addCityStateLink(html, cityRecord.state);
+  if (cityRecord) {
+    html = removeCityFaq(html);
+    html = addCityStateLink(html, cityRecord.state);
+  }
 
   if (relative.startsWith("city/") || relative.startsWith("guides/") || relative === "boat-donation-by-city/index.html") {
     html = addContentPageNavigation(html);
