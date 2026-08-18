@@ -1,0 +1,484 @@
+{
+  "alabama": {
+    "state": "Alabama",
+    "intro": "Alabama boating ranges from tidal saltwater along Mobile Bay and the Gulf to deep freshwater reservoirs on the Tennessee, Coosa, and Tallapoosa systems. Summer heat, storms, covered slips, lifts, and trailer condition all matter when a boat has been sitting.",
+    "areas": "Boats in Alabama may be near Mobile Bay, the Tennessee River, Lake Guntersville, or stored around Lewis Smith Lake, Logan Martin Lake, Lake Martin, and the Gulf Coast around Orange Beach and Dauphin Island.",
+    "comparison": "A boat near Mobile Bay may involve different questions than one near Lake Guntersville or Logan Martin Lake.",
+    "conditions": "Owners around these waters may be dealing with tidal access near the coast, freshwater reservoir storage, summer storms, covered slips, trailer condition, and drives between home, lake, and marina.",
+    "paperwork": "Alabama owners often have separate paperwork questions for the vessel, outboard, and trailer, so include registration records, any bill of sale, lien release, and trailer title or registration if available.",
+    "localQuestion": "Can I submit a boat stored near Mobile Bay or the Tennessee River?"
+  },
+  "alaska": {
+    "state": "Alaska",
+    "intro": "Alaska donations can involve saltwater exposure, remote storage, tides, winter layup, and limited seasonal access. A boat in a harbor slip in Seward, Homer, or Juneau is reviewed differently from a trailer boat stored inland near Anchorage or the Mat-Su.",
+    "areas": "Boats in Alaska may be near Cook Inlet, Prince William Sound, Kachemak Bay, or stored around Resurrection Bay, Southeast Alaska harbors, the Kenai River, and Big Lake.",
+    "comparison": "A boat near Cook Inlet may involve different questions than one near Kachemak Bay or Southeast Alaska harbors.",
+    "conditions": "Owners around these waters may be dealing with large tides, cold-weather storage, remote harbors, short service windows, saltwater exposure, and limited overland access.",
+    "paperwork": "Alaska owners should gather registration, title or ownership records, trailer paperwork, Coast Guard documentation if applicable, and any harbor or storage account details.",
+    "localQuestion": "Can I submit a boat stored near Cook Inlet or Prince William Sound?"
+  },
+  "arizona": {
+    "state": "Arizona",
+    "intro": "Arizona boating is mostly freshwater and desert-reservoir based, with sun exposure, dry storage, trailer tires, batteries, upholstery, and long-distance towing often shaping the review. Boats may be stored far from the owner or near seasonal lake communities.",
+    "areas": "Boats in Arizona may be near Lake Havasu, Lake Pleasant, Saguaro Lake, or stored around Canyon Lake, Roosevelt Lake, Bartlett Lake, and the Colorado River.",
+    "comparison": "A boat near Lake Havasu may involve different questions than one near Saguaro Lake or Roosevelt Lake.",
+    "conditions": "Owners around these waters may be dealing with desert sun, dry storage, trailer tires and bearings, batteries, upholstery wear, changing reservoir levels, and long towing distances.",
+    "paperwork": "Arizona owners should include title and registration information for the boat and trailer, lien releases, and whether the boat is stored at a residence, yard, or marina.",
+    "localQuestion": "Can I submit a boat stored near Lake Havasu or Lake Pleasant?"
+  },
+  "arkansas": {
+    "state": "Arkansas",
+    "intro": "Arkansas owners often keep boats on freshwater lakes, Corps reservoirs, river marinas, covered docks, or trailers at home. Steep ramps, rural storage, seasonal use, and trailer condition can affect whether direct buyer access is practical.",
+    "areas": "Boats in Arkansas may be near Lake Ouachita, Beaver Lake, Greers Ferry Lake, or stored around Bull Shoals Lake, Lake Dardanelle, the Arkansas River, and Norfork Lake.",
+    "comparison": "A boat near Lake Ouachita may involve different questions than one near Greers Ferry Lake or Lake Dardanelle.",
+    "conditions": "Owners around these waters may be dealing with freshwater storage, Corps lake rules, steep ramps, covered docks, rural access, trailer condition, and seasonal use patterns.",
+    "paperwork": "Arkansas paperwork questions usually start with boat registration or title records, trailer title or registration, lien releases, and marina or storage information if the boat is not at home.",
+    "localQuestion": "Can I submit a boat stored near Lake Ouachita or Beaver Lake?"
+  },
+  "california": {
+    "state": "California",
+    "intro": "California can mean coastal saltwater, busy harbor slips, Delta marinas, mountain lakes, or desert reservoirs. Haul-out access, marina rules, liveaboard status, separate trailer paperwork, and distance between the boat and potential buyers can all matter.",
+    "areas": "Boats in California may be near San Francisco Bay, San Diego Bay, Long Beach Harbor, or stored around Newport Harbor, the Sacramento-San Joaquin Delta, Lake Tahoe, and Clear Lake.",
+    "comparison": "A boat near San Francisco Bay may involve different questions than one near Long Beach Harbor or the Sacramento-San Joaquin Delta.",
+    "conditions": "Owners around these waters may be dealing with saltwater corrosion, harbor rules, Delta marinas, lake storage, haul-out scheduling, trailer paperwork, and long distances between regions.",
+    "paperwork": "California owners should look for vessel title or registration, trailer title or permanent trailer identification records, lien releases, Coast Guard documentation, and marina account details.",
+    "localQuestion": "Can I submit a boat stored near San Francisco Bay or San Diego Bay?"
+  },
+  "colorado": {
+    "state": "Colorado",
+    "intro": "Colorado boating is shaped by mountain reservoirs, shorter seasons, winter storage, altitude, and trailering. A boat may be shrink-wrapped, stored at a yard, or parked at home for much of the year, so access and trailer readiness are important.",
+    "areas": "Boats in Colorado may be near Chatfield Reservoir, Cherry Creek Reservoir, Lake Pueblo, or stored around Blue Mesa Reservoir, Dillon Reservoir, Grand Lake, and Horsetooth Reservoir.",
+    "comparison": "A boat near Chatfield Reservoir may involve different questions than one near Lake Pueblo or Dillon Reservoir.",
+    "conditions": "Owners around these waters may be dealing with short seasons, winterization, mountain weather, altitude, reservoir ramps, storage-yard access, and trailer readiness.",
+    "paperwork": "Colorado owners should gather boat registration, title or ownership records, trailer paperwork, lien releases, and storage-yard access details.",
+    "localQuestion": "Can I submit a boat stored near Chatfield Reservoir or Cherry Creek Reservoir?"
+  },
+  "connecticut": {
+    "state": "Connecticut",
+    "intro": "Connecticut owners may be dealing with tidal saltwater slips, river marinas, inland lake storage, winterization, shrink-wrap, and spring launch schedules. Yard access and account status often matter as much as the boat condition.",
+    "areas": "Boats in Connecticut may be near Long Island Sound, the Connecticut River, Candlewood Lake, or stored around Mystic Harbor, Norwalk Harbor, Stamford Harbor, and Branford and Guilford marinas.",
+    "comparison": "A boat near Long Island Sound may involve different questions than one near Candlewood Lake or Norwalk Harbor.",
+    "conditions": "Owners around these waters may be dealing with tidal slips, winter storage, shrink-wrap, yard launch schedules, river access, lake storage, and marina account requirements.",
+    "paperwork": "Connecticut paperwork may include title or registration, trailer title or registration, lien release, Coast Guard documentation, and marina or yard records.",
+    "localQuestion": "Can I submit a boat stored near Long Island Sound or the Connecticut River?"
+  },
+  "delaware": {
+    "state": "Delaware",
+    "intro": "Delaware boating often involves tidal bays, shallow-water access, salt exposure, winter storage, and coastal storm preparation. Boats in beach-area slips or yards may have seasonal access windows and marina requirements.",
+    "areas": "Boats in Delaware may be near Delaware Bay, Indian River Bay, Rehoboth Bay, or stored around Lewes Harbor, the Nanticoke River, the C&D Canal, and Bethany and Fenwick-area marinas.",
+    "comparison": "A boat near Delaware Bay may involve different questions than one near Rehoboth Bay or the Nanticoke River.",
+    "conditions": "Owners around these waters may be dealing with tidal bays, shallow access, salt exposure, winter storage, coastal storms, marina rules, and seasonal beach traffic.",
+    "paperwork": "Delaware owners should include registration or title records, trailer paperwork, lien releases, Coast Guard documentation if applicable, and marina account details.",
+    "localQuestion": "Can I submit a boat stored near Delaware Bay or Indian River Bay?"
+  },
+  "florida": {
+    "state": "Florida",
+    "intro": "Florida donations are shaped by salt air, hurricanes, tides, year-round use, marina demand, lifts, and long coastlines. A boat in a Keys slip, on a Tampa Bay lift, or inland near the St. Johns River may raise different storage and buyer-access questions.",
+    "areas": "Boats in Florida may be near Biscayne Bay, Tampa Bay, the Florida Keys, or stored around the Intracoastal Waterway, the St. Johns River, Lake Okeechobee, and Pensacola Bay.",
+    "comparison": "A boat near Biscayne Bay may involve different questions than one near the Florida Keys or the St. Johns River.",
+    "conditions": "Owners around these waters may be dealing with saltwater corrosion, tides, hurricanes, lift access, inland river storage, year-round use, marina demand, and long distances between boating regions.",
+    "paperwork": "Florida owners should gather the vessel title or registration, trailer title, lien release, Coast Guard documentation if applicable, and any marina, lift, or storage account details.",
+    "localQuestion": "Can I submit a boat stored near Biscayne Bay or Tampa Bay?"
+  },
+  "georgia": {
+    "state": "Georgia",
+    "intro": "Georgia includes freshwater lake boating, river marinas, and coastal saltwater use. Covered slips, lake-level changes, summer storms, trailers, and distance from metro Atlanta or coastal yards can affect review.",
+    "areas": "Boats in Georgia may be near Lake Lanier, Lake Allatoona, Clarks Hill Lake, or stored around Lake Oconee, Lake Sinclair, the Savannah River, and the Georgia coast around Brunswick and Savannah.",
+    "comparison": "A boat near Lake Lanier may involve different questions than one near Clarks Hill Lake or Lake Sinclair.",
+    "conditions": "Owners around these waters may be dealing with freshwater lake storage, coastal saltwater exposure, lake-level changes, covered slips, summer storms, trailer access, and metro-to-lake travel.",
+    "paperwork": "Georgia owners should include registration or title records, trailer paperwork, lien releases, and storage or marina information.",
+    "localQuestion": "Can I submit a boat stored near Lake Lanier or Lake Allatoona?"
+  },
+  "hawaii": {
+    "state": "Hawaii",
+    "intro": "Hawaii donations often involve island logistics, saltwater exposure, harbor permits, haul-out availability, and limited inter-island options. Access, slip status, and whether the boat runs under its own power are especially important.",
+    "areas": "Boats in Hawaii may be near Honolulu Harbor, Kaneohe Bay, Maalaea Harbor, or stored around Nawiliwili Harbor, Hilo Bay, Keehi Lagoon, and Ala Wai Small Boat Harbor.",
+    "comparison": "A boat near Honolulu Harbor may involve different questions than one near Maalaea Harbor or Hilo Bay.",
+    "conditions": "Owners around these waters may be dealing with saltwater exposure, harbor permits, island logistics, limited haul-out options, slip status, and whether the boat can move under its own power.",
+    "paperwork": "Hawaii owners should gather registration or documentation records, trailer paperwork if there is one, lien releases, harbor account details, and any permit or storage information.",
+    "localQuestion": "Can I submit a boat stored near Honolulu Harbor or Kaneohe Bay?"
+  },
+  "idaho": {
+    "state": "Idaho",
+    "intro": "Idaho boating is mostly freshwater, with mountain lake seasons, winter storage, rural access, and trailering playing a large role. Boats may be stored at cabins, yards, or covered slips that are not easy to reach year-round.",
+    "areas": "Boats in Idaho may be near Lake Coeur d'Alene, Payette Lake, Priest Lake, or stored around Lake Pend Oreille, Lucky Peak Reservoir, the Snake River, and Dworshak Reservoir.",
+    "comparison": "A boat near Lake Coeur d'Alene may involve different questions than one near Priest Lake or Lucky Peak Reservoir.",
+    "conditions": "Owners around these waters may be dealing with mountain lake seasons, winter storage, rural access, cold-weather layup, trailer condition, and long drives to service yards.",
+    "paperwork": "Idaho owners should include boat registration or title records, trailer title or registration, lien releases, and access notes for storage yards, cabins, or marinas.",
+    "localQuestion": "Can I submit a boat stored near Lake Coeur d'Alene or Payette Lake?"
+  },
+  "illinois": {
+    "state": "Illinois",
+    "intro": "Illinois owners may be dealing with Great Lakes harbors, river marinas, inland lakes, winter storage, and seasonal launch schedules. Chicago-area harbor rules are different from rural reservoir or trailer storage situations.",
+    "areas": "Boats in Illinois may be near Lake Michigan, the Chain O'Lakes, the Illinois River, or stored around Fox River, Lake Shelbyville, Rend Lake, and Carlyle Lake.",
+    "comparison": "A boat near Lake Michigan may involve different questions than one near the Illinois River or Lake Shelbyville.",
+    "conditions": "Owners around these waters may be dealing with Great Lakes harbors, river current, inland lake storage, winter layup, marina rules, and spring launch timing.",
+    "paperwork": "Illinois paperwork often includes title and registration for the boat, trailer title or registration, lien release, and marina or winter-storage records.",
+    "localQuestion": "Can I submit a boat stored near Lake Michigan or the Chain O'Lakes?",
+    "preflightHeading": "Separate harbor, river, and winter-storage facts",
+    "preflight": "For a Lake Michigan berth, identify the harbor, gate procedure, current fees, launch or haul-out status, and any seasonal deadline. For an Illinois River marina, add current, dock, and access details. If the boat is wrapped or blocked for winter, photograph the support arrangement and state whether facility staff must authorize entry. For a trailered inland-lake boat, document the trailer and road access separately from the vessel."
+  },
+  "indiana": {
+    "state": "Indiana",
+    "intro": "Indiana boating includes Great Lakes slips, inland reservoirs, natural lakes, and river marinas. Winter storage, trailer condition, ramp access, and whether fees are current can affect timing.",
+    "areas": "Boats in Indiana may be near Lake Michigan, Lake Monroe, Patoka Lake, or stored around Geist Reservoir, Brookville Lake, the Ohio River, and Lake Wawasee.",
+    "comparison": "A boat near Lake Michigan may involve different questions than one near Patoka Lake or Brookville Lake.",
+    "conditions": "Owners around these waters may be dealing with Great Lakes exposure, inland lake storage, river marinas, winterization, trailer condition, and seasonal access.",
+    "paperwork": "Indiana owners should gather boat title and registration, trailer title or registration, lien releases, and any marina or storage account details.",
+    "localQuestion": "Can I submit a boat stored near Lake Michigan or Lake Monroe?",
+    "preflightHeading": "Make the storage season explicit",
+    "preflight": "An Indiana request should say whether the boat is launched, winterized, shrink-wrapped, blocked, or ready on a trailer. For a Great Lakes slip, include marina access and any haul-out requirement; for a reservoir or natural lake, give the ramp, storage lot, and trailer facts. Name any deadline or unpaid balance instead of assuming it can wait, and keep every owner obligation current during review."
+  },
+  "iowa": {
+    "state": "Iowa",
+    "intro": "Iowa donations often involve freshwater lakes, river marinas, short boating seasons, winter storage, and trailering. Boats may sit at lake homes, farms, storage units, or marinas, so access details are useful.",
+    "areas": "Boats in Iowa may be near Okoboji, Saylorville Lake, Coralville Lake, or stored around Clear Lake, the Mississippi River, the Missouri River, and Rathbun Lake.",
+    "comparison": "A boat near Okoboji may involve different questions than one near Coralville Lake or the Mississippi River.",
+    "conditions": "Owners around these waters may be dealing with short seasons, river marinas, lake-home storage, winter layup, farm or yard access, and trailer readiness.",
+    "paperwork": "Iowa owners should include registration or title records, trailer paperwork, lien releases, and storage-location information.",
+    "localQuestion": "Can I submit a boat stored near Okoboji or Saylorville Lake?",
+    "preflightHeading": "Document rural and seasonal access",
+    "preflight": "For an Iowa boat at a lake home, farm, or storage unit, show the driveway, gate, surface, overhead clearance, and where a buyer could lawfully inspect it after a sale. For a river marina, provide the dock and facility contact instead. If the boat has been stored through several winters, report the last launch, winterizing history, cover condition, tire age, and whether the trailer can be moved without repair."
+  },
+  "kansas": {
+    "state": "Kansas",
+    "intro": "Kansas boating is reservoir-based, with wind, changing water levels, outdoor storage, and trailer condition often influencing review. Many boats are kept at home, at lake lots, or in storage yards.",
+    "areas": "Boats in Kansas may be near Milford Lake, Clinton Lake, Tuttle Creek Lake, or stored around Cheney Reservoir, El Dorado Lake, Perry Lake, and Wilson Lake.",
+    "comparison": "A boat near Milford Lake may involve different questions than one near Tuttle Creek Lake or El Dorado Lake.",
+    "conditions": "Owners around these waters may be dealing with reservoir winds, changing water levels, outdoor storage, sun exposure, rural access, and trailer condition.",
+    "paperwork": "Kansas owners should gather title or registration records, trailer paperwork, lien releases, and notes about storage access and known trailer defects.",
+    "localQuestion": "Can I submit a boat stored near Milford Lake or Clinton Lake?",
+    "preflightHeading": "Check sun exposure, tires, and the exit route",
+    "preflight": "A Kansas boat kept outdoors may need especially clear photographs of upholstery, cover damage, gelcoat, tires, wiring, and exposed fittings. State whether changing reservoir levels have left it in water, on a lift, or already hauled. For a lake lot or rural yard, describe the road surface, gate width, and turning room without promising that the trailer is roadworthy. A buyer, not Boats for Charity, evaluates and arranges any later pickup."
+  },
+  "kentucky": {
+    "state": "Kentucky",
+    "intro": "Kentucky owners often use large reservoirs, houseboat marinas, river slips, and seasonal storage yards. Covered slips, marina approvals, haul-out needs, and long drives around the lakes can affect coordination.",
+    "areas": "Boats in Kentucky may be near Kentucky Lake, Lake Barkley, Lake Cumberland, or stored around Green River Lake, Nolin River Lake, the Ohio River, and Dale Hollow Lake.",
+    "comparison": "A boat near Kentucky Lake may involve different questions than one near Lake Cumberland or Nolin River Lake.",
+    "conditions": "Owners around these waters may be dealing with large reservoir marinas, covered slips, houseboat facilities, steep lake roads, river current, haul-outs, and seasonal storage.",
+    "paperwork": "Kentucky paperwork may include boat title or registration, trailer title or registration, lien releases, Coast Guard documentation for larger vessels, and marina account information.",
+    "localQuestion": "Can I submit a boat stored near Kentucky Lake or Lake Barkley?",
+    "preflightHeading": "Explain the slip, vessel size, and facility rules",
+    "preflight": "For a Kentucky houseboat or larger cruiser, include length, beam, height, draft, engine status, documentation number, slip type, and the marina's access and vendor requirements. For a smaller trailered boat, show the trailer papers and condition as a separate item. If a covered slip, lift, haul-out, or narrow lake road affects buyer access, describe it directly. Do not cancel the slip or authorize movement from an inquiry alone."
+  },
+  "louisiana": {
+    "state": "Louisiana",
+    "intro": "Louisiana boating can involve brackish water, bayous, tidal areas, hurricanes, river current, and freshwater reservoirs. Storm damage history, trailer condition, marina access, and whether the boat is in a yard or on a lift matter.",
+    "areas": "Boats in Louisiana may be near Lake Pontchartrain, the Gulf Coast, the Atchafalaya Basin, or stored around the Mississippi River, Toledo Bend Reservoir, Bayou Lafourche, and Calcasieu Lake.",
+    "comparison": "A boat near Lake Pontchartrain may involve different questions than one near the Atchafalaya Basin or Toledo Bend Reservoir.",
+    "conditions": "Owners around these waters may be dealing with brackish water, bayous, tidal access, hurricanes, river current, storm history, and trailer or yard access.",
+    "paperwork": "Louisiana owners should include title or registration records, trailer paperwork, lien releases, Coast Guard documentation, and storage or marina account details.",
+    "localQuestion": "Can I submit a boat stored near Lake Pontchartrain or the Gulf Coast?"
+  },
+  "maine": {
+    "state": "Maine",
+    "intro": "Maine donations often involve saltwater moorings, working harbors, lake camps, winter storage, shrink-wrap, and short launch seasons. Haul-out records and yard access are often important.",
+    "areas": "Boats in Maine may be near Casco Bay, Penobscot Bay, Frenchman Bay, or stored around Moosehead Lake, Sebago Lake, Kennebunkport Harbor, and Portland Harbor.",
+    "comparison": "A boat near Casco Bay may involve different questions than one near Frenchman Bay or Sebago Lake.",
+    "conditions": "Owners around these waters may be dealing with saltwater moorings, working harbors, lake camps, winter storage, shrink-wrap, haul-outs, and short launch seasons.",
+    "paperwork": "Maine owners should gather registration or documentation records, trailer paperwork, lien releases, mooring or yard information, and storage account details.",
+    "localQuestion": "Can I submit a boat stored near Casco Bay or Penobscot Bay?"
+  },
+  "maryland": {
+    "state": "Maryland",
+    "intro": "Maryland boating is heavily tied to the Chesapeake, tidal rivers, marinas, winter storage, and haul-out yards. Slip status, access, and whether the boat is on land or in the water are central questions.",
+    "areas": "Boats in Maryland may be near Chesapeake Bay, the Severn River, the Magothy River, or stored around the Patuxent River, Deep Creek Lake, Baltimore Harbor, and Kent Island marinas.",
+    "comparison": "A boat near Chesapeake Bay may involve different questions than one near the Magothy River or Deep Creek Lake.",
+    "conditions": "Owners around these waters may be dealing with Chesapeake tides, river marinas, winter storage, haul-out yards, slip access, and documented-vessel paperwork.",
+    "paperwork": "Maryland owners should include title and registration records, trailer title or registration, lien releases, Coast Guard documentation, and marina or yard information.",
+    "localQuestion": "Can I submit a boat stored near Chesapeake Bay or the Severn River?"
+  },
+  "massachusetts": {
+    "state": "Massachusetts",
+    "intro": "Massachusetts donations often involve coastal saltwater, moorings, winter storage, tight marina schedules, and seasonal access. A Cape boat on a mooring raises different questions from an inland trailer boat or Boston Harbor slip.",
+    "areas": "Boats in Massachusetts may be near Boston Harbor, Cape Cod Bay, Buzzards Bay, or stored around Nantucket Sound, Martha's Vineyard harbors, the Charles River, Lake Quinsigamond, and other inland waters.",
+    "comparison": "A boat near Boston Harbor may involve different questions than one near Buzzards Bay or Martha's Vineyard harbors.",
+    "conditions": "Owners around these waters may be dealing with coastal saltwater, moorings, winter storage, short launch seasons, crowded yards, and inland trailer storage.",
+    "paperwork": "Massachusetts owners should gather title or registration records, trailer paperwork, lien releases, Coast Guard documentation, and mooring, yard, or marina details.",
+    "localQuestion": "Can I submit a boat stored near Boston Harbor or Cape Cod Bay?"
+  },
+  "michigan": {
+    "state": "Michigan",
+    "intro": "Michigan donations can involve Great Lakes harbors, inland lakes, winterization, shrink-wrap, and short boating seasons. Location, haul-out status, trailer readiness, and marina access shape the practical review.",
+    "areas": "Boats in Michigan may be near Lake Michigan, Lake Huron, Lake St. Clair, or stored around the Detroit River, Grand Traverse Bay, Torch Lake, and the Inland Waterway.",
+    "comparison": "A boat near Lake Michigan may involve different questions than one near Lake St. Clair or Grand Traverse Bay.",
+    "conditions": "Owners around these waters may be dealing with Great Lakes weather, inland lake storage, winterization, shrink-wrap, haul-out status, trailer readiness, and short boating seasons.",
+    "paperwork": "Michigan owners should include boat title and registration, trailer title or registration, lien releases, Coast Guard documentation, and storage or marina account details.",
+    "localQuestion": "Can I submit a boat stored near Lake Michigan or Lake Huron?"
+  },
+  "minnesota": {
+    "state": "Minnesota",
+    "intro": "Minnesota boating is freshwater-focused, with short seasons, winter storage, shrink-wrap, lake cabins, and trailers playing a major role. A Duluth harbor boat raises different questions from a pontoon on a central Minnesota lake.",
+    "areas": "Boats in Minnesota may be near Lake Minnetonka, Mille Lacs Lake, Leech Lake, or stored around Lake Vermilion, Lake Superior, the Mississippi River, and the St. Croix River.",
+    "comparison": "A boat near Lake Minnetonka may involve different questions than one near Leech Lake or Lake Superior.",
+    "conditions": "Owners around these waters may be dealing with short freshwater seasons, winter storage, shrink-wrap, lake cabins, pontoon lifts, trailer condition, and distance from storage.",
+    "paperwork": "Minnesota owners should gather title or registration records, trailer paperwork, lien releases, and marina, cabin, or storage-yard access details.",
+    "localQuestion": "Can I submit a boat stored near Lake Minnetonka or Mille Lacs Lake?"
+  },
+  "mississippi": {
+    "state": "Mississippi",
+    "intro": "Mississippi boating can mean Gulf Coast saltwater, river current, reservoirs, hurricanes, and outdoor storage. Access, storm exposure, trailer condition, and whether the boat sits at a camp, marina, or residence all matter.",
+    "areas": "Boats in Mississippi may be near the Mississippi Gulf Coast, Biloxi Bay, Pascagoula River, or stored around Ross Barnett Reservoir, Pickwick Lake, the Mississippi River, and Sardis Lake.",
+    "comparison": "A boat near the Mississippi Gulf Coast may involve different questions than one near Pascagoula River or Pickwick Lake.",
+    "conditions": "Owners around these waters may be dealing with Gulf Coast saltwater, river current, reservoirs, hurricanes, outdoor storage, storm exposure, and trailer access.",
+    "paperwork": "Mississippi owners should include title or registration records, trailer paperwork, lien releases, Coast Guard documentation if applicable, and storage or marina details.",
+    "localQuestion": "Can I submit a boat stored near the Mississippi Gulf Coast or Biloxi Bay?",
+    "preflightHeading": "Distinguish storm history from current condition",
+    "preflight": "For a Gulf Coast boat, report any known storm, flooding, grounding, salvage, or insurance history and photograph present saltwater corrosion, wiring, bilge, hull, and running gear. For a reservoir or river boat, focus on current storage, access, and trailer condition rather than borrowing coastal assumptions. If a marina, camp, or residence has a deadline or restricted gate, provide the direct facility facts and keep the vessel secure during review."
+  },
+  "missouri": {
+    "state": "Missouri",
+    "intro": "Missouri donations often involve large freshwater reservoirs, covered slips, lift systems, steep lake roads, and seasonal use. Boats at Lake of the Ozarks marinas may require different coordination than trailer boats stored near home.",
+    "areas": "Boats in Missouri may be near Lake of the Ozarks, Table Rock Lake, Truman Lake, or stored around Mark Twain Lake, Bull Shoals Lake, the Missouri River, and the Mississippi River.",
+    "comparison": "A boat near Lake of the Ozarks may involve different questions than one near Truman Lake or Bull Shoals Lake.",
+    "conditions": "Owners around these waters may be dealing with covered slips, lift systems, large reservoir marinas, steep lake roads, seasonal use, and trailer or storage-yard access.",
+    "paperwork": "Missouri owners should gather title and registration records, trailer paperwork, lien releases, and marina or storage account details.",
+    "localQuestion": "Can I submit a boat stored near Lake of the Ozarks or Table Rock Lake?"
+  },
+  "montana": {
+    "state": "Montana",
+    "intro": "Montana boating is seasonal and often tied to large lakes, rivers, rural storage, cold winters, and long towing distances. Trailer condition and exact access details matter, especially outside larger towns.",
+    "areas": "Boats in Montana may be near Flathead Lake, Fort Peck Lake, Canyon Ferry Lake, or stored around Holter Lake, Hebgen Lake, the Missouri River, and Yellowstone River.",
+    "comparison": "A boat near Flathead Lake may involve different questions than one near Canyon Ferry Lake or Hebgen Lake.",
+    "conditions": "Owners around these waters may be dealing with short seasons, cold storage, rural lake access, river use, mountain weather, long towing distances, and trailer condition.",
+    "paperwork": "Montana owners should include boat registration or title records, trailer paperwork, lien releases, and information about storage access and road conditions.",
+    "localQuestion": "Can I submit a boat stored near Flathead Lake or Fort Peck Lake?",
+    "preflightHeading": "Give a precise location in a large, rural state",
+    "preflight": "A broad lake name is not enough for a Montana request. Give the marina, ramp area, storage address, or rural property location; describe the final road, gate, surface, snow or seasonal access limits, and who can authorize entry. If the boat is winterized or wrapped, include the last operating date and what can be photographed now. Treat the trailer as its own asset and disclose tires, bearings, brakes, lights, paperwork, and known defects."
+  },
+  "nebraska": {
+    "state": "Nebraska",
+    "intro": "Nebraska owners often keep boats on trailers near reservoirs, lake homes, storage yards, or river marinas. Wind exposure, seasonal storage, rural access, and trailer readiness can influence timing.",
+    "areas": "Boats in Nebraska may be near Lake McConaughy, Lewis and Clark Lake, Branched Oak Lake, or stored around Calamus Reservoir, Harlan County Reservoir, the Missouri River, and the Platte River.",
+    "comparison": "A boat near Lake McConaughy may involve different questions than one near Branched Oak Lake or Harlan County Reservoir.",
+    "conditions": "Owners around these waters may be dealing with reservoir winds, river access, winter storage, rural yards, lake-home storage, and trailer readiness.",
+    "paperwork": "Nebraska owners should gather registration or title records, trailer paperwork, lien releases, and storage-location details.",
+    "localQuestion": "Can I submit a boat stored near Lake McConaughy or Lewis and Clark Lake?",
+    "preflightHeading": "Show how the boat leaves its storage site",
+    "preflight": "For a Nebraska boat at a lake home or rural yard, photograph the full exit path as well as the vessel. Note gates, soft ground, grades, overhead limits, tire condition, hitch access, and whether another vehicle or stored equipment blocks the trailer. A river-marina request should instead identify the dock, facility contact, current fees, and any lift requirement. These facts inform a later buyer; they do not authorize Boats for Charity to move the boat."
+  },
+  "nevada": {
+    "state": "Nevada",
+    "intro": "Nevada donations can involve desert sun, marina storage, changing reservoir levels, long towing distances, and trailers that have sat in heat. Lake Tahoe and Lake Mead each bring their own access and storage questions.",
+    "areas": "Boats in Nevada may be near Lake Mead, Lake Tahoe, Lake Mohave, or stored around Pyramid Lake, Lahontan Reservoir, Rye Patch Reservoir, and the Colorado River.",
+    "comparison": "A boat near Lake Mead may involve different questions than one near Lake Mohave or Lahontan Reservoir.",
+    "conditions": "Owners around these waters may be dealing with desert sun, changing reservoir levels, marina storage, long towing distances, trailer heat wear, and seasonal access.",
+    "paperwork": "Nevada owners should include title and registration records, trailer paperwork, lien releases, and marina or storage account details.",
+    "localQuestion": "Can I submit a boat stored near Lake Mead or Lake Tahoe?"
+  },
+  "new-hampshire": {
+    "state": "New Hampshire",
+    "intro": "New Hampshire boating includes inland lakes, tidal coastal waters, winter storage, shrink-wrap, and short launch seasons. Marina access and whether the boat is on a trailer, lift, or mooring help shape review.",
+    "areas": "Boats in New Hampshire may be near Lake Winnipesaukee, Squam Lake, Newfound Lake, or stored around Sunapee Lake, Great Bay, the Piscataqua River, and Hampton Harbor.",
+    "comparison": "A boat near Lake Winnipesaukee may involve different questions than one near Newfound Lake or Great Bay.",
+    "conditions": "Owners around these waters may be dealing with short lake seasons, winter storage, shrink-wrap, moorings, tidal coastal access, and trailer or marina access.",
+    "paperwork": "New Hampshire owners should gather registration or title records, trailer paperwork, lien releases, and marina, mooring, or storage details.",
+    "localQuestion": "Can I submit a boat stored near Lake Winnipesaukee or Squam Lake?",
+    "preflightHeading": "Cold-weather evidence to include",
+    "preflight": "For a New Hampshire boat, separate verified operating history from assumptions after winter storage. Photograph the engine or outdrive, bilge, transom, deck, cover or shrink-wrap, trailer tires and hubs, identification plates, and the complete path to the road or launch. Note the last confirmed run and winterization, snow or freeze exposure, seasonal facility access, balances, and any lake-property or marina deadline. These facts support review and later buyer planning; they do not promise acceptance or authorize the charity to move the boat."
+  },
+  "new-jersey": {
+    "state": "New Jersey",
+    "intro": "New Jersey donations often involve saltwater bays, tidal access, shore marinas, winter storage, and storm exposure. Slip rules, yard balances, haul-out status, and trailer access are common practical issues.",
+    "areas": "Boats in New Jersey may be near Barnegat Bay, Raritan Bay, the Jersey Shore, or stored around Great Egg Harbor Bay, Cape May Harbor, Lake Hopatcong, and the Delaware River.",
+    "comparison": "A boat near Barnegat Bay may involve different questions than one near the Jersey Shore or Cape May Harbor.",
+    "conditions": "Owners around these waters may be dealing with tidal bays, shore marinas, saltwater exposure, winter storage, storm history, yard balances, and haul-out status.",
+    "paperwork": "New Jersey owners should include title and registration records, trailer title or registration, lien releases, Coast Guard documentation, and marina or yard account details.",
+    "localQuestion": "Can I submit a boat stored near Barnegat Bay or Raritan Bay?"
+  },
+  "new-mexico": {
+    "state": "New Mexico",
+    "intro": "New Mexico boating is reservoir-based, with sun exposure, fluctuating water levels, rural storage, and long towing distances. Trailer condition and whether the boat is reachable at a lake lot or storage yard are important.",
+    "areas": "Boats in New Mexico may be near Elephant Butte Lake, Navajo Lake, Ute Lake, or stored around Conchas Lake, Abiquiu Lake, Cochiti Lake, and the Rio Grande reservoirs.",
+    "comparison": "A boat near Elephant Butte Lake may involve different questions than one near Ute Lake or Abiquiu Lake.",
+    "conditions": "Owners around these waters may be dealing with desert sun, reservoir levels, rural lake storage, long towing distances, dry upholstery and tires, and trailer condition.",
+    "paperwork": "New Mexico owners should gather boat and trailer title or registration records, lien releases, and storage access information.",
+    "localQuestion": "Can I submit a boat stored near Elephant Butte Lake or Navajo Lake?",
+    "preflightHeading": "Record dry-climate wear and the actual storage point",
+    "preflight": "For a New Mexico boat, photograph sun-damaged upholstery, covers, tires, hoses, wiring, and any dry or cracked components instead of describing the condition only as weathered. State whether the boat remains in a reservoir slip, sits at a lake lot, or is stored many miles away. Include the last launch date, present water or land status, gate access, road surface, and trailer defects so a future buyer can judge the location accurately."
+  },
+  "new-york": {
+    "state": "New York",
+    "intro": "New York donations can involve coastal saltwater, Great Lakes harbors, river marinas, inland lakes, winterization, and dense marina rules. A Long Island slip differs from a Finger Lakes trailer boat or an upstate winter-storage yard.",
+    "areas": "Boats in New York may be near Long Island Sound, the Hudson River, Lake George, or stored around the Finger Lakes, Lake Ontario, Lake Erie, and the Thousand Islands.",
+    "comparison": "A boat near Long Island Sound may involve different questions than one near Lake George or Lake Ontario.",
+    "conditions": "Owners around these waters may be dealing with coastal saltwater, Great Lakes harbors, river marinas, inland lake storage, winterization, and dense marina rules.",
+    "paperwork": "New York owners should include title and registration records, trailer paperwork, lien releases, Coast Guard documentation, and marina or yard information.",
+    "localQuestion": "Can I submit a boat stored near Long Island Sound or the Hudson River?"
+  },
+  "north-carolina": {
+    "state": "North Carolina",
+    "intro": "North Carolina boating includes tidal sounds, Atlantic marinas, inland reservoirs, hurricanes, and seasonal storage. Access, storm history, trailer condition, and marina requirements are common review points.",
+    "areas": "Boats in North Carolina may be near the Outer Banks, Pamlico Sound, Albemarle Sound, or stored around Lake Norman, Jordan Lake, Cape Fear River, and Wrightsville Beach marinas.",
+    "comparison": "A boat near the Outer Banks may involve different questions than one near Albemarle Sound or Jordan Lake.",
+    "conditions": "Owners around these waters may be dealing with tidal sounds, Atlantic marinas, inland reservoirs, hurricanes, trailer condition, and access through yards or lifts.",
+    "paperwork": "North Carolina owners should gather title and registration records, trailer paperwork, lien releases, Coast Guard documentation, and storage or marina details.",
+    "localQuestion": "Can I submit a boat stored near the Outer Banks or Pamlico Sound?"
+  },
+  "north-dakota": {
+    "state": "North Dakota",
+    "intro": "North Dakota boating is seasonal and freshwater-based, with winter storage, rural access, wind exposure, and trailering often shaping review. Exact location matters because many boats sit far from service yards.",
+    "areas": "Boats in North Dakota may be near Lake Sakakawea, Devils Lake, the Missouri River, or stored around Lake Ashtabula, Jamestown Reservoir, Lake Metigoshe, and the Red River.",
+    "comparison": "A boat near Lake Sakakawea may involve different questions than one near the Missouri River or Jamestown Reservoir.",
+    "conditions": "Owners around these waters may be dealing with short freshwater seasons, winter storage, wind exposure, rural access, long towing distances, and trailer readiness.",
+    "paperwork": "North Dakota owners should include boat registration or title records, trailer paperwork, lien releases, and storage access details.",
+    "localQuestion": "Can I submit a boat stored near Lake Sakakawea or Devils Lake?",
+    "preflightHeading": "Account for winter layup and distance",
+    "preflight": "A North Dakota boat may be far from the person submitting it or inaccessible for part of the winter. Identify who has keys and authority, when the boat can be reached, whether it is wrapped or indoors, and what current photographs are possible. For a trailer, give tire age, bearing and brake condition, registration, hitch details, and the road out. Do not estimate pickup time from mileage; the buyer makes that plan only after a sale."
+  },
+  "ohio": {
+    "state": "Ohio",
+    "intro": "Ohio owners may be dealing with Lake Erie harbors, river marinas, inland lakes, winter storage, and short boating seasons. Haul-out status, trailer readiness, and marina balances can affect timing.",
+    "areas": "Boats in Ohio may be near Lake Erie, the Ohio River, Grand Lake St. Marys, or stored around Indian Lake, Alum Creek Lake, Buckeye Lake, and the Muskingum River.",
+    "comparison": "A boat near Lake Erie may involve different questions than one near Grand Lake St. Marys or Alum Creek Lake.",
+    "conditions": "Owners around these waters may be dealing with Lake Erie harbors, river marinas, inland lakes, winter storage, haul-out status, and trailer condition.",
+    "paperwork": "Ohio owners should gather title and registration records, trailer title or registration, lien releases, Coast Guard documentation if applicable, and marina or storage details.",
+    "localQuestion": "Can I submit a boat stored near Lake Erie or the Ohio River?"
+  },
+  "oklahoma": {
+    "state": "Oklahoma",
+    "intro": "Oklahoma donations often involve reservoirs, covered slips, lake cabins, severe weather, and trailers that may not have moved recently. Marina access, trailer condition, and the route to the public road are practical review points.",
+    "areas": "Boats in Oklahoma may be near Grand Lake O' the Cherokees, Lake Texoma, Keystone Lake, or stored around Eufaula Lake, Tenkiller Ferry Lake, Broken Bow Lake, and the Arkansas River.",
+    "comparison": "A boat near Grand Lake O' the Cherokees may involve different questions than one near Keystone Lake or Tenkiller Ferry Lake.",
+    "conditions": "Owners around these waters may be dealing with reservoir storage, covered slips, severe weather, lake cabins, trailer condition, and boats that have not moved recently.",
+    "paperwork": "Oklahoma owners should include title and registration records, trailer paperwork, lien releases, and storage or marina account details.",
+    "localQuestion": "Can I submit a boat stored near Grand Lake O' the Cherokees or Lake Texoma?"
+  },
+  "oregon": {
+    "state": "Oregon",
+    "intro": "Oregon donations can involve coastal saltwater, Columbia River current, inland reservoirs, rain exposure, winter storage, and marinas with limited haul-out schedules. Trailer condition and access are important.",
+    "areas": "Boats in Oregon may be near the Columbia River, Willamette River, Yaquina Bay, or stored around Coos Bay, Detroit Lake, Upper Klamath Lake, and other Oregon coast or inland waters.",
+    "comparison": "A boat near the Columbia River may involve different questions than one near Yaquina Bay or Detroit Lake.",
+    "conditions": "Owners around these waters may be dealing with coastal saltwater, river current, rain exposure, inland reservoirs, winter storage, and limited haul-out schedules.",
+    "paperwork": "Oregon owners should gather title and registration records, trailer title or registration, lien releases, Coast Guard documentation, and marina or yard details.",
+    "localQuestion": "Can I submit a boat stored near the Columbia River or Willamette River?"
+  },
+  "pennsylvania": {
+    "state": "Pennsylvania",
+    "intro": "Pennsylvania boating includes Great Lakes slips, inland lakes, and river marinas with seasonal storage. Winterization, trailer condition, ramp access, and distance from storage often affect donation review.",
+    "areas": "Boats in Pennsylvania may be near Lake Erie, Raystown Lake, the Susquehanna River, or stored around the Delaware River, the Allegheny River, the Monongahela River, and Lake Wallenpaupack.",
+    "comparison": "A boat near Lake Erie may involve different questions than one near the Susquehanna River or the Allegheny River.",
+    "conditions": "Owners around these waters may be dealing with Great Lakes slips, river marinas, inland lake storage, winterization, ramp access, and trailer condition.",
+    "paperwork": "Pennsylvania owners should include title and registration records, trailer paperwork, lien releases, and marina or storage details.",
+    "localQuestion": "Can I submit a boat stored near Lake Erie or Raystown Lake?"
+  },
+  "rhode-island": {
+    "state": "Rhode Island",
+    "intro": "Rhode Island donations usually involve saltwater, moorings, busy harbors, winter storage, and haul-out yards. Marina permissions, mooring status, and whether the boat is on land or in the water are important.",
+    "areas": "Boats in Rhode Island may be near Narragansett Bay, Newport Harbor, Point Judith, or stored around Block Island harbors, Mount Hope Bay, Greenwich Bay, and Wickford Harbor.",
+    "comparison": "A boat near Narragansett Bay may involve different questions than one near Point Judith or Mount Hope Bay.",
+    "conditions": "Owners around these waters may be dealing with saltwater moorings, busy harbors, winter storage, haul-out yards, marina permissions, and whether the boat is on land or water.",
+    "paperwork": "Rhode Island owners should gather registration or documentation records, trailer paperwork, lien releases, mooring information, and yard or marina account details.",
+    "localQuestion": "Can I submit a boat stored near Narragansett Bay or Newport Harbor?"
+  },
+  "south-carolina": {
+    "state": "South Carolina",
+    "intro": "South Carolina boating includes coastal saltwater, tidal creeks, hurricanes, inland reservoirs, and year-round use. Lift access, marina rules, trailer condition, and storm history can affect review.",
+    "areas": "Boats in South Carolina may be near Charleston Harbor, the Intracoastal Waterway, Lake Murray, or stored around Lake Hartwell, Winyah Bay, Beaufort and Hilton Head waters, and Santee Cooper lakes.",
+    "comparison": "A boat near Charleston Harbor may involve different questions than one near Lake Murray or Winyah Bay.",
+    "conditions": "Owners around these waters may be dealing with coastal saltwater, tidal creeks, hurricanes, inland reservoirs, lift access, trailer condition, and marina rules.",
+    "paperwork": "South Carolina owners should include title and registration records, trailer paperwork, lien releases, Coast Guard documentation, and marina or storage information.",
+    "localQuestion": "Can I submit a boat stored near Charleston Harbor or the Intracoastal Waterway?"
+  },
+  "south-dakota": {
+    "state": "South Dakota",
+    "intro": "South Dakota boating is seasonal, freshwater-based, and often tied to reservoirs or river access. Rural storage, winter layup, wind exposure, and trailer readiness matter.",
+    "areas": "Boats in South Dakota may be near Lake Oahe, Lewis and Clark Lake, Lake Francis Case, or stored around Big Stone Lake, Lake Kampeska, the Missouri River, and Angostura Reservoir.",
+    "comparison": "A boat near Lake Oahe may involve different questions than one near Lake Francis Case or Lake Kampeska.",
+    "conditions": "Owners around these waters may be dealing with short seasons, reservoir winds, winter layup, rural access, river storage, and trailer readiness.",
+    "paperwork": "South Dakota owners should gather registration or title records, trailer paperwork, lien releases, and storage-location access details.",
+    "localQuestion": "Can I submit a boat stored near Lake Oahe or Lewis and Clark Lake?",
+    "preflightHeading": "Pin down reservoir location and access",
+    "preflight": "Lake Oahe and other long reservoirs cover broad areas, so name the exact marina, ramp area, storage lot, or address rather than only the waterbody. Say whether the vessel is afloat, winterized, blocked, or trailered, and identify any facility contact or seasonal restriction. Current photos should include cover and hull condition, engine and bilge, identification numbers, and trailer components. The owner keeps custody while those facts are reviewed."
+  },
+  "tennessee": {
+    "state": "Tennessee",
+    "intro": "Tennessee donations often involve freshwater reservoirs, covered slips, steep lake roads, houseboat marinas, and seasonal storage. Access, lift status, and trailer condition help define the review.",
+    "areas": "Boats in Tennessee may be near Norris Lake, Dale Hollow Lake, Old Hickory Lake, or stored around Center Hill Lake, Kentucky Lake, Chickamauga Lake, and the Tennessee River.",
+    "comparison": "A boat near Norris Lake may involve different questions than one near Old Hickory Lake or Kentucky Lake.",
+    "conditions": "Owners around these waters may be dealing with freshwater reservoirs, covered slips, steep lake roads, houseboat marinas, lift status, and seasonal storage.",
+    "paperwork": "Tennessee owners should include title and registration records, trailer title or registration, lien releases, Coast Guard documentation for larger vessels, and marina account details.",
+    "localQuestion": "Can I submit a boat stored near Norris Lake or Dale Hollow Lake?"
+  },
+  "texas": {
+    "state": "Texas",
+    "intro": "Texas boating ranges from Gulf saltwater and tidal bays to Hill Country and North Texas reservoirs. Hurricanes, sun exposure, dry storage, lift access, marina demand, and long towing distances can all matter.",
+    "areas": "Boats in Texas may be near Galveston Bay, Clear Lake, Lake Travis, or stored around Lake Texoma, Possum Kingdom Lake, Corpus Christi Bay, and the Gulf Coast.",
+    "comparison": "A boat near Galveston Bay may involve different questions than one near Lake Travis or Possum Kingdom Lake.",
+    "conditions": "Owners around these waters may be dealing with Gulf saltwater, tidal bays, reservoir storage, hurricanes, sun exposure, dry storage, lift access, and long towing distances.",
+    "paperwork": "Texas owners should gather title and registration records for the boat and motor where applicable, trailer title or registration, lien releases, Coast Guard documentation, and marina or storage details.",
+    "localQuestion": "Can I submit a boat stored near Galveston Bay or Clear Lake?"
+  },
+  "utah": {
+    "state": "Utah",
+    "intro": "Utah boating is shaped by reservoirs, mountain seasons, desert sun, changing water levels, and trailering. Lake Powell logistics and winter storage can make access details especially important.",
+    "areas": "Boats in Utah may be near Great Salt Lake, Lake Powell, Bear Lake, or stored around Utah Lake, Flaming Gorge Reservoir, Jordanelle Reservoir, and Deer Creek Reservoir.",
+    "comparison": "A boat near Great Salt Lake may involve different questions than one near Bear Lake or Flaming Gorge Reservoir.",
+    "conditions": "Owners around these waters may be dealing with reservoir levels, mountain seasons, desert sun, winter storage, long towing distances, and marina access around Lake Powell.",
+    "paperwork": "Utah owners should include title and registration records, trailer paperwork, lien releases, and marina or storage-yard access information.",
+    "localQuestion": "Can I submit a boat stored near Great Salt Lake or Lake Powell?",
+    "preflightHeading": "Name the marina, launch status, and overland constraints",
+    "preflight": "A Utah request should distinguish a boat in a marina from one already hauled or stored inland. Give the exact facility or address, current launch status, storage balance, dimensions, trailer condition, and any seasonal or water-level issue the owner or facility has actually reported. For a larger Lake Powell vessel, include beam, height, draft, engine status, and documentation. A buyer later assesses route and service needs; the charity does not arrange them."
+  },
+  "vermont": {
+    "state": "Vermont",
+    "intro": "Vermont donations usually involve freshwater lakes, short seasons, winter storage, moorings, and rural access. Shrink-wrap status, trailer condition, and storage location help with review.",
+    "areas": "Boats in Vermont may be near Lake Champlain, Lake Bomoseen, Lake Memphremagog, or stored around the Connecticut River, Waterbury Reservoir, Lake Dunmore, and Malletts Bay.",
+    "comparison": "A boat near Lake Champlain may involve different questions than one near Lake Memphremagog or Waterbury Reservoir.",
+    "conditions": "Owners around these waters may be dealing with short freshwater seasons, winter storage, shrink-wrap, rural lake access, moorings, and trailer condition.",
+    "paperwork": "Vermont owners should gather registration or title records, trailer paperwork, lien releases, and marina, mooring, or storage information.",
+    "localQuestion": "Can I submit a boat stored near Lake Champlain or Lake Bomoseen?",
+    "preflightHeading": "Clarify mooring and winter-storage status",
+    "preflight": "For a Vermont boat on a seasonal mooring, provide the mooring holder, tender or launch access, current location, and any date by which the boat must come ashore. For a wrapped or indoor boat, state who can open or authorize access and whether identification and condition can be photographed. Include trailer details even if the vessel normally stays in the water. Keep storage, mooring, insurance, and security in place throughout the review."
+  },
+  "virginia": {
+    "state": "Virginia",
+    "intro": "Virginia boating includes Chesapeake tidal waters, Atlantic marinas, rivers, and inland lakes. Hurricanes, winter storage, marina access, trailer condition, and whether the boat is documented can affect review.",
+    "areas": "Boats in Virginia may be near Chesapeake Bay, the Potomac River, Smith Mountain Lake, or stored around the James River, the Rappahannock River, Virginia Beach marinas, and Claytor Lake.",
+    "comparison": "A boat near Chesapeake Bay may involve different questions than one near Smith Mountain Lake or the Rappahannock River.",
+    "conditions": "Owners around these waters may be dealing with Chesapeake tides, Atlantic marinas, rivers, inland lakes, hurricanes, winter storage, and trailer or yard access.",
+    "paperwork": "Virginia owners should include title and registration records, trailer paperwork, lien releases, Coast Guard documentation, and marina or storage account details.",
+    "localQuestion": "Can I submit a boat stored near Chesapeake Bay or the Potomac River?"
+  },
+  "washington": {
+    "state": "Washington",
+    "intro": "Washington donations can involve saltwater moorage, freshwater lakes, river current, rain exposure, liveaboard questions, and haul-out availability. Marina access and whether the boat runs under its own power are important.",
+    "areas": "Boats in Washington may be near Puget Sound, Lake Washington, the San Juan Islands, or stored around the Columbia River, Lake Union, Hood Canal, and Lake Chelan.",
+    "comparison": "A boat near Puget Sound may involve different questions than one near the San Juan Islands or Lake Union.",
+    "conditions": "Owners around these waters may be dealing with saltwater moorage, freshwater lake storage, river current, rain exposure, haul-out availability, and moorage account details.",
+    "paperwork": "Washington owners should gather title and registration records, trailer paperwork, lien releases, Coast Guard documentation, moorage details, and storage account information.",
+    "localQuestion": "Can I submit a boat stored near Puget Sound or Lake Washington?"
+  },
+  "west-virginia": {
+    "state": "West Virginia",
+    "intro": "West Virginia boating is freshwater and often tied to lakes, rivers, mountain roads, and seasonal storage. Trailer condition, ramp access, and exact storage location can be more important than broad mileage estimates.",
+    "areas": "Boats in West Virginia may be near Summersville Lake, Bluestone Lake, Tygart Lake, or stored around Stonewall Jackson Lake, the Ohio River, the Kanawha River, and Cheat Lake.",
+    "comparison": "A boat near Summersville Lake may involve different questions than one near Tygart Lake or the Ohio River.",
+    "conditions": "Owners around these waters may be dealing with mountain roads, lake ramps, river access, seasonal storage, trailer condition, and exact access at homes, yards, or marinas.",
+    "paperwork": "West Virginia owners should include title or registration records, trailer paperwork, lien releases, and access details for storage yards, homes, or marinas.",
+    "localQuestion": "Can I submit a boat stored near Summersville Lake or Bluestone Lake?",
+    "preflightHeading": "Describe the mountain-road exit before assumptions form",
+    "preflight": "A West Virginia storage address may be close on a map yet difficult for a trailer or service vehicle to reach. Photograph the driveway, grade, curves, gate, surface, overhead clearance, and space to turn; report the trailer's last road use, tire age, known brake issues, other defects, and any professional inspection. For a marina or river slip, substitute dock, ramp, current, and facility-access facts. These details help a future buyer plan; they do not mean pickup or acceptance is guaranteed."
+  },
+  "wisconsin": {
+    "state": "Wisconsin",
+    "intro": "Wisconsin donations involve Great Lakes harbors, inland lakes, river marinas, winterization, shrink-wrap, and short seasons. Trailer readiness, storage status, and marina access often determine timing.",
+    "areas": "Boats in Wisconsin may be near Lake Michigan, Lake Superior, Lake Winnebago, or stored around the Wisconsin River, the Mississippi River, the Chain O'Lakes, and Green Bay.",
+    "comparison": "A boat near Lake Michigan may involve different questions than one near Lake Winnebago or the Mississippi River.",
+    "conditions": "Owners around these waters may be dealing with Great Lakes harbors, inland lakes, river marinas, winterization, shrink-wrap, short seasons, and trailer readiness.",
+    "paperwork": "Wisconsin owners should gather title and registration records, trailer title or registration, lien releases, Coast Guard documentation, and marina or winter-storage details.",
+    "localQuestion": "Can I submit a boat stored near Lake Michigan or Lake Superior?"
+  },
+  "wyoming": {
+    "state": "Wyoming",
+    "intro": "Wyoming boating is seasonal, often remote, and shaped by mountain weather, cold storage, reservoirs, and long towing distances. Exact location and trailer condition are especially important.",
+    "areas": "Boats in Wyoming may be near Flaming Gorge Reservoir, Jackson Lake, Boysen Reservoir, or stored around Glendo Reservoir, Keyhole Reservoir, Yellowstone Lake, and the North Platte River.",
+    "comparison": "A boat near Flaming Gorge Reservoir may involve different questions than one near Boysen Reservoir or Keyhole Reservoir.",
+    "conditions": "Owners around these waters may be dealing with short seasons, remote reservoirs, mountain weather, cold storage, long towing distances, and trailer condition.",
+    "paperwork": "Wyoming owners should include registration or title records, trailer paperwork, lien releases, and details about storage access and known trailer defects.",
+    "localQuestion": "Can I submit a boat stored near Flaming Gorge Reservoir or Jackson Lake?",
+    "preflightHeading": "Verify remote access rather than estimating it",
+    "preflight": "For a Wyoming boat, give the exact marina, storage yard, residence, or rural property and identify who can provide lawful access. Note seasonal closures or weather limits only when confirmed by the owner or facility, and state when current photographs can be taken. A trailered vessel needs separate records for tires, bearings, brakes, lights, hitch, registration, and road conditions. Keep custody and storage arrangements unchanged until an authorized transfer is complete."
+  }
+}

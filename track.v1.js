@@ -1,6 +1,6 @@
 // Standalone donate-button click tracking.
 // Included on every page that has a "Donate" call-to-action but does NOT load
-// the full homepage bundle (script.v122.js already tracks the homepage CTAs).
+// the full site bundle (script.v123.js already tracks the site CTAs).
 // Sends a lightweight, fire-and-forget beacon to a Netlify Function so the team
 // can count how many times each donate button is clicked. Tracking is written
 // so it can never block navigation or break the page.

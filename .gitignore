@@ -3,3 +3,6 @@
 
 # Dependencies
 node_modules
+
+# Local SEO, functional, and visual QA output
+artifacts/
