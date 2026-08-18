@@ -1,8 +1,13 @@
 {
   "@context": "https://schema.org",
-  "@type": "Nonprofit",
+  "@type": "NGO",
   "name": "Boats for Charity",
-  "url": "https://boatsforcharity.org",
-  "description": "Boats for Charity facilitates boat donations without towing or transport.",
-  "areaServed": "United States"
+  "url": "https://boatsforcharity.org/",
+  "description": "Boats for Charity is a 501(c)(3) nonprofit that reviews boat donation requests individually and provides clear transfer and donation documentation when a donation is completed.",
+  "areaServed": {
+    "@type": "Country",
+    "name": "United States"
+  },
+  "nonprofitStatus": "https://schema.org/Nonprofit501c3",
+  "taxID": "41-2487552"
 }

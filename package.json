@@ -2,6 +2,13 @@
   "name": "boatsforcharity",
   "private": true,
   "type": "module",
+  "scripts": {
+    "seo:repair": "node scripts/repair-seo.mjs",
+    "seo:refine-copy": "node scripts/refine-editorial-copy.mjs",
+    "seo:audit": "node scripts/seo-audit.mjs",
+    "seo:audit-content": "node scripts/content-quality-audit.mjs",
+    "test": "npm run seo:audit && npm run seo:audit-content"
+  },
   "dependencies": {
     "@netlify/database": "latest",
     "drizzle-orm": "beta"
