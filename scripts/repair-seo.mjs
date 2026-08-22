@@ -694,7 +694,12 @@ function addContentPageNavigation(html) {
   if (!headerExpression.test(html)) return html;
   const header = `<header class="site-header">
   <div class="wrap">
-    <a href="/" aria-label="Boats for Charity home"><img src="/assets/logo.png" alt="Boats for Charity" class="logo" width="280" height="80"></a>
+    <a href="/" aria-label="Boats for Charity home">
+      <picture>
+        <source srcset="/assets/logo.webp" type="image/webp">
+        <img src="/assets/logo.png" alt="Boats for Charity" class="logo" width="280" height="80" decoding="async">
+      </picture>
+    </a>
     <button id="menuToggle" class="hamburger" aria-label="Toggle navigation" aria-controls="primaryNav" aria-expanded="false">☰ Menu</button>
     <nav id="primaryNav" class="nav" aria-label="Primary" hidden>
       <a href="/#how">How It Works</a>
