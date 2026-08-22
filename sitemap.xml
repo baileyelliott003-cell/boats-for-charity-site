@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="/sitemap.xsl"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- ===== CORE CONVERSION & HUB PAGES ===== -->
   <url><loc>https://boatsforcharity.org/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://boatsforcharity.org/donate-a-boat/</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
   <url><loc>https://boatsforcharity.org/boat-donation-by-state/</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
@@ -10,8 +9,6 @@
   <url><loc>https://boatsforcharity.org/faq/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://boatsforcharity.org/guides/</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
   <url><loc>https://boatsforcharity.org/hin-lookup/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-
-  <!-- ===== EDUCATIONAL GUIDES ===== -->
   <url><loc>https://boatsforcharity.org/guides/tax-deductible-boat-donation/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://boatsforcharity.org/guides/how-to-donate-a-boat/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://boatsforcharity.org/guides/boat-donation-paperwork/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
@@ -28,8 +25,6 @@
   <url><loc>https://boatsforcharity.org/guides/donate-a-commercial-boat/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/guides/junk-boat-removal/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/guides/boat-title-transfer/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-
-  <!-- ===== JUNK & FREE BOAT REMOVAL GEO PORTALS ===== -->
   <url><loc>https://boatsforcharity.org/free-boat-removal-florida/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/free-boat-removal-california/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/free-boat-removal-texas/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
@@ -38,60 +33,56 @@
   <url><loc>https://boatsforcharity.org/junk-boat-removal-california/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/junk-boat-removal-texas/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/junk-boat-removal-washington/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-
-  <!-- ===== STATE DIRECTORY HUBS ===== -->
-  <url><loc>https://boatsforcharity.org/state/florida/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-  <url><loc>https://boatsforcharity.org/state/california/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-  <url><loc>https://boatsforcharity.org/state/texas/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-  <url><loc>https://boatsforcharity.org/state/washington/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
-  <url><loc>https://boatsforcharity.org/state/oregon/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/michigan/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/north-carolina/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/south-carolina/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/georgia/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/maryland/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/virginia/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/new-york/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/state/massachusetts/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/ohio/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/wisconsin/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/minnesota/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/missouri/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/tennessee/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/alabama/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/louisiana/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/new-jersey/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/connecticut/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/rhode-island/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/maine/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/arizona/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/nevada/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/colorado/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/utah/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/idaho/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/montana/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/alaska/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/hawaii/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/illinois/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
-  <url><loc>https://boatsforcharity.org/state/pennsylvania/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/indiana/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/kentucky/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/oklahoma/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/arkansas/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/mississippi/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/iowa/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/kansas/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/nebraska/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/south-dakota/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/north-dakota/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/wyoming/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/new-mexico/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/west-virginia/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/delaware/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/vermont/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-  <url><loc>https://boatsforcharity.org/state/new-hampshire/</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
-
-  <!-- ===== CITY HUBS ===== -->
+  <url><loc>https://boatsforcharity.org/state-florida</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://boatsforcharity.org/state-california</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://boatsforcharity.org/state-texas</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://boatsforcharity.org/state-washington</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://boatsforcharity.org/state-oregon</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-michigan</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-north-carolina</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-south-carolina</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-georgia</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-maryland</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-virginia</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-new-york</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/state-massachusetts</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-ohio</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-wisconsin</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-minnesota</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-missouri</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-tennessee</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-alabama</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-louisiana</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-new-jersey</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-connecticut</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-rhode-island</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-maine</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-arizona</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-nevada</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-colorado</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-utah</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-idaho</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-montana</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-alaska</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-hawaii</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-illinois</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/state-pennsylvania</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-indiana</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-kentucky</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-oklahoma</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-arkansas</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-mississippi</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-iowa</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-kansas</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-nebraska</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-south-dakota</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-north-dakota</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-wyoming</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-new-mexico</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-west-virginia</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-delaware</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-vermont</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://boatsforcharity.org/state-new-hampshire</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
   <url><loc>https://boatsforcharity.org/city/miami/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/city/fort-lauderdale/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/city/tampa/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
