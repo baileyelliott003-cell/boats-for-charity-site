@@ -240,6 +240,8 @@ registerRedirect("/index.html", "/");
 for (const [file, route] of ROOT_PAGES) registerRedirect(`/${file}`, route);
 for (const slug of Object.keys(STATE_NAMES)) {
   registerRedirect(`/state-${slug}.html`, `/state-${slug}`);
+  registerRedirect(`/state/${slug}/`, `/state-${slug}`);
+  registerRedirect(`/state/${slug}`, `/state-${slug}`);
 }
 for (const record of cityRecords) {
   registerRedirect(`/city/${record.slug}/index.html`, `/city/${record.slug}/`);
@@ -254,6 +256,10 @@ registerRedirect("/boat-donation-by-city/index.html", "/boat-donation-by-city/")
 registerRedirect("/blog", "/guides/");
 registerRedirect("/blog/", "/guides/");
 registerRedirect("/blog/index.html", "/guides/");
+
+registerRedirect("/guides/boat-title-transfer", "/guides/boat-donation-paperwork/");
+registerRedirect("/guides/boat-title-transfer/", "/guides/boat-donation-paperwork/");
+registerRedirect("/guides/boat-title-transfer/index.html", "/guides/boat-donation-paperwork/");
 
 for (const [file, target] of LEGACY_PAGE_TARGETS) {
   const stem = file.slice(0, -5);
@@ -272,6 +278,8 @@ function normalizeInternalTarget(value) {
   const suffixIndex = local.search(/[?#]/);
   const suffix = suffixIndex >= 0 ? local.slice(suffixIndex) : "";
   let pathname = suffixIndex >= 0 ? local.slice(0, suffixIndex) : local;
+
+  pathname = pathname.replace(/^\/state\/([a-z-]+)\/?$/, "/state-$1");
 
   if (REDIRECT_TARGETS.has(pathname)) pathname = REDIRECT_TARGETS.get(pathname);
   if (pathname === "/index.html") pathname = "/";
@@ -292,7 +300,7 @@ function setCanonical(html, route) {
   if (/<link\s+rel=["']canonical["'][^>]*>/i.test(html)) {
     return html.replace(/<link\s+rel=["']canonical["'][^>]*>/i, tag);
   }
-  return html.replace(/<\/head>/i, `${tag}\n</head>`);
+  return html.replace(/<\/head>/i, `${tag}\n<\/head>`);
 }
 
 function getTitle(html) {
@@ -306,19 +314,20 @@ function getDescription(html) {
 
 function setTitle(html, value) {
   if (/<title>[^<]*<\/title>/i.test(html)) return html.replace(/<title>[^<]*<\/title>/i, `<title>${value}</title>`);
-  return html.replace(/<\/head>/i, `<title>${value}</title>\n</head>`);
+  return html.replace(/<\/head>/i, `<title>${value}</title>\n<\/head>`);
 }
 
 function setDescription(html, value) {
   const expression = /<meta\s+name=["']description["'][^>]*>/i;
   const tag = `<meta name="description" content="${value}">`;
   if (expression.test(html)) return html.replace(expression, tag);
-  return html.replace(/<\/head>/i, `${tag}\n</head>`);
+  return html.replace(/<\/head>/i, `${tag}\n<\/head>`);
 }
 
 function optimizeSearchSnippet(html, relative) {
   let output = html;
   if (relative === "index.html") {
+    output = setTitle(output, "Donate Your Boat for Charity: Tax-Deductible Vessel Donations | Boats for Charity");
     output = setDescription(
       output,
       "Donate a boat through Boats for Charity, an Oregon-based 501(c)(3) nonprofit (EIN 41-2487552), with individual review and clear donation paperwork.",
@@ -352,7 +361,7 @@ function setPropertyMeta(html, property, value) {
   const expression = new RegExp(`<meta\\s+property=["']${escapedProperty}["'][^>]*>`, "i");
   const tag = `<meta property="${property}" content="${value}">`;
   if (expression.test(html)) return html.replace(expression, tag);
-  return html.replace(/<\/head>/i, `${tag}\n</head>`);
+  return html.replace(/<\/head>/i, `${tag}\n<\/head>`);
 }
 
 function setNameMeta(html, name, value) {
@@ -360,7 +369,7 @@ function setNameMeta(html, name, value) {
   const expression = new RegExp(`<meta\\s+name=["']${escapedName}["'][^>]*>`, "i");
   const tag = `<meta name="${name}" content="${value}">`;
   if (expression.test(html)) return html.replace(expression, tag);
-  return html.replace(/<\/head>/i, `${tag}\n</head>`);
+  return html.replace(/<\/head>/i, `${tag}\n<\/head>`);
 }
 
 function addSocialMetadata(html, route) {
@@ -370,7 +379,6 @@ function addSocialMetadata(html, route) {
   const canonicalUrl = `${ORIGIN}${route}`;
   const logoUrl = `${ORIGIN}/assets/logo.png`;
 
-  // Open Graph
   output = setPropertyMeta(output, "og:type", "website");
   output = setPropertyMeta(output, "og:title", title);
   output = setPropertyMeta(output, "og:description", description);
@@ -378,7 +386,6 @@ function addSocialMetadata(html, route) {
   output = setPropertyMeta(output, "og:site_name", "Boats for Charity");
   output = setPropertyMeta(output, "og:image", logoUrl);
 
-  // Twitter Cards
   output = setNameMeta(output, "twitter:card", "summary_large_image");
   output = setNameMeta(output, "twitter:title", title);
   output = setNameMeta(output, "twitter:description", description);
@@ -397,7 +404,7 @@ function ensureLangAttribute(html) {
 
 function ensureOttoPixel(html) {
   if (!html.includes('id="sa-dynamic-optimization"')) {
-    return html.replace(/<\/head>/i, `${OTTO_SCRIPT}\n</head>`);
+    return html.replace(/<\/head>/i, `${OTTO_SCRIPT}\n<\/head>`);
   }
   return html;
 }
@@ -433,8 +440,8 @@ function addStateSchema(html, stateSlug, route) {
       isPartOf: { "@type": "WebSite", name: "Boats for Charity", url: `${ORIGIN}/` },
     },
   ];
-  const script = `<script id="state-page-schema" type="application/ld+json">${JSON.stringify(schema)}</script>`;
-  return output.replace(/<\/head>/i, `${script}\n</head>`);
+  const script = `<script id="state-page-schema" type="application/ld+json">${JSON.stringify(schema)}<\/script>`;
+  return output.replace(/<\/head>/i, `${script}\n<\/head>`);
 }
 
 function normalizeQuestion(value) {
@@ -556,6 +563,29 @@ function stripInlineMarkup(value) {
     .trim();
 }
 
+function fixCityCtaAndDeadLinks(html, cityRecord) {
+  let output = html;
+  if (cityRecord.slug !== "annapolis") {
+    output = output.replace(
+      /<h2>Ready for a No-Cost Boat Donation Review in Annapolis\?</h2>/gi,
+      `<h2>Ready for a No-Cost Boat Donation Review in ${cityRecord.city}?</h2>`,
+    );
+  }
+
+  output = output.replace(/href=["']\/city\/cape-cod\/?["']/gi, 'href="/city/gloucester/"');
+  output = output.replace(/href=["']\/city\/south-padre-island\/?["']/gi, 'href="/city/port-aransas/"');
+  output = output.replace(/href=["']\/city\/st-augustine\/?["']/gi, 'href="/city/daytona-beach/"');
+  output = output.replace(/href=["']\/city\/springfield\/?["']/gi, 'href="/city/st-louis/"');
+  output = output.replace(/href=["']\/city\/huntington-beach\/?["']/gi, 'href="/city/dana-point/"');
+  output = output.replace(/href=["']\/city\/melbourne\/?["']/gi, 'href="/city/tampa/"');
+
+  if (cityRecord.slug === "annapolis") {
+    output = output.replace(/href=["']\/city\/alexandria\/?["']/gi, 'href="/city/washington/"');
+  }
+
+  return output;
+}
+
 function refreshStateSections() {
   for (const [slug, stateName] of Object.entries(STATE_NAMES)) {
     const content = STATE_CONTENT[slug];
@@ -565,7 +595,7 @@ function refreshStateSections() {
     const file = `state-${slug}.html`;
     let html = read(file);
     const heroExpression = new RegExp(
-      `(<h1 style="display:none;">|<h1[^>]*>Donate a Boat in ${stateName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} With Clear Local Guidance<\\/h1>\\s*<p class="sub">)[\\s\\S]*?(<\\/p>)`,
+      `(<h1>Boat Donation in ${stateName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} With Clear Local Guidance<\\/h1>\\s*<p class="sub">)[\\s\\S]*?(<\\/p>)`,
       "i",
     );
     if (heroExpression.test(html)) {
@@ -625,7 +655,7 @@ function refreshStateSections() {
       "",
     );
     write(file, html);
-  }
+  } 
 }
 
 function refreshCityDirectory() {
@@ -639,7 +669,7 @@ function refreshCityDirectory() {
   for (const [stateName, records] of citiesByState) {
     const escapedState = stateName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const sectionExpression = new RegExp(
-      `(<section><h2>${escapedState}<\\/h2><ul class="state-link-grid">)[\\s\\S]*?(<\\/ul>)`,
+      `(<section><h2>${escapedState}<\/h2><ul class="state-link-grid">)[\s\S]*?(<\/ul>)`,
       "i",
     );
     if (sectionExpression.test(html)) {
@@ -671,8 +701,7 @@ function addStateCityLinks(html, stateName) {
       <h2>Boat Donation Guides for ${stateName} Cities</h2>
       <div class="cards">${snapshots}</div>${additionalCities}
     </div>
-  </section>
-`;
+  </section>\n`;
   const existing = /\s*<section class="section alt in-state-cities" data-seo-module="state-cities">[\s\S]*?<\/section>/i;
   if (existing.test(html)) return html.replace(existing, `\n${section.trimEnd()}`);
   const nearby = /\s*<section class="section nearby-states">/i;
@@ -695,20 +724,17 @@ function addContentPageNavigation(html) {
   const header = `<header class="site-header">
   <div class="wrap">
     <a href="/" aria-label="Boats for Charity home">
-      <picture>
-        <source srcset="/assets/logo.webp" type="image/webp">
-        <img src="/assets/logo.png" alt="Boats for Charity" class="logo" width="280" height="80" decoding="async">
-      </picture>
+      <img src="/assets/logo.png" alt="Boats for Charity logo" class="logo" width="280" height="80" fetchpriority="high" decoding="async">
     </a>
-    <button id="menuToggle" class="hamburger" aria-label="Toggle navigation" aria-controls="primaryNav" aria-expanded="false">☰ Menu</button>
+    <button id="menuToggle" class="hamburger" aria-label="Toggle navigation" aria-controls="primaryNav" aria-expanded="false">Menu</button>
     <nav id="primaryNav" class="nav" aria-label="Primary" hidden>
       <a href="/#how">How It Works</a>
       <a href="/#accept">What We Accept</a>
       <a href="/boat-donation-by-state">By State</a>
       <a href="/guides/">Guides</a>
       <a href="/faq">FAQ</a>
-      <a href="tel:+18555573703" class="nav-phone" aria-label="Call Boats for Charity">(855) 557-3703</a>
-      <a href="/donate-a-boat" class="btn btn-primary">Donate a Boat</a>
+      <a href="tel:+18555573703" class="nav-phone" aria-label="Call Boats for Charity">Call (855) 557-3703</a>
+      <a href="/donate-a-boat" class="btn btn-primary" aria-label="Donate a Boat">Donate a Boat</a>
     </nav>
   </div>
 </header>`;
@@ -740,6 +766,7 @@ function repairHtml(relative) {
   if (cityRecord) {
     html = removeCityFaq(html);
     html = addCityStateLink(html, cityRecord.state);
+    html = fixCityCtaAndDeadLinks(html, cityRecord);
   }
 
   if (relative.startsWith("city/") || relative.startsWith("guides/") || relative === "boat-donation-by-city/index.html") {
