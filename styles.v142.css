@@ -148,6 +148,20 @@ a:hover{text-decoration:underline}
 .state-card small{color:#64748b;font-weight:600}
 
 .tiny{font-size:.9rem;color:var(--muted)}
+.tax-disclaimer{margin-top:0.75rem;max-width:40rem}
+.cta-link-bold{font-weight:700;text-decoration:underline}
+.center-wrap-720{text-align:center;max-width:720px}
+.article-wrap-52{max-width:52rem}
+.tax-guide-callout{
+  background:#f0fdfa;
+  border-left:4px solid var(--teal);
+  padding:1.25rem 1.5rem;
+  border-radius:8px;
+  margin:2rem 0;
+}
+.tax-guide-callout h3{margin-top:0;color:var(--navy)}
+.tax-guide-callout p{margin-bottom:0.75rem;color:#334155}
+.tax-guide-callout a{color:#0b5f67;font-weight:700;text-decoration:underline}
 
 /* Sticky action bar */
 .action-bar{
