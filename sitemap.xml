@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- ===== CORE CONVERSION & HUB PAGES ===== -->
   <url><loc>https://boatsforcharity.org/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://boatsforcharity.org/donate-a-boat</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://boatsforcharity.org/boat-donation-by-state</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
+  <url><loc>https://boatsforcharity.org/donate-a-boat/</loc><changefreq>weekly</changefreq><priority>0.95</priority></url>
+  <url><loc>https://boatsforcharity.org/boat-donation-by-state/</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
   <url><loc>https://boatsforcharity.org/boat-donation-by-city/</loc><changefreq>weekly</changefreq><priority>0.90</priority></url>
-  <url><loc>https://boatsforcharity.org/boats-for-sale</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
-  <url><loc>https://boatsforcharity.org/faq</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
+  <url><loc>https://boatsforcharity.org/boats-for-sale/</loc><changefreq>daily</changefreq><priority>0.85</priority></url>
+  <url><loc>https://boatsforcharity.org/faq/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
   <url><loc>https://boatsforcharity.org/guides/</loc><changefreq>weekly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://boatsforcharity.org/hin-lookup</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/hin-lookup/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
 
   <!-- ===== EDUCATIONAL GUIDES ===== -->
   <url><loc>https://boatsforcharity.org/guides/tax-deductible-boat-donation/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
