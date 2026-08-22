@@ -18,7 +18,6 @@ html,body{
 }
 img{
   max-width:100%;height:auto;
-  content-visibility:auto;
 }
 a{color:var(--teal);text-decoration:none}
 a:hover{text-decoration:underline}
@@ -28,10 +27,23 @@ a:hover{text-decoration:underline}
 .skip-link{position:absolute;left:-1000px;top:auto;width:1px;height:1px;overflow:hidden}
 .skip-link:focus{left:16px;top:16px;width:auto;height:auto;background:#fff;color:#000;padding:8px 12px;border-radius:6px;box-shadow:var(--ring)}
 
-.site-header{background:#fff;border-bottom:1px solid #dbe5e8;z-index:10;contain:layout paint}
+.site-header{background:#fff;border-bottom:1px solid #dbe5e8;z-index:10}
 .site-header .wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
-.logo{width:68px;height:auto;aspect-ratio:7/2;contain:size layout}
-.logo.small{width:36px}
+.logo{
+  width:auto;
+  max-width:240px;
+  height:auto;
+  max-height:56px;
+  display:block;
+  object-fit:contain;
+}
+.logo.small{
+  width:auto;
+  max-width:180px;
+  height:auto;
+  max-height:48px;
+  object-fit:contain;
+}
 
 .hamburger{display:none;border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:10px 12px;font-weight:700;touch-action:manipulation}
 
@@ -43,7 +55,6 @@ a:hover{text-decoration:underline}
   background:linear-gradient(180deg, #f8fbfb, #fff);
   padding:72px 0 56px;
   text-align:center;
-  contain:layout;
 }
 .hero h1{font-size:clamp(30px,5vw,44px);margin:0 0 8px;color:var(--navy);letter-spacing:-0.02em}
 .hero .sub{color:#374151;font-size:1.15rem}
@@ -52,7 +63,7 @@ a:hover{text-decoration:underline}
 .section{padding:56px 0}
 .section.alt{background:#f8fafc}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
-.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 5px 15px rgba(0,0,0,.03);contain:content}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:18px;box-shadow:0 5px 15px rgba(0,0,0,.03)}
 .card h3{margin-top:0;color:var(--navy)}
 
 .benefits{columns:2;column-gap:24px}
@@ -79,7 +90,6 @@ a:hover{text-decoration:underline}
 .site-footer{
   border-top:1px solid #e5e7eb;background:#fff;padding:20px 0;
   overflow-x:hidden;width:100%;
-  content-visibility:auto;contain-intrinsic-size:300px;
 }
 .site-footer .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .foot-brand{display:flex;align-items:center;gap:12px}
@@ -132,7 +142,6 @@ a:hover{text-decoration:underline}
   border-top:1px solid #e5e7eb;
   width:100%;
   overflow-x:hidden;
-  content-visibility:auto;contain-intrinsic-size:240px;
 }
 .state-footer-links h2{
   margin:0;
@@ -229,8 +238,25 @@ body{padding-bottom:0}
   .wrap{padding:0 16px; width:100%; box-sizing:border-box}
   .action-bar{display:grid}
   .site-header{position:static; width:100%; overflow-x:hidden}
-  .site-header .wrap{padding:16px 16px; flex-direction:column; align-items:center; justify-content:center; gap:10px}
-  .logo{width:112px !important; height:auto; display:block; margin:0 auto; aspect-ratio:7/2}
+  .site-header .wrap{padding:14px 16px; flex-direction:column; align-items:center; justify-content:center; gap:10px}
+  .logo{
+    width:auto !important;
+    max-width:210px !important;
+    height:auto !important;
+    max-height:52px !important;
+    display:block;
+    margin:0 auto;
+    object-fit:contain;
+    aspect-ratio:auto !important;
+  }
+  .logo.small{
+    width:auto !important;
+    max-width:160px !important;
+    height:auto !important;
+    max-height:42px !important;
+    object-fit:contain;
+    aspect-ratio:auto !important;
+  }
   .hamburger{display:block;align-self:center;width:max-content;min-width:120px;max-width:100%}
   .nav[hidden]{display:none !important}
   .nav{width:100%; display:grid; grid-template-columns:1fr; gap:10px; text-align:center}
@@ -248,7 +274,7 @@ body{padding-bottom:0}
   .btn, .btn-primary, .btn-ghost{width:100%; padding:15px 16px; font-size:1rem}
   .site-footer{width:100%; overflow-x:hidden}
   .site-footer .wrap{flex-direction:column; align-items:center; text-align:center; padding:0 16px}
-  .foot-brand{flex-direction:column}
+  .foot-brand{flex-direction:column; align-items:center; text-align:center}
   .foot-links{justify-content:center; text-align:center}
 }
 
@@ -321,7 +347,6 @@ section.donate .wrap > p { margin-bottom:12px }
     linear-gradient(135deg, #f5fbfb 0%, #ffffff 55%, #eef7f6 100%);
   background-size:44px 44px, 44px 44px, auto, auto;
   border-bottom:1px solid #dbe5e8;
-  contain:layout;
 }
 .local-hero-grid{
   display:grid;
@@ -352,7 +377,6 @@ section.donate .wrap > p { margin-bottom:12px }
   border-radius:8px;
   padding:24px;
   box-shadow:0 18px 45px rgba(11,36,59,.18);
-  contain:content;
 }
 .local-panel:before{
   content:"";
@@ -401,7 +425,6 @@ section.donate .wrap > p { margin-bottom:12px }
 .faq-guide-list{
   display:grid;
   gap:14px;
-  content-visibility:auto;contain-intrinsic-size:400px;
 }
 .faq-guide-item{
   background:#fff;
@@ -456,7 +479,7 @@ section.donate .wrap > p { margin-bottom:12px }
 .nav-phone{font-weight:800;color:var(--navy) !important;white-space:nowrap}
 
 /* Trust bar */
-.trust-bar{background:var(--navy);color:#fff;padding:28px 0;contain:layout}
+.trust-bar{background:var(--navy);color:#fff;padding:28px 0}
 .trust{
   list-style:none;margin:0;padding:0;
   display:grid;grid-template-columns:repeat(4,1fr);gap:20px;
@@ -501,7 +524,6 @@ section.donate .wrap > p { margin-bottom:12px }
 .donated-gallery{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
   gap:20px;margin-top:20px;
-  content-visibility:auto;contain-intrinsic-size:320px;
 }
 .donated-item{margin:0}
 .donated-item img{
@@ -527,7 +549,6 @@ section.donate .wrap > p { margin-bottom:12px }
   border:1px solid #dbe5e8;
   border-radius:16px;
   box-shadow:0 12px 30px rgba(11,36,59,.07);
-  content-visibility:auto;contain-intrinsic-size:260px;
 }
 .ebay-panel:before{
   content:"";
@@ -565,7 +586,6 @@ section.donate .wrap > p { margin-bottom:12px }
 .cta-band{
   background:linear-gradient(135deg,var(--navy),#123a5c);
   color:#fff;text-align:center;padding:56px 0;
-  content-visibility:auto;contain-intrinsic-size:220px;
 }
 .cta-band h2{color:#fff;margin-top:0}
 .cta-band p{color:#dbe7ee;max-width:52ch;margin:0 auto 8px}
