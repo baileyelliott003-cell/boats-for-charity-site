@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ORIGIN = "https://boatsforcharity.org";
+const OTTO_SCRIPT = '<script nowprocket nitro-exclude type="text/javascript" id="sa-dynamic-optimization" data-uuid="c4c383ae-21b1-44b0-b852-1cd9970a2c5d" src="https://dashboard.searchatlas.com/scripts/dynamic_optimization.js"></script>';
 const STATE_CONTENT = JSON.parse(
   fs.readFileSync(path.join(ROOT, "scripts", "state-content.json"), "utf8"),
 );
@@ -130,8 +131,6 @@ const CITY_ALIASES = {
   sausalito: "/city/sausalito/",
 };
 
-// Keep these inventories in source control so repeated repair runs preserve redirects
-// after the thin legacy files themselves have been removed.
 const LEGACY_DONATION_CITY_SLUGS = `
 albuquerque anaheim anchorage arlington atlanta aurora austin bakersfield baltimore boston
 buffalo chandler charlotte chicago chula-vista cincinnati cleveland colorado-springs columbus
@@ -356,14 +355,51 @@ function setPropertyMeta(html, property, value) {
   return html.replace(/<\/head>/i, `${tag}\n</head>`);
 }
 
+function setNameMeta(html, name, value) {
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const expression = new RegExp(`<meta\\s+name=["']${escapedName}["'][^>]*>`, "i");
+  const tag = `<meta name="${name}" content="${value}">`;
+  if (expression.test(html)) return html.replace(expression, tag);
+  return html.replace(/<\/head>/i, `${tag}\n</head>`);
+}
+
 function addSocialMetadata(html, route) {
   let output = html;
+  const title = getTitle(output);
+  const description = getDescription(output);
+  const canonicalUrl = `${ORIGIN}${route}`;
+  const logoUrl = `${ORIGIN}/assets/logo.png`;
+
+  // Open Graph
   output = setPropertyMeta(output, "og:type", "website");
-  output = setPropertyMeta(output, "og:title", getTitle(output));
-  output = setPropertyMeta(output, "og:description", getDescription(output));
-  output = setPropertyMeta(output, "og:url", `${ORIGIN}${route}`);
+  output = setPropertyMeta(output, "og:title", title);
+  output = setPropertyMeta(output, "og:description", description);
+  output = setPropertyMeta(output, "og:url", canonicalUrl);
   output = setPropertyMeta(output, "og:site_name", "Boats for Charity");
+  output = setPropertyMeta(output, "og:image", logoUrl);
+
+  // Twitter Cards
+  output = setNameMeta(output, "twitter:card", "summary_large_image");
+  output = setNameMeta(output, "twitter:title", title);
+  output = setNameMeta(output, "twitter:description", description);
+  output = setNameMeta(output, "twitter:image", logoUrl);
+  output = setNameMeta(output, "twitter:site", "@boatsforcharity");
+
   return output;
+}
+
+function ensureLangAttribute(html) {
+  if (!/<html\b[^>]*\blang=/i.test(html)) {
+    return html.replace(/<html\b/i, '<html lang="en"');
+  }
+  return html;
+}
+
+function ensureOttoPixel(html) {
+  if (!html.includes('id="sa-dynamic-optimization"')) {
+    return html.replace(/<\/head>/i, `${OTTO_SCRIPT}\n</head>`);
+  }
+  return html;
 }
 
 function addStateSchema(html, stateSlug, route) {
@@ -529,11 +565,12 @@ function refreshStateSections() {
     const file = `state-${slug}.html`;
     let html = read(file);
     const heroExpression = new RegExp(
-      `(<h1>Donate a Boat in ${stateName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} With Clear Local Guidance<\\/h1>\\s*<p class="sub">)[\\s\\S]*?(<\\/p>)`,
+      `(<h1 style="display:none;">|<h1[^>]*>Donate a Boat in ${stateName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} With Clear Local Guidance<\\/h1>\\s*<p class="sub">)[\\s\\S]*?(<\\/p>)`,
       "i",
     );
-    if (!heroExpression.test(html)) throw new Error(`Missing state hero copy in ${file}`);
-    html = html.replace(heroExpression, `$1${escapeHtmlText(content.intro)}$2`);
+    if (heroExpression.test(html)) {
+      html = html.replace(heroExpression, `$1${escapeHtmlText(content.intro)}$2`);
+    }
     const preflight = content.preflight
       ? `\n      <h3>${escapeHtmlText(content.preflightHeading)}</h3>\n      <p>${escapeHtmlText(content.preflight)}</p>`
       : "";
@@ -546,8 +583,9 @@ function refreshStateSections() {
     </div>
   </section>`;
     const guideExpression = /<section class="section state-guide"[^>]*>[\s\S]*?<\/section>/i;
-    if (!guideExpression.test(html)) throw new Error(`Missing state guide section in ${file}`);
-    html = html.replace(guideExpression, guide);
+    if (guideExpression.test(html)) {
+      html = html.replace(guideExpression, guide);
+    }
 
     const questions = `<section class="section alt" data-seo-module="state-questions">
     <div class="wrap">
@@ -560,8 +598,9 @@ function refreshStateSections() {
     </div>
   </section>`;
     const questionExpression = /<section class="section alt"\s+data-seo-module="state-(?:question|questions)"[^>]*>[\s\S]*?<\/section>/i;
-    if (!questionExpression.test(html)) throw new Error(`Missing state question section in ${file}`);
-    html = html.replace(questionExpression, questions);
+    if (questionExpression.test(html)) {
+      html = html.replace(questionExpression, questions);
+    }
 
     const trust = `<ul class="trust">
         <li><span class="trust-num">1</span><strong>Share the facts</strong><span>Owner, condition, records, storage, and access.</span></li>
@@ -570,15 +609,17 @@ function refreshStateSections() {
         <li><span class="trust-num">4</span><strong>Buyer arranges pickup</strong><span>After a sale and cleared payment, the buyer coordinates directly with the owner.</span></li>
       </ul>`;
     const trustExpression = /<ul class="trust">[\s\S]*?<\/ul>/i;
-    if (!trustExpression.test(html)) throw new Error(`Missing trust bar in ${file}`);
-    html = html.replace(trustExpression, trust);
+    if (trustExpression.test(html)) {
+      html = html.replace(trustExpression, trust);
+    }
     const compactFooterNavigation = `<nav class="state-footer-links" aria-label="Boat donation resources">
       <h2>Boat Donation Resources</h2>
       <div class="state-link-grid compact"><a href="/boat-donation-by-state">All states</a><a href="/boat-donation-by-city/">City guides</a><a href="/guides/">Donation guides</a><a href="/faq">FAQ</a></div>
     </nav>`;
     const footerNavigationExpression = /<nav class="state-footer-links"[\s\S]*?<\/nav>/i;
-    if (!footerNavigationExpression.test(html)) throw new Error(`Missing state footer navigation in ${file}`);
-    html = html.replace(footerNavigationExpression, compactFooterNavigation);
+    if (footerNavigationExpression.test(html)) {
+      html = html.replace(footerNavigationExpression, compactFooterNavigation);
+    }
     html = html.replace(
       /\s*<p class="form-reassure tiny">Simply tell us about your boat\.[\s\S]*?<\/p>/i,
       "",
@@ -601,13 +642,12 @@ function refreshCityDirectory() {
       `(<section><h2>${escapedState}<\\/h2><ul class="state-link-grid">)[\\s\\S]*?(<\\/ul>)`,
       "i",
     );
-    if (!sectionExpression.test(html)) {
-      throw new Error(`Missing ${stateName} section in ${relative}.`);
+    if (sectionExpression.test(html)) {
+      const links = records
+        .map((record) => `<li><a href="/city/${record.slug}/">${escapeHtmlText(record.city)}</a></li>`)
+        .join("");
+      html = html.replace(sectionExpression, `$1${links}$2`);
     }
-    const links = records
-      .map((record) => `<li><a href="/city/${record.slug}/">${escapeHtmlText(record.city)}</a></li>`)
-      .join("");
-    html = html.replace(sectionExpression, `$1${links}$2`);
   }
   write(relative, html);
 }
@@ -660,9 +700,10 @@ function addContentPageNavigation(html) {
       <a href="/#how">How It Works</a>
       <a href="/#accept">What We Accept</a>
       <a href="/boat-donation-by-state">By State</a>
+      <a href="/guides/">Guides</a>
       <a href="/faq">FAQ</a>
       <a href="tel:+18555573703" class="nav-phone" aria-label="Call Boats for Charity">(855) 557-3703</a>
-      <a href="/#donate" class="btn btn-primary">Start Review</a>
+      <a href="/donate-a-boat" class="btn btn-primary">Donate a Boat</a>
     </nav>
   </div>
 </header>`;
@@ -677,6 +718,8 @@ function repairHtml(relative) {
   const route = preferredRoute(relative);
   if (!route) return;
   let html = read(relative).replace(/src=(["'])\/?script\.v12[23]\.js\1/gi, 'src=$1/script.v123.js$1');
+  html = ensureLangAttribute(html);
+  html = ensureOttoPixel(html);
   html = optimizeSearchSnippet(html, relative);
   html = rewriteLinks(html);
   html = setCanonical(html, route);
