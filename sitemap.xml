@@ -25,14 +25,18 @@
   <url><loc>https://boatsforcharity.org/guides/donate-an-inherited-boat/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/guides/donate-a-jet-ski/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/guides/donate-a-commercial-boat/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://boatsforcharity.org/guides/junk-boat-removal/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
+  <url><loc>https://boatsforcharity.org/guides/junk-boat-removal/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/guides/boat-title-transfer/</loc><changefreq>monthly</changefreq><priority>0.70</priority></url>
 
-  <!-- ===== FREE BOAT REMOVAL STATE PAGES ===== -->
+  <!-- ===== JUNK & FREE BOAT REMOVAL GEO PORTALS ===== -->
   <url><loc>https://boatsforcharity.org/free-boat-removal-florida/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/free-boat-removal-california/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/free-boat-removal-texas/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://boatsforcharity.org/free-boat-removal-washington/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/junk-boat-removal-florida/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/junk-boat-removal-california/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/junk-boat-removal-texas/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://boatsforcharity.org/junk-boat-removal-washington/</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
 
   <!-- ===== STATE DIRECTORY HUBS ===== -->
   <url><loc>https://boatsforcharity.org/state/florida/</loc><changefreq>monthly</changefreq><priority>0.80</priority></url>
