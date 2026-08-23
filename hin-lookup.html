@@ -116,6 +116,19 @@
   },
   {
     "@context": "https://schema.org",
+    "@type": "NGO",
+    "@id": "https://boatsforcharity.org/#organization",
+    "name": "Boats for Charity",
+    "url": "https://boatsforcharity.org/",
+    "logo": "https://boatsforcharity.org/assets/logo.png",
+    "sameAs": ["https://www.ebay.com/usr/boatsforcharity"],
+    "nonprofitStatus": "https://schema.org/Nonprofit501c3",
+    "taxID": "41-2487552",
+    "telephone": "+18555573703",
+    "email": "info@boatsforcharity.org"
+  },
+  {
+    "@context": "https://schema.org",
     "@type": "FAQPage",
     "mainEntity": [
       {
@@ -414,7 +427,7 @@
     </div>
 
     <div id="valConfirm" hidden>
-      <div class="val-confirm" role="status" aria-live="polite">
+      <div class="val-confirm" role="status" aria-live="polite" data-track="hin-confirm">
         <h2>Valuation Request Received</h2>
         <p>Thanks! We've received your boat information.</p>
         <p>Our team will review the details you provided along with available market information to prepare an estimated market range for your boat.</p>
@@ -566,12 +579,10 @@
       var datePredatesCurrentFormat = candidates.length === 1 && (candidates[0] < 1984 || (candidates[0] === 1984 && (tail.charCodeAt(0) - 64) < 8));
 
       if (modelYear < 1984 || datePredatesCurrentFormat) {
-        // The current arrangement was not required before August 1, 1984.
         out.notes.push('The date and model-year characters point to a hull from before the current 12-character arrangement became required on August 1, 1984. Those fields cannot be read with confidence from this decoder. Ask the builder, a marine surveyor, or your state boating agency.');
       } else {
         out.modelYear = String(modelYear);
         out.format = 'Current format (required for boats certified on or after August 1, 1984)';
-        // The certification year is normally the model year or the one before it.
         if (candidates.length === 1) {
           out.date = monthName + ' ' + candidates[0];
         } else {
@@ -622,7 +633,6 @@
     var decoded = decode(hin);
     render(hin, decoded);
     track('hin_decode_success');
-    // Hand the decoded values to the valuation flow so known fields carry over.
     document.dispatchEvent(new CustomEvent('hin:decoded', { detail: { hin: hin, mic: decoded.mic, modelYear: decoded.modelYear === UNDETERMINED ? '' : decoded.modelYear } }));
   });
 
@@ -633,9 +643,6 @@
   });
 })();
 
-/* Boat valuation request + owner intent.
-   Posts to Netlify Forms with the same AJAX pattern the site already relies on,
-   so leads land alongside donation submissions with no new infrastructure. */
 (function () {
   var openBtn = document.getElementById('valOpen');
   var wrap = document.getElementById('valFormWrap');
@@ -661,8 +668,6 @@
     });
   }
 
-  // A short client-side reference lets the intent submission be matched back to
-  // the valuation lead without updating the original submission.
   function clientRef() {
     var existing = document.getElementById('valClientRef').value;
     if (existing) return existing;
@@ -762,7 +767,7 @@
       if (donateCta) {
         donateCta.addEventListener('click', function () { track('donation_cta_clicked', { from: 'hin_valuation_intent' }); });
       }
-      post(intentForm).catch(function () { /* intent is a nice-to-have; never block the user */ });
+      post(intentForm).catch(function () { });
     });
   }
 })();
