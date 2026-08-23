@@ -330,7 +330,7 @@ function optimizeSearchSnippet(html, relative) {
     output = setTitle(output, "Donate Your Boat for Charity: Tax-Deductible Vessel Donations | Boats for Charity");
     output = setDescription(
       output,
-      "Donate a boat through Boats for Charity, an Oregon-based 501(c)(3) nonprofit (EIN 41-2487552), with individual review and clear donation paperwork.",
+      "Donate your boat, sailboat, yacht, or trailer to Boats for Charity, an Oregon-based 501(c)(3) nonprofit (EIN 41-2487552). Free review, owner custody, and IRS Form 1098-C.",
     );
   }
   if (/^city\/[^/]+\/index\.html$/.test(relative)) {
@@ -409,6 +409,32 @@ function ensureOttoPixel(html) {
   return html;
 }
 
+function escapeHtmlText(value) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function stripInlineMarkup(value) {
+  return value
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&rsquo;|&#8217;|&#39;/gi, "'")
+    .replace(/&quot;|&ldquo;|&rdquo;|&#8220;|&#8221;/gi, '"')
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizeQuestion(value) {
+  return stripInlineMarkup(value)
+    .toLowerCase()
+    .replace(/['']/g, "'")
+    .replace(/[^a-z0-9']+/g, " ")
+    .trim();
+}
+
 function addStateSchema(html, stateSlug, route) {
   const marker = 'id="state-page-schema"';
   let output = html;
@@ -416,6 +442,10 @@ function addStateSchema(html, stateSlug, route) {
     output = output.replace(/<script\s+id=["']state-page-schema["'][^>]*>[\s\S]*?<\/script>\s*/i, "");
   }
   const stateName = STATE_NAMES[stateSlug];
+  const content = STATE_CONTENT[stateSlug];
+  const q1Answer = `You may submit it for individual review. ${content.comparison} Give the exact marina, yard, mooring, residence, or storage address; describe whether the boat is afloat, blocked, lifted, or trailered; and disclose access limits, balances, liens, and facility deadlines.`;
+  const q2Answer = `${content.paperwork} Do not sign a title, cancel storage or insurance, or release the boat on the strength of an inquiry alone.`;
+
   const schema = [
     {
       "@context": "https://schema.org",
@@ -433,6 +463,97 @@ function addStateSchema(html, stateSlug, route) {
     },
     {
       "@context": "https://schema.org",
+      "@type": "NGO",
+      "@id": `${ORIGIN}/#organization`,
+      name: "Boats for Charity",
+      url: `${ORIGIN}/`,
+      logo: `${ORIGIN}/assets/logo.png`,
+      nonprofitStatus: "https://schema.org/Nonprofit501c3",
+      taxID: "41-2487552",
+      telephone: "+18555573703",
+      email: "info@boatsforcharity.org",
+      areaServed: { "@type": "State", name: stateName },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: getTitle(output),
+      description: getDescription(output),
+      url: `${ORIGIN}${route}`,
+      isPartOf: { "@type": "WebSite", name: "Boats for Charity", url: `${ORIGIN}/` },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: content.localQuestion,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: q1Answer,
+          },
+        },
+        {
+          "@type": "Question",
+          name: `Which ${stateName} ownership records should I gather?`,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: q2Answer,
+          },
+        },
+      ],
+    },
+  ];
+  const script = `<script id="state-page-schema" type="application/ld+json">${JSON.stringify(schema)}<\/script>`;
+  return output.replace(/<\/head>/i, `${script}\n<\/head>`);
+}
+
+function addCitySchema(html, cityRecord, route) {
+  const marker = 'id="city-page-schema"';
+  let output = html;
+  if (output.includes(marker)) {
+    output = output.replace(/<script\s+id=["']city-page-schema["'][^>]*>[\s\S]*?<\/script>\s*/i, "");
+  }
+  output = output.replace(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>\s*/gi, "");
+
+  const schema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${ORIGIN}/` },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Boat Donation by City",
+          item: `${ORIGIN}/boat-donation-by-city/`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: `${cityRecord.city}, ${cityRecord.state}`,
+          item: `${ORIGIN}${route}`,
+        },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "NGO",
+      name: `Boats for Charity - ${cityRecord.city} Service Area`,
+      url: `${ORIGIN}${route}`,
+      logo: `${ORIGIN}/assets/logo.png`,
+      nonprofitStatus: "https://schema.org/Nonprofit501c3",
+      taxID: "41-2487552",
+      telephone: "+18555573703",
+      email: "info@boatsforcharity.org",
+      areaServed: {
+        "@type": "City",
+        name: cityRecord.city,
+      },
+    },
+    {
+      "@context": "https://schema.org",
       "@type": "WebPage",
       name: getTitle(output),
       description: getDescription(output),
@@ -440,16 +561,49 @@ function addStateSchema(html, stateSlug, route) {
       isPartOf: { "@type": "WebSite", name: "Boats for Charity", url: `${ORIGIN}/` },
     },
   ];
-  const script = `<script id="state-page-schema" type="application/ld+json">${JSON.stringify(schema)}<\/script>`;
+
+  const script = `<script id="city-page-schema" type="application/ld+json">${JSON.stringify(schema)}<\/script>`;
   return output.replace(/<\/head>/i, `${script}\n<\/head>`);
 }
 
-function normalizeQuestion(value) {
-  return stripInlineMarkup(value)
-    .toLowerCase()
-    .replace(/[’']/g, "'")
-    .replace(/[^a-z0-9']+/g, " ")
-    .trim();
+function addGuideSchema(html, relative, route) {
+  if (!relative.startsWith("guides/") || relative === "guides/index.html") return html;
+  const marker = 'id="guide-page-schema"';
+  let output = html;
+  if (output.includes(marker)) {
+    output = output.replace(/<script\s+id=["']guide-page-schema["'][^>]*>[\s\S]*?<\/script>\s*/i, "");
+  }
+
+  const title = getTitle(output);
+  const description = getDescription(output);
+  const schema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: `${ORIGIN}/` },
+        { "@type": "ListItem", position: 2, name: "Guides", item: `${ORIGIN}/guides/` },
+        { "@type": "ListItem", position: 3, name: title, item: `${ORIGIN}${route}` },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: title,
+      description: description,
+      url: `${ORIGIN}${route}`,
+      mainEntityOfPage: { "@type": "WebPage", "@id": `${ORIGIN}${route}` },
+      publisher: {
+        "@type": "NGO",
+        name: "Boats for Charity",
+        url: `${ORIGIN}/`,
+        logo: { "@type": "ImageObject", url: `${ORIGIN}/assets/logo.png` },
+      },
+    },
+  ];
+
+  const script = `<script id="guide-page-schema" type="application/ld+json">${JSON.stringify(schema)}<\/script>`;
+  return output.replace(/<\/head>/i, `${script}\n<\/head>`);
 }
 
 function syncStructuredData(html, route) {
@@ -469,12 +623,7 @@ function syncStructuredData(html, route) {
       return;
     }
     if (!item || typeof item !== "object") return;
-    if (item["@type"] === "WebPage") {
-      item.name = title;
-      item.description = description;
-      item.url = url;
-    }
-    if (item["@type"] === "CollectionPage") {
+    if (item["@type"] === "WebPage" || item["@type"] === "CollectionPage") {
       item.name = title;
       item.description = description;
       item.url = url;
@@ -545,24 +694,6 @@ function rewriteLinks(html) {
   return output;
 }
 
-function escapeHtmlText(value) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function stripInlineMarkup(value) {
-  return value
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&rsquo;|&#8217;|&#39;/gi, "'")
-    .replace(/&quot;|&ldquo;|&rdquo;|&#8220;|&#8221;/gi, '"')
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function fixCityCtaAndDeadLinks(html, cityRecord) {
   let output = html;
   if (cityRecord.slug !== "annapolis") {
@@ -595,14 +726,16 @@ function refreshStateSections() {
     const file = `state-${slug}.html`;
     let html = read(file);
     const heroExpression = new RegExp(
-      `(<h1>Boat Donation in ${stateName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} With Clear Local Guidance<\\/h1>\\s*<p class="sub">)[\\s\\S]*?(<\\/p>)`,
+      `(<h1>Boat Donation in ${stateName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")} With Clear Local Guidance<\/h1>\s*<p class="sub">)[\s\S]*?(<\/p>)`,
       "i",
     );
     if (heroExpression.test(html)) {
       html = html.replace(heroExpression, `$1${escapeHtmlText(content.intro)}$2`);
     }
     const preflight = content.preflight
-      ? `\n      <h3>${escapeHtmlText(content.preflightHeading)}</h3>\n      <p>${escapeHtmlText(content.preflight)}</p>`
+      ? `
+      <h3>${escapeHtmlText(content.preflightHeading)}</h3>
+      <p>${escapeHtmlText(content.preflight)}</p>`
       : "";
     const guide = `<section class="section state-guide" data-seo-module="state-local">
     <div class="wrap">
@@ -694,7 +827,8 @@ function addStateCityLinks(html, stateName) {
     .map((record) => `<article class="card"><h3><a href="/city/${record.slug}/">${record.city}</a></h3><p>${escapeHtmlText(record.description)}</p></article>`)
     .join("");
   const additionalCities = remainingRecords.length
-    ? `\n      <h3>More ${stateName} city guides</h3><div class="state-link-grid compact">${links}</div>`
+    ? `
+      <h3>More ${stateName} city guides</h3><div class="state-link-grid compact">${links}</div>`
     : "";
   const section = `  <section class="section alt in-state-cities" data-seo-module="state-cities">
     <div class="wrap">
@@ -765,8 +899,13 @@ function repairHtml(relative) {
   const cityRecord = cityRecords.find((record) => record.file === relative);
   if (cityRecord) {
     html = removeCityFaq(html);
+    html = addCitySchema(html, cityRecord, route);
     html = addCityStateLink(html, cityRecord.state);
     html = fixCityCtaAndDeadLinks(html, cityRecord);
+  }
+
+  if (relative.startsWith("guides/")) {
+    html = addGuideSchema(html, relative, route);
   }
 
   if (relative.startsWith("city/") || relative.startsWith("guides/") || relative === "boat-donation-by-city/index.html") {
@@ -778,7 +917,7 @@ function repairHtml(relative) {
     if (/<meta\s+name=["']robots["'][^>]*>/i.test(html)) {
       html = html.replace(/<meta\s+name=["']robots["'][^>]*>/i, robots);
     } else {
-      html = html.replace(/<\/head>/i, `${robots}\n</head>`);
+      html = html.replace(/</head>/i, `${robots}\n</head>`);
     }
   }
 
