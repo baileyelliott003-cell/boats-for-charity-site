@@ -3,7 +3,10 @@
   "@type": "NGO",
   "name": "Boats for Charity",
   "url": "https://boatsforcharity.org/",
-  "description": "Boats for Charity is a 501(c)(3) nonprofit that reviews boat donation requests individually and provides clear transfer and donation documentation when a donation is completed.",
+  "logo": "https://boatsforcharity.org/assets/logo.png",
+  "description": "Boats for Charity is an Oregon-based 501(c)(3) nonprofit (EIN 41-2487552) that reviews boat donation requests individually and provides clear transfer and donation documentation.",
+  "telephone": "+18555573703",
+  "email": "info@boatsforcharity.org",
   "areaServed": {
     "@type": "Country",
     "name": "United States"
