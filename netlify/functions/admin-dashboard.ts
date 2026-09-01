@@ -124,7 +124,8 @@ export default async (req: Request, context: Context) => {
     .btn-sm.action { background: #0b243b; color: #fff; border-color: #0b243b; }
     .source-tag { font-family: monospace; font-size: 0.82rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
     
-    .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+    .filter-group { display: flex; gap: 12px; flex-wrap: wrap; }
     .filter-bar input, .filter-bar select { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; }
     
     .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: grid; place-items: center; z-index: 100; padding: 20px; }
@@ -139,6 +140,7 @@ export default async (req: Request, context: Context) => {
   <header class="dash-header">
     <h1>🚤 Boats for Charity — Pipeline &amp; Attribution Hub</h1>
     <div style="display: flex; gap: 10px;">
+      <button class="btn-sm primary" onclick="syncNetlifyForms()">⚡ Sync Netlify Forms</button>
       <button class="btn-sm primary" onclick="exportConversionsSecure()">📥 Export Google Ads CSV</button>
       <a href="/admin/dashboard" class="btn-sm">🔄 Refresh</a>
       <button class="btn-sm" onclick="logout()">Sign Out</button>
@@ -188,16 +190,21 @@ export default async (req: Request, context: Context) => {
         <span>Verified Form Leads</span>
       </h2>
       <div class="filter-bar">
-        <input type="text" id="leadSearch" placeholder="Search name, email, phone, boat details..." onkeyup="filterLeads()" style="min-width:280px;">
-        <select id="stageFilter" onchange="filterLeads()">
-          <option value="">All Stages</option>
-          <option>New</option>
-          <option>Contacted</option>
-          <option>Qualified</option>
-          <option>Donation Accepted</option>
-          <option>Listed</option>
-          <option>Sold</option>
-        </select>
+        <div class="filter-group">
+          <input type="text" id="leadSearch" placeholder="Search name, email, phone, boat details..." onkeyup="filterLeads()" style="min-width:280px;">
+          <select id="stageFilter" onchange="filterLeads()">
+            <option value="">All Stages</option>
+            <option>New</option>
+            <option>Contacted</option>
+            <option>Qualified</option>
+            <option>Donation Accepted</option>
+            <option>Listed</option>
+            <option>Sold</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn-sm primary" onclick="syncNetlifyForms()">⚡ Sync Netlify Forms</button>
+        </div>
       </div>
       <div style="overflow-x: auto;">
         <table id="leadsTable">
@@ -550,6 +557,31 @@ export default async (req: Request, context: Context) => {
       });
       if (res.ok) { loadData(); }
       else { alert('Failed to update stage'); }
+    }
+
+    async function syncNetlifyForms() {
+      const btn = event.currentTarget;
+      const oldText = btn.textContent;
+      btn.textContent = '⏳ Syncing...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/admin-backfill', {
+          method: 'POST',
+          headers
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert('Sync Complete! Scanned: ' + data.scanned + ', Inserted: ' + data.inserted + ', Skipped: ' + data.skipped);
+          loadData();
+        } else {
+          alert(data.error || 'Sync failed or no API token configured.');
+        }
+      } catch (err) {
+        alert('Sync error: ' + err.message);
+      } finally {
+        btn.textContent = oldText;
+        btn.disabled = false;
+      }
     }
 
     // MODAL HANDLERS
