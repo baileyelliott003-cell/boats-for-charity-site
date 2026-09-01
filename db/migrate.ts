@@ -282,7 +282,35 @@ export async function runMigrations() {
     CREATE INDEX IF NOT EXISTS audit_history_created_at_idx ON audit_history(created_at);
   `);
 
-  // 11. Protect Legacy visits & donate_clicks with ip_hash column
+  // 11. Admin Sessions
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS admin_sessions (
+      token_hash text PRIMARY KEY,
+      csrf_hash text NOT NULL,
+      created_at timestamp with time zone DEFAULT now() NOT NULL,
+      expires_at timestamp with time zone NOT NULL,
+      last_used_at timestamp with time zone DEFAULT now() NOT NULL,
+      revoked_at timestamp with time zone
+    );
+    CREATE INDEX IF NOT EXISTS admin_sessions_expires_idx ON admin_sessions(expires_at);
+  `);
+
+  // 12. Persistent Rate Limits
+  await db.execute(sql`
+    CREATE TABLE IF NOT EXISTS persistent_rate_limits (
+      bucket_key text PRIMARY KEY,
+      action text NOT NULL,
+      identifier_hash text NOT NULL,
+      hit_count integer DEFAULT 1 NOT NULL,
+      first_hit_at timestamp with time zone DEFAULT now() NOT NULL,
+      last_hit_at timestamp with time zone DEFAULT now() NOT NULL,
+      blocked_until timestamp with time zone
+    );
+    CREATE INDEX IF NOT EXISTS persistent_rate_limits_action_idx ON persistent_rate_limits(action);
+    CREATE INDEX IF NOT EXISTS persistent_rate_limits_blocked_idx ON persistent_rate_limits(blocked_until);
+  `);
+
+  // 13. Protect Legacy visits & donate_clicks with ip_hash column
   await db.execute(sql`
     DO $$
     BEGIN
@@ -295,7 +323,7 @@ export async function runMigrations() {
     END $$;
   `);
 
-  // 12. Safe backfill for reliable post-Aug 17 Google Ads accepted donations if they exist in leads
+  // 14. Safe backfill for reliable post-Aug 17 Google Ads accepted donations if they exist in leads
   await db.execute(sql`
     DO $$
     BEGIN
