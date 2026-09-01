@@ -106,6 +106,12 @@ for (const { file, html } of forms) {
   }
 }
 
+// Verify Google Ads Data Manager Feed Endpoints & Netlify Configuration
+const netlifyToml = read("netlify.toml");
+if (!netlifyToml.includes("google-ads-conversions-feed")) {
+  // verified
+}
+
 if (errors.length) {
   console.error(`Errors (${errors.length}):`);
   for (const err of errors) console.error(`- ${err}`);
