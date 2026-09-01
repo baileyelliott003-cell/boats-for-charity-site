@@ -2,7 +2,35 @@
 import crypto from "node:crypto";
 
 /**
- * Helper to hash PII or IP addresses safely using SHA-256.
+ * Normalize and SHA-256 hash an email for Google Ads enhanced conversions.
+ */
+export function hashEmail(val: string | null | undefined): string {
+  if (!val) return "";
+  const clean = val.trim().toLowerCase();
+  if (!clean) return "";
+  if (/^[a-f0-9]{64}$/i.test(clean)) return clean;
+  return crypto.createHash("sha256").update(clean).digest("hex");
+}
+
+/**
+ * Normalize and SHA-256 hash a phone number in E.164 form.
+ */
+export function hashPhone(val: string | null | undefined): string {
+  if (!val) return "";
+  const clean = val.trim();
+  if (!clean) return "";
+  if (/^[a-f0-9]{64}$/i.test(clean)) return clean.toLowerCase();
+
+  const digits = clean.replace(/\D/g, "");
+  if (!digits) return "";
+
+  let normalized = `+${digits}`;
+  if (!clean.startsWith("+") && digits.length === 10) normalized = `+1${digits}`;
+  return crypto.createHash("sha256").update(normalized).digest("hex");
+}
+
+/**
+ * Generic SHA-256 helper for internal identifiers and abuse controls.
  */
 export function sha256(val: string | null | undefined): string {
   if (!val) return "";

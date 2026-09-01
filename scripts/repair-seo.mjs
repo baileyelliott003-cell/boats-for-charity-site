@@ -106,10 +106,20 @@ const preferredHtml = listFiles(ROOT, (file) => file.endsWith(".html"))
   .map((file) => toPosix(path.relative(ROOT, file)))
   .filter((relative) => preferredRoute(relative));
 
+let googleAdsUpdated = 0;
 let trackerInjected = 0;
 for (const relative of preferredHtml) {
   let html = read(relative);
   let modified = false;
+
+  if (!html.includes("gtag('config', 'AW-18239894267');") && html.includes("gtag('config', 'G-28FSWPQMQV');")) {
+    html = html.replace(
+      "gtag('config', 'G-28FSWPQMQV');",
+      "gtag('config', 'G-28FSWPQMQV');\n  gtag('config', 'AW-18239894267');"
+    );
+    modified = true;
+    googleAdsUpdated++;
+  }
 
   // 1. Inject tracker.v1.js
   if (!html.includes('src="/tracker.v1.js"')) {
@@ -137,4 +147,4 @@ for (const relative of preferredHtml) {
   }
 }
 
-console.log(`[repair-seo] Verified tracker, WhatConverts & SEO structure across ${preferredHtml.length} pages (${trackerInjected} updated).`);
+console.log(`[repair-seo] Verified Google tag, first-party tracking, and SEO structure across ${preferredHtml.length} pages (${googleAdsUpdated} Google Ads configs added, ${trackerInjected} total updated).`);

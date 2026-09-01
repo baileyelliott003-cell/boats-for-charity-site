@@ -14,7 +14,7 @@ import {
   events
 } from "../../db/schema.js";
 import { authorizeAdminRequest } from "../../lib/admin-auth.js";
-import { sha256 } from "../../lib/attribution.js";
+import { hashEmail, hashPhone, sha256 } from "../../lib/attribution.js";
 import { conversionId, selectLatestListingForFinalSale } from "../../lib/pipeline-rules.js";
 import { desc, eq, sql, and, gte, lte } from "drizzle-orm";
 
@@ -68,6 +68,48 @@ export default async (req: Request, context: Context) => {
             conversionRate: Number(totalLeadsRow?.count ? ((totalSalesRow?.count || 0) / totalLeadsRow.count * 100).toFixed(2) : 0)
           },
           sourceBreakdown: bySource
+        });
+      }
+
+      if (action === "google_ads_status") {
+        const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+        const allConversions = await db.select().from(conversionExports).orderBy(desc(conversionExports.conversionTime));
+        const countsByType: Record<string, number> = {};
+        let missingClickIdCount = 0;
+        let matchableHashedCount = 0;
+        let eligibleCount = 0;
+
+        for (const conversion of allConversions) {
+          countsByType[conversion.conversionType] = (countsByType[conversion.conversionType] || 0) + 1;
+          const hasClickId = Boolean(conversion.gclid || conversion.gbraid || conversion.wbraid);
+          const hasHashedData = Boolean(conversion.hashedEmail || conversion.hashedPhone);
+          if (!hasClickId) missingClickIdCount++;
+          if (hasHashedData) matchableHashedCount++;
+          if ((hasClickId || hasHashedData) && new Date(conversion.conversionTime) >= sixtyDaysAgo) eligibleCount++;
+        }
+
+        const lastQueued = allConversions[0] || null;
+        return Response.json({
+          feed: {
+            endpoint: "/api/google-ads-conversions-feed.csv",
+            authType: "HTTP Basic Authentication",
+            isConfigured: Boolean(process.env.GOOGLE_ADS_FEED_USERNAME && process.env.GOOGLE_ADS_FEED_PASSWORD),
+            totalQueuedConversions: allConversions.length,
+            eligibleConversionsCount: eligibleCount,
+            ineligibleOrExpiredCount: allConversions.length - eligibleCount,
+            countsByType,
+            missingGclidCount: missingClickIdCount,
+            matchableHashedCount,
+            lastQueuedConversion: lastQueued ? {
+              id: lastQueued.conversionId,
+              type: lastQueued.conversionType,
+              time: lastQueued.conversionTime,
+              value: lastQueued.conversionValue,
+              hasGclid: Boolean(lastQueued.gclid),
+              hasHashedEmail: Boolean(lastQueued.hashedEmail),
+              hasHashedPhone: Boolean(lastQueued.hashedPhone)
+            } : null
+          }
         });
       }
 
@@ -149,8 +191,8 @@ export default async (req: Request, context: Context) => {
             conversionTime: new Date(),
             conversionValue: "0.0",
             currency: "USD",
-            hashedEmail: sha256(existing.email),
-            hashedPhone: sha256(existing.phone),
+            hashedEmail: hashEmail(existing.email),
+            hashedPhone: hashPhone(existing.phone),
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -166,10 +208,10 @@ export default async (req: Request, context: Context) => {
             gbraid: existing.gbraid || "",
             wbraid: existing.wbraid || "",
             conversionTime: new Date(),
-            conversionValue: "1.0",
+            conversionValue: "0.0",
             currency: "USD",
-            hashedEmail: sha256(existing.email),
-            hashedPhone: sha256(existing.phone),
+            hashedEmail: hashEmail(existing.email),
+            hashedPhone: hashPhone(existing.phone),
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -202,7 +244,7 @@ export default async (req: Request, context: Context) => {
           updatedAt: sql`now()`
         }).where(eq(calls.id, Number(call_id))).returning();
 
-        if (stage === "Qualified" && existingCall.gclid) {
+        if (stage === "Qualified") {
           const convId = `conv_qual_call_${call_id}`;
           await db.insert(conversionExports).values({
             conversionId: convId,
@@ -213,7 +255,22 @@ export default async (req: Request, context: Context) => {
             conversionTime: new Date(),
             conversionValue: "0.0",
             currency: "USD",
-            hashedPhone: sha256(existingCall.callerNumber),
+            hashedPhone: hashPhone(existingCall.callerNumber),
+            exportStatus: "Pending"
+          }).onConflictDoNothing();
+        }
+
+        if (stage === "Donation Accepted") {
+          await db.insert(conversionExports).values({
+            conversionId: `conv_accept_call_${call_id}`,
+            conversionType: "Donation_Accepted",
+            callId: Number(call_id),
+            leadId: lead_id ? Number(lead_id) : null,
+            gclid: existingCall.gclid || "",
+            conversionTime: new Date(),
+            conversionValue: "0.0",
+            currency: "USD",
+            hashedPhone: hashPhone(existingCall.callerNumber),
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -351,10 +408,10 @@ export default async (req: Request, context: Context) => {
             gbraid: leadObj?.gbraid || "",
             wbraid: leadObj?.wbraid || "",
             conversionTime: new Date(),
-            conversionValue: "1.0",
+            conversionValue: "0.0",
             currency: "USD",
-            hashedEmail: leadObj?.email ? sha256(leadObj.email) : "",
-            hashedPhone: leadObj?.phone ? sha256(leadObj.phone) : "",
+            hashedEmail: leadObj?.email ? hashEmail(leadObj.email) : "",
+            hashedPhone: leadObj?.phone ? hashPhone(leadObj.phone) : "",
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -469,7 +526,7 @@ export default async (req: Request, context: Context) => {
           await db.update(leads).set({ stage: "Sold", updatedAt: sql`now()` }).where(eq(leads.id, boatRecord.leadId));
         }
 
-        // Auto-queue Value-based Boat_Sold conversion for Google Ads
+        // Auto-queue Value-based Boat_Sold conversion for Google Ads Data Manager
         const convId = conversionId("boat-sold", boat_id);
         await db.insert(conversionExports).values({
           conversionId: convId,
@@ -483,8 +540,8 @@ export default async (req: Request, context: Context) => {
           conversionTime: newSale.saleDate,
           conversionValue: String(sale_amount),
           currency: "USD",
-          hashedEmail: leadRecord?.email ? sha256(leadRecord.email) : "",
-          hashedPhone: leadRecord?.phone ? sha256(leadRecord.phone) : "",
+          hashedEmail: leadRecord?.email ? hashEmail(leadRecord.email) : "",
+          hashedPhone: leadRecord?.phone ? hashPhone(leadRecord.phone) : "",
           exportStatus: "Pending"
         }).onConflictDoNothing();
 

@@ -60,6 +60,16 @@ for (const file of preferredFiles) {
   }
   
   if (file !== "thanks.html") {
+    const googleTagLoaders = (html.match(/googletagmanager\.com\/gtag\/js/g) || []).length;
+    if (googleTagLoaders !== 1) {
+      addError(`${file}: expected exactly 1 Google tag loader, found ${googleTagLoaders}`);
+    }
+    if (!html.includes("gtag('config', 'G-28FSWPQMQV');")) {
+      addError(`${file}: missing GA4 destination G-28FSWPQMQV`);
+    }
+    if (!html.includes("gtag('config', 'AW-18239894267');")) {
+      addError(`${file}: missing Google Ads destination AW-18239894267`);
+    }
     if (!html.includes('src="/tracker.v1.js"')) {
       addError(`${file}: missing tracker.v1.js`);
     }
@@ -95,4 +105,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`PASS: All ${preferredFiles.length} pages verified for first-party tracking and SEO integrity.`);
+console.log(`PASS: All ${preferredFiles.length} pages verified for one Google Tag loader, GA4, Google Ads, first-party tracking, and SEO integrity.`);

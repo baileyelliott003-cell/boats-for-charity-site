@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-console.log("[batch-inject] Installing first-party tracking across public HTML files...");
+console.log("[batch-inject] Installing first-party tracking and Google Ads configuration across public HTML files...");
 
 function listHtml(dir) {
   const files = [];
@@ -19,7 +19,9 @@ function listHtml(dir) {
 
 const htmlFiles = listHtml(ROOT);
 let trackerUpdated = 0;
+let googleAdsUpdated = 0;
 let placeholdersRemoved = 0;
+let filesUpdated = 0;
 
 for (const file of htmlFiles) {
   let content = fs.readFileSync(file, "utf-8");
@@ -39,7 +41,10 @@ for (const file of htmlFiles) {
       content = withoutTracker;
       changed = true;
     }
-    if (changed) fs.writeFileSync(file, content, "utf-8");
+    if (changed) {
+      fs.writeFileSync(file, content, "utf-8");
+      filesUpdated++;
+    }
     continue;
   }
 
@@ -59,9 +64,19 @@ for (const file of htmlFiles) {
     }
   }
 
+  if (!content.includes("gtag('config', 'AW-18239894267');") && content.includes("gtag('config', 'G-28FSWPQMQV');")) {
+    content = content.replace(
+      "gtag('config', 'G-28FSWPQMQV');",
+      "gtag('config', 'G-28FSWPQMQV');\n  gtag('config', 'AW-18239894267');"
+    );
+    changed = true;
+    googleAdsUpdated++;
+  }
+
   if (changed) {
     fs.writeFileSync(file, content, "utf-8");
+    filesUpdated++;
   }
 }
 
-console.log(`[batch-inject] Completed: tracker added to ${trackerUpdated} files; ${placeholdersRemoved} generic WhatConverts placeholders removed.`);
+console.log(`[batch-inject] Completed: ${trackerUpdated} trackers added, ${googleAdsUpdated} Google Ads configs added, ${placeholdersRemoved} generic WhatConverts placeholders removed, ${filesUpdated} files updated.`);
