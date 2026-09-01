@@ -1,10 +1,9 @@
-// Netlify Function: record a click on a "Donate" call-to-action button.
-// Called from the browser via navigator.sendBeacon / fetch when a donate
-// button is clicked. Returns 204 and never blocks the user's navigation.
+// netlify/functions/track-donate.ts
 import type { Config, Context } from "@netlify/functions";
 import { db } from "../../db/index.js";
 import { donateClicks } from "../../db/schema.js";
 import { looksLikeBot } from "../../lib/bot.js";
+import { sha256 } from "../../lib/attribution.js";
 
 export default async (req: Request, context: Context) => {
   if (req.method !== "POST") {
@@ -25,27 +24,23 @@ export default async (req: Request, context: Context) => {
       }
     }
   } catch {
-    // Ignore malformed bodies — still record the click as "unknown".
+    // Ignore malformed bodies
   }
 
-  // The visitor's IP is taken from Netlify's server-side signals, never from
-  // anything the browser can set in the request body, so it can't be spoofed
-  // by the page. `context.ip` is the connecting client; the header is a
-  // fallback for older runtimes.
-  const ip = (
+  const rawIp = (
     context.ip ||
     req.headers.get("x-nf-client-connection-ip") ||
     (req.headers.get("x-forwarded-for") || "").split(",")[0] ||
     ""
-  )
-    .trim()
-    .slice(0, 64);
+  ).trim();
 
+  // Hash raw IP address to protect privacy
+  const ipHash = sha256(rawIp);
   const userAgent = (req.headers.get("user-agent") || "").slice(0, 500);
   const isBot = looksLikeBot(userAgent);
 
   try {
-    await db.insert(donateClicks).values({ source, path, ip, userAgent, isBot });
+    await db.insert(donateClicks).values({ source, path, ipHash, userAgent, isBot });
   } catch (err) {
     console.error("track-donate: insert failed", err);
     return new Response("error", { status: 500 });
