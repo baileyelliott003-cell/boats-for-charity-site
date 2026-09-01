@@ -4,13 +4,13 @@
  * Features:
  * 1. Persistent Anonymous Visitor ID (bfc_vid in localStorage + Cookie)
  * 2. 30-Minute Inactivity Session ID (bfc_sid in sessionStorage / Cookie)
- * 3. First-Touch & Last-Non-Direct Marketing Attribution
+ * 3. Multi-Touch Model: First-Touch (preserves original landing/source) & Last-Non-Direct Attribution
  * 4. Captures UTMs, GCLID, GBRAID, WBRAID, MSCLKID, Referrer, Landing Page
  * 5. Safely extracts GA4 client_id if present
- * 6. Automatically populates all Netlify intake forms with hidden fields
+ * 6. Automatically populates all Netlify intake forms with hidden fields (donationForm, boatValuation, boatValuationIntent, etc.)
  * 7. Tracks: page_view, donation_form_view, form_start, form_submit_attempt, phone_click
- * 8. Zero PII transmission to GA4 or Microsoft Clarity
- * 9. Safe WhatConverts DNI integration hook (falls back to Quo 855-557-3703)
+ * 8. Zero PII transmission to GA4 or Microsoft Clarity (Anonymous Identify only)
+ * 9. Safe WhatConverts DNI integration hook with Quo 855-557-3703 fallback
  */
 
 (function () {
@@ -45,7 +45,7 @@
     document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/; SameSite=Lax';
   }
 
-  // 1. Get or Create Visitor ID (Persistent)
+  // 1. Get or Create Visitor ID (Persistent across all sessions/pages)
   function getVisitorId() {
     var vid = null;
     try {
@@ -144,7 +144,7 @@
     (currentTouch.referring_domain && currentTouch.referring_domain !== window.location.hostname.replace(/^www\./, ''))
   );
 
-  // First touch
+  // First touch: PRESERVES THE TRUE INITIAL LANDING PAGE & SOURCE
   var firstTouch = null;
   try {
     var ftRaw = localStorage.getItem(FIRST_TOUCH_KEY);
@@ -173,7 +173,25 @@
   var visitorId = getVisitorId();
   var sessionId = getSessionId();
 
-  // 4. Send Server-Side Event (navigator.sendBeacon with fetch fallback)
+  // 4. Anonymous Clarity Identify & Privacy-Safe GA4 Integration
+  try {
+    if (typeof window.clarity === 'function') {
+      // Anonymous session identification — STRICTLY NO PII
+      window.clarity('identify', visitorId, sessionId, currentTouch.landing_page, firstTouch.utm_source || 'direct');
+    }
+  } catch (e) {}
+
+  try {
+    if (typeof window.gtag === 'function') {
+      // Set first-party non-PII dimension
+      window.gtag('set', 'user_properties', {
+        visitor_id: visitorId,
+        first_touch_source: firstTouch.utm_source || 'direct'
+      });
+    }
+  } catch (e) {}
+
+  // 5. Send Server-Side Event (navigator.sendBeacon with fetch fallback)
   function sendEvent(eventName, metadata) {
     var payload = {
       visitor_id: visitorId,
@@ -199,7 +217,7 @@
     }
   }
 
-  // 5. Populate Form Hidden Fields Dynamically
+  // 6. Populate Form Hidden Fields Dynamically across all forms
   function injectHiddenFields(form) {
     if (!form || form.dataset.attributionAttached) return;
     form.dataset.attributionAttached = 'true';
@@ -238,23 +256,24 @@
     });
   }
 
-  // 6. Bind DOM Events
-  document.addEventListener('DOMContentLoaded', function () {
+  // 7. Bind DOM Events
+  function initTracker() {
     // Record page view event
     sendEvent('page_view', { title: document.title });
 
-    // Populate existing forms
-    var forms = document.querySelectorAll('form[name="donationForm"], form#donationForm, form[name="boatValuation"], form#valForm');
+    // Populate all existing intake and intent forms
+    var forms = document.querySelectorAll('form[name="donationForm"], form#donationForm, form[name="boatValuation"], form#valForm, form[name="boatValuationIntent"], form#intentForm, form[data-netlify="true"]');
     forms.forEach(function (form) {
       injectHiddenFields(form);
-      sendEvent('donation_form_view', { form_name: form.getAttribute('name') || form.id });
+      var formName = form.getAttribute('name') || form.id || 'form';
+      sendEvent('donation_form_view', { form_name: formName });
 
       // Track form start
       var hasStarted = false;
       form.addEventListener('input', function () {
         if (!hasStarted) {
           hasStarted = true;
-          sendEvent('form_start', { form_name: form.getAttribute('name') || form.id });
+          sendEvent('form_start', { form_name: formName });
         }
       });
 
@@ -263,7 +282,7 @@
         // Refresh ga_client_id just before sending
         var gaInput = form.querySelector('input[name="ga_client_id"]');
         if (gaInput) gaInput.value = getGaClientId();
-        sendEvent('form_submit_attempt', { form_name: form.getAttribute('name') || form.id });
+        sendEvent('form_submit_attempt', { form_name: formName });
       });
     });
 
@@ -278,18 +297,28 @@
       });
     });
 
-    // 7. Dynamic Number Insertion Hook (WhatConverts safe integration)
+    // 8. Dynamic Number Insertion Hook (WhatConverts safe integration)
     // Keeps 855-557-3703 as fallback. If WhatConverts is loaded, swaps dynamically.
     if (window._whatconverts && typeof window._whatconverts.push === 'function') {
       window._whatconverts.push(['set_custom_field', 'visitor_id', visitorId]);
       window._whatconverts.push(['set_custom_field', 'session_id', sessionId]);
+      window._whatconverts.push(['set_custom_field', 'first_touch_source', firstTouch.utm_source || 'direct']);
+      window._whatconverts.push(['set_custom_field', 'first_touch_landing_page', firstTouch.landing_page || '/']);
     }
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTracker);
+  } else {
+    initTracker();
+  }
 
   // Expose safe global helper
   window.BFC_TRACKER = {
     getVisitorId: function () { return visitorId; },
     getSessionId: function () { return sessionId; },
+    getFirstTouch: function () { return firstTouch; },
+    getLastTouch: function () { return lastTouch; },
     sendEvent: sendEvent,
     injectHiddenFields: injectHiddenFields
   };

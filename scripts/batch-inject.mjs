@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const WHATCONVERTS_SNIPPET = `<script src="//tracking.whatconverts.com/scripts/wc.js" async></script>`;
+console.log("[batch-inject] Running comprehensive Sitewide Injection for tracker.v1.js & WhatConverts across all HTML files...");
 
 function listHtml(dir) {
   const files = [];
@@ -18,6 +18,8 @@ function listHtml(dir) {
 }
 
 const htmlFiles = listHtml(ROOT);
+const WHATCONVERTS_TAG = `  <script src="//tracking.whatconverts.com/scripts/wc.js" async></script>`;
+
 let trackerUpdated = 0;
 let wcUpdated = 0;
 
@@ -25,7 +27,7 @@ for (const file of htmlFiles) {
   let content = fs.readFileSync(file, "utf-8");
   let changed = false;
 
-  // 1. Ensure tracker.v1.js is included
+  // 1. Inject tracker.v1.js
   if (!content.includes('src="/tracker.v1.js"')) {
     if (content.includes('src="/script.v123.js"')) {
       content = content.replace(
@@ -41,10 +43,10 @@ for (const file of htmlFiles) {
     }
   }
 
-  // 2. Ensure official WhatConverts script tag is installed in <head>
+  // 2. Inject WhatConverts official script in <head>
   if (!content.includes('tracking.whatconverts.com/scripts/wc.js')) {
     if (content.includes('</head>')) {
-      content = content.replace('</head>', `  ${WHATCONVERTS_SNIPPET}\n</head>`);
+      content = content.replace('</head>', `${WHATCONVERTS_TAG}\n</head>`);
       changed = true;
       wcUpdated++;
     }
@@ -55,4 +57,4 @@ for (const file of htmlFiles) {
   }
 }
 
-console.log(`[inject-tracker] Processed ${htmlFiles.length} HTML files: tracker updated in ${trackerUpdated}, WhatConverts script injected in ${wcUpdated}.`);
+console.log(`[batch-inject] Completed: Injected tracker into ${trackerUpdated} files, WhatConverts into ${wcUpdated} files across ${htmlFiles.length} total HTML pages.`);

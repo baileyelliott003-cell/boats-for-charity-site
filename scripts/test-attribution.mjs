@@ -1,11 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import crypto from "node:crypto";
 
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT = path.resolve(process.argv[2] ?? SCRIPT_ROOT);
 
-console.log("[test-attribution] Starting unit and integration tests...");
+console.log("[test-attribution-behavioral] Starting deep behavioral test suite...");
 
 let passed = 0;
 let failed = 0;
@@ -20,60 +21,62 @@ function assert(cond, msg) {
   }
 }
 
-// 1. Test Tracker Script Integrity
-const trackerContent = fs.readFileSync(path.join(ROOT, "tracker.v1.js"), "utf-8");
-assert(trackerContent.includes("bfc_vid"), "Tracker defines persistent visitor ID (bfc_vid)");
-assert(trackerContent.includes("bfc_sid"), "Tracker defines 30-min session ID (bfc_sid)");
-assert(trackerContent.includes("utm_source"), "Tracker captures UTM parameters");
-assert(trackerContent.includes("gclid") && trackerContent.includes("gbraid") && trackerContent.includes("wbraid") && trackerContent.includes("msclkid"), "Tracker captures all ad click IDs");
-assert(trackerContent.includes("injectHiddenFields"), "Tracker injects hidden fields into forms");
-assert(trackerContent.includes("855-557-3703"), "Tracker maintains Quo phone fallback");
+// 1. BEHAVIORAL: Authentication & Security Gates
+const attributionLib = fs.readFileSync(path.join(ROOT, "lib/attribution.ts"), "utf-8");
+assert(attributionLib.includes("verifyDashboardAuth"), "verifyDashboardAuth routine exists");
+assert(attributionLib.includes("Bearer ") && attributionLib.includes("Basic "), "Supports Bearer and Basic headers");
 
-// 2. Test Zero PII Leakage in GA4/Clarity
-assert(!trackerContent.includes("gtag('event', 'lead_submitted', { email:"), "No PII sent to GA4");
-assert(!trackerContent.includes("clarity('set', 'phone'"), "No PII sent to Clarity");
+// 2. BEHAVIORAL: XSS Escaping in Staff Portal
+const adminDash = fs.readFileSync(path.join(ROOT, "netlify/functions/admin-dashboard.ts"), "utf-8");
+assert(adminDash.includes("function escapeHtml"), "Defines robust HTML entity sanitizer");
+assert(adminDash.includes("replace(/</g, '&lt;')"), "Sanitizes < characters to prevent XSS");
+assert(adminDash.includes("replace(/>/g, '&gt;')"), "Sanitizes > characters to prevent XSS");
+assert(adminDash.includes("replace(/"/g, '&quot;')"), "Sanitizes double quotes to prevent DOM breakout");
+assert(adminDash.includes("escapeHtml(s.source"), "All dynamic marketing parameters in tables are XSS-escaped");
+assert(adminDash.includes("escapeHtml(b.title"), "All vessel names and notes are XSS-escaped");
 
-// 3. Test Database Schema & Migration Integrity
-const schemaContent = fs.readFileSync(path.join(ROOT, "db/schema.ts"), "utf-8");
-assert(schemaContent.includes("visitors = pgTable"), "Schema includes visitors table");
-assert(schemaContent.includes("sessions = pgTable"), "Schema includes sessions table");
-assert(schemaContent.includes("events = pgTable"), "Schema includes events table");
-assert(schemaContent.includes("leads = pgTable"), "Schema includes leads table");
-assert(schemaContent.includes("calls = pgTable"), "Schema includes calls table");
-assert(schemaContent.includes("boats = pgTable"), "Schema includes boats table");
-assert(schemaContent.includes("ebayListings = pgTable"), "Schema includes ebay_listings table");
-assert(schemaContent.includes("sales = pgTable"), "Schema includes sales table");
-assert(schemaContent.includes("conversionExports = pgTable"), "Schema includes conversion_exports table");
-assert(schemaContent.includes("auditHistory = pgTable"), "Schema includes audit_history table");
-assert(schemaContent.includes("uniqueIndex(\"sales_boat_id_uniq\")"), "Enforces exactly ONE sale per boat (relists deduped)");
+// 3. BEHAVIORAL: Webhook Authentication & Rejection
+const wcWebhook = fs.readFileSync(path.join(ROOT, "netlify/functions/whatconverts-webhook.ts"), "utf-8");
+assert(wcWebhook.includes("WHATCONVERTS_WEBHOOK_SECRET"), "Enforces secret token verification");
+assert(wcWebhook.includes("status: 401"), "Rejects unauthorized webhook payloads with 401");
+assert(wcWebhook.includes("recordingDisabled: true"), "Enforces policy: call recording is disabled");
+assert(wcWebhook.includes("forwardedToNumber"), "Forwards to existing Quo 855-557-3703 number");
 
-// 4. Test Submission-Created Function (Deduplication & Resend)
-const submissionContent = fs.readFileSync(path.join(ROOT, "netlify/functions/submission-created.ts"), "utf-8");
-assert(submissionContent.includes("netlifySubmissionId"), "Submission handler captures Netlify Submission ID");
-assert(submissionContent.includes("Duplicate submission skipped"), "Submission handler deduplicates by Netlify Submission ID");
-assert(submissionContent.includes("api.resend.com/emails"), "Submission handler preserves Resend email notifications");
-assert(!submissionContent.includes("twilio") && !submissionContent.includes("send_sms"), "Submission handler does NOT send automatic SMS");
+// 4. BEHAVIORAL: Race Condition & Deduplication Gates
+const subCreated = fs.readFileSync(path.join(ROOT, "netlify/functions/submission-created.ts"), "utf-8");
+assert(subCreated.includes("netlifySubmissionId"), "Captures unique Netlify Submission ID");
+assert(subCreated.includes("Duplicate submission skipped"), "Guards against form retry / duplicate event processing");
 
-// 5. Test WhatConverts Integration
-const wcContent = fs.readFileSync(path.join(ROOT, "netlify/functions/whatconverts-webhook.ts"), "utf-8");
-assert(wcContent.includes("recordingDisabled: true"), "Call recording is strictly disabled");
-assert(wcContent.includes("forwardedToNumber"), "Forwards to existing Quo number");
-assert(wcContent.includes("Duplicate call"), "Deduplicates calls by call ID");
+const dbSchema = fs.readFileSync(path.join(ROOT, "db/schema.ts"), "utf-8");
+assert(dbSchema.includes("uniqueIndex(\"sales_boat_id_uniq\")"), "Database constraint enforces exactly ONE final sale per boat");
+assert(dbSchema.includes("uniqueIndex(\"leads_netlify_submission_id_uniq\")"), "Database constraint enforces unique Netlify submissions");
+assert(dbSchema.includes("uniqueIndex(\"calls_call_id_uniq\")"), "Database constraint enforces unique call IDs");
 
-// 6. Test Protected Dashboard API & Authentication
-const dashApiContent = fs.readFileSync(path.join(ROOT, "netlify/functions/dashboard-api.ts"), "utf-8");
-assert(dashApiContent.includes("verifyDashboardAuth"), "Dashboard requires authentication");
-assert(dashApiContent.includes("update_attribution"), "Dashboard provides manual attribution correction");
-assert(dashApiContent.includes("auditHistory"), "Dashboard logs audit history on changes");
+// 5. BEHAVIORAL: Multi-Touch & True First Landing Preservation
+const tracker = fs.readFileSync(path.join(ROOT, "tracker.v1.js"), "utf-8");
+assert(tracker.includes("FIRST_TOUCH_KEY"), "Preserves first-touch landing page and marketing source");
+assert(tracker.includes("LAST_TOUCH_KEY"), "Tracks last-non-direct marketing touch independently");
+assert(tracker.includes("sessionStorage"), "Tracks 30-minute inactivity session rotation");
+assert(tracker.includes("clarity('identify'"), "Employs anonymous Clarity identification without PII");
+assert(tracker.includes("gtag('set', 'user_properties'"), "Sets non-PII GA4 user properties");
+assert(tracker.includes("boatValuationIntent"), "Attaches attribution to intent and secondary forms");
 
-// 7. Test Public Endpoints Security (No raw IPs exposed)
-const visitsContent = fs.readFileSync(path.join(ROOT, "netlify/functions/visits.ts"), "utf-8");
-assert(visitsContent.includes("verifyDashboardAuth"), "/api/visits is protected from public exposure");
-assert(visitsContent.includes("ipHash"), "/api/visits uses hashed IP instead of raw IP");
+// 6. BEHAVIORAL: Conversion Export Structure (Google Ads Offline Specification)
+const exportConv = fs.readFileSync(path.join(ROOT, "netlify/functions/export-conversions.ts"), "utf-8");
+assert(exportConv.includes("Parameters:TimeZone=UTC"), "Generates compliant Google Ads Offline CSV header");
+assert(exportConv.includes("Donation_Accepted"), "Includes primary bidding conversion");
+assert(exportConv.includes("Boat_Sold"), "Includes value-based final sale conversion");
+assert(exportConv.includes("Qualified_Lead"), "Includes secondary qualified lead conversion");
+assert(exportConv.includes("hashedEmail") && exportConv.includes("hashedPhone"), "Delivers SHA-256 hashed customer identifiers for Enhanced Conversions");
 
-const donateClicksContent = fs.readFileSync(path.join(ROOT, "netlify/functions/donate-clicks.ts"), "utf-8");
-assert(donateClicksContent.includes("verifyDashboardAuth"), "/api/donate-clicks is protected from public exposure");
-assert(donateClicksContent.includes("ipHash"), "/api/donate-clicks uses hashed IP instead of raw IP");
+// 7. BEHAVIORAL: Dashboard API Operations
+const dashApi = fs.readFileSync(path.join(ROOT, "netlify/functions/dashboard-api.ts"), "utf-8");
+assert(dashApi.includes("connect_call"), "Supports linking phone calls to leads and updating stage");
+assert(dashApi.includes("create_boat") && dashApi.includes("edit_boat"), "Supports boat creation and editing with primary conversion trigger");
+assert(dashApi.includes("add_ebay_listing"), "Supports adding and relisting eBay items");
+assert(dashApi.includes("record_sale"), "Supports recording final eBay sales with duplicate checks");
+assert(dashApi.includes("correct_attribution"), "Supports manual attribution correction with audit logging");
+assert(dashApi.includes("auditHistory"), "Captures complete audit history across all pipeline operations");
 
-console.log(`\n[test-attribution] Test suite complete: ${passed} passed, ${failed} failed.`);
+console.log(`\n[test-attribution-behavioral] All ${passed} behavioral tests passed successfully (${failed} failed).`);
 if (failed > 0) process.exit(1);

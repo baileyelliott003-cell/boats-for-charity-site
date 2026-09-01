@@ -4,9 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT = path.resolve(process.argv[2] ?? SCRIPT_ROOT);
-const ORIGIN = "https://boatsforcharity.org";
 const errors = [];
-const warnings = [];
 
 const ROOT_ROUTES = new Map([
   ["donate-a-boat.html", "/donate-a-boat"],
@@ -68,6 +66,9 @@ for (const file of preferredFiles) {
     if (!html.includes('src="/script.v123.js"')) {
       addError(`${file}: missing script.v123.js`);
     }
+    if (!html.includes('tracking.whatconverts.com/scripts/wc.js')) {
+      addError(`${file}: missing WhatConverts tracking script`);
+    }
   }
 
   for (const match of html.matchAll(/<form\b[\s\S]*?<\/form>/gi)) {
@@ -97,4 +98,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`PASS: All ${preferredFiles.length} pages verified for SEO and attribution tracker integrity.`);
+console.log(`PASS: All ${preferredFiles.length} pages verified for tracker, WhatConverts, and SEO integrity.`);
