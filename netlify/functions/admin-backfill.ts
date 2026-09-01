@@ -36,19 +36,35 @@ export default async (req: Request, context: Context) => {
     }
   }
 
-  const netlifyToken = getRuntimeEnv("NETLIFY_AUTH_TOKEN") || getRuntimeEnv("NETLIFY_API_TOKEN") || getRuntimeEnv("NETLIFY_TOKEN");
-  const siteId = getRuntimeEnv("NETLIFY_SITE_ID") || getRuntimeEnv("SITE_ID");
+  const netlifyToken = getRuntimeEnv("NETLIFY_FORMS_BACKFILL_TOKEN")
+    || getRuntimeEnv("NETLIFY_API_TOKEN")
+    || getRuntimeEnv("NETLIFY_AUTH_TOKEN")
+    || getRuntimeEnv("NETLIFY_TOKEN");
+  const siteId = context.site?.id || getRuntimeEnv("NETLIFY_SITE_ID") || getRuntimeEnv("SITE_ID");
 
-  if (!netlifyToken || !siteId) {
-    return new Response(JSON.stringify({ 
-      error: "Netlify API token or Site ID environment variable is not configured for automatic backfill.",
+  if (!netlifyToken) {
+    return new Response(JSON.stringify({
+      error: "Automatic backfill needs a Netlify personal access token. Configure NETLIFY_FORMS_BACKFILL_TOKEN as a secret environment variable for Functions, then redeploy.",
       scanned: 0,
       inserted: 0,
       skipped: 0,
       failed: 0
     }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
+      status: 503,
+      headers: { "Content-Type": "application/json", "cache-control": "no-store" }
+    });
+  }
+
+  if (!siteId) {
+    return new Response(JSON.stringify({
+      error: "Automatic backfill could not determine the current Netlify Site ID.",
+      scanned: 0,
+      inserted: 0,
+      skipped: 0,
+      failed: 0
+    }), {
+      status: 503,
+      headers: { "Content-Type": "application/json", "cache-control": "no-store" }
     });
   }
 

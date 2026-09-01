@@ -581,7 +581,7 @@ export default async (req: Request, context: Context) => {
           alert('Sync Complete! Scanned: ' + data.scanned + ', Inserted: ' + data.inserted + ', Skipped: ' + data.skipped);
           loadData();
         } else {
-          alert(data.error || 'Sync failed or no API token configured.');
+          alert(data.error || 'Sync failed.');
         }
       } catch (err) {
         alert('Sync error: ' + err.message);
