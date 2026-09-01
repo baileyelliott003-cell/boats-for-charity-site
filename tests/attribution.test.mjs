@@ -117,6 +117,16 @@ test('dashboard HTML contains Sync Netlify Forms button and never embeds secrets
   assert.match(html, /\/api\/admin-login/);
 });
 
+test('legacy admin entry points route to the current staff portal', () => {
+  const adminHtml = fs.readFileSync(path.join(ROOT, 'admin/index.html'), 'utf-8');
+  const redirects = fs.readFileSync(path.join(ROOT, '_redirects'), 'utf-8');
+  assert.match(adminHtml, /\/admin\/dashboard/);
+  assert.doesNotMatch(adminHtml, /netlify-cms|netlify-identity-widget/i);
+  assert.match(redirects, /^\/admin\s+\/admin\/dashboard\s+302!/m);
+  assert.match(redirects, /^\/admin\/\s+\/admin\/dashboard\s+302!/m);
+  assert.match(redirects, /^\/admin\/index\.html\s+\/admin\/dashboard\s+302!/m);
+});
+
 test('Netlify submission normalization handles event payloads robustly', async () => {
   const { normalizeNetlifySubmission } = await importBundled('lib/netlify-submission.ts');
   const rawBody = JSON.stringify({
