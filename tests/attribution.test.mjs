@@ -3,7 +3,7 @@ import { after, before, test } from 'node:test';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { pathToUrl } from 'node:url';
+import { pathToFileURL } from 'node:url';
 import { build } from 'esbuild';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -35,10 +35,6 @@ async function importBundled(relativePath) {
     bundles.set(relativePath, import(`${pathToFileURL(outfile).href}?v=${Date.now()}`));
   }
   return bundles.get(relativePath);
-}
-
-function pathToFileURL(filepath) {
-  return new URL(`file://${path.resolve(filepath)}`);
 }
 
 after(() => fs.rmSync(OUT, { recursive: true, force: true }));
