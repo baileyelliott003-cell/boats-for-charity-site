@@ -3,11 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "inject:tracker": "node scripts/inject-tracker.mjs",
+    "test:attribution": "node scripts/test-attribution.mjs",
     "seo:repair": "node scripts/repair-seo.mjs",
     "seo:refine-copy": "node scripts/refine-editorial-copy.mjs",
     "seo:audit": "node scripts/seo-audit.mjs",
     "seo:audit-content": "node scripts/content-quality-audit.mjs",
-    "test": "npm run seo:audit && npm run seo:audit-content"
+    "test": "npm run inject:tracker && npm run test:attribution && npm run seo:audit && npm run seo:audit-content"
   },
   "dependencies": {
     "@netlify/database": "latest",
