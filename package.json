@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "inject:tracker": "node scripts/inject-tracker.mjs",
+    "inject:tracker": "node scripts/batch-inject.mjs",
     "test:attribution": "node scripts/test-attribution.mjs",
     "seo:repair": "node scripts/repair-seo.mjs",
     "seo:refine-copy": "node scripts/refine-editorial-copy.mjs",
