@@ -295,5 +295,49 @@ export async function runMigrations() {
     END $$;
   `);
 
+  // 12. Safe backfill for reliable post-Aug 17 Google Ads accepted donations if they exist in leads
+  await db.execute(sql`
+    DO $$
+    BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'leads') THEN
+        INSERT INTO conversion_exports (
+          conversion_id,
+          conversion_type,
+          lead_id,
+          boat_id,
+          gclid,
+          gbraid,
+          wbraid,
+          conversion_time,
+          conversion_value,
+          currency,
+          hashed_email,
+          hashed_phone,
+          export_status
+        )
+        SELECT
+          'conv_accept_lead_' || l.id,
+          'Donation_Accepted',
+          l.id,
+          l.boat_id,
+          coalesce(l.gclid, ''),
+          coalesce(l.gbraid, ''),
+          coalesce(l.wbraid, ''),
+          l.created_at,
+          '0.0',
+          'USD',
+          case when l.email <> '' then encode(digest(lower(trim(l.email)), 'sha256'), 'hex') else '' end,
+          case when l.phone <> '' then encode(digest(regexp_replace(l.phone, '\D', '', 'g'), 'sha256'), 'hex') else '' end,
+          'Pending'
+        FROM leads l
+        WHERE l.stage IN ('Donation Accepted', 'Listed', 'Sold')
+          AND l.created_at >= '2026-08-17T00:00:00Z'
+          AND (l.gclid <> '' OR l.email <> '' OR l.phone <> '')
+          AND (l.last_touch_source ILIKE '%google%' OR l.first_touch_source ILIKE '%google%' OR l.gclid <> '')
+        ON CONFLICT (conversion_id) DO NOTHING;
+      END IF;
+    END $$;
+  `);
+
   console.log("[db:migrate] All migrations applied successfully.");
 }
