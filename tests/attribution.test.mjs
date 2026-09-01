@@ -89,6 +89,34 @@ test('admin login succeeds with secure cookie flags and server-side token hashin
   assert.equal([...store.sessions.values()][0].tokenHash.includes('raw-session-token'), false);
 });
 
+test('admin login uses DASHBOARD_SECRET as the deployed password source', async () => {
+  const { createAdminLoginHandler } = await importBundled('lib/admin-auth.ts');
+  const store = new FakeAdminStore();
+  const originalDashboardSecret = process.env.DASHBOARD_SECRET;
+  const originalAdminPassword = process.env.ADMIN_PASSWORD;
+  process.env.DASHBOARD_SECRET = 'dashboard-secret-password';
+  process.env.ADMIN_PASSWORD = 'deprecated-admin-password';
+
+  try {
+    const handler = createAdminLoginHandler({
+      store,
+      getRateLimitSalt: () => 'protected-salt',
+      randomToken: (() => { const tokens = ['session-token', 'csrf-token']; return () => tokens.shift(); })(),
+    });
+    const login = (password) => handler(new Request('https://boatsforcharity.org/api/admin-login', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ password }),
+    }), { ip: '203.0.113.11' });
+
+    assert.equal((await login('deprecated-admin-password')).status, 401);
+    assert.equal((await login('dashboard-secret-password')).status, 200);
+  } finally {
+    if (originalDashboardSecret === undefined) delete process.env.DASHBOARD_SECRET;
+    else process.env.DASHBOARD_SECRET = originalDashboardSecret;
+    if (originalAdminPassword === undefined) delete process.env.ADMIN_PASSWORD;
+    else process.env.ADMIN_PASSWORD = originalAdminPassword;
+  }
+});
+
 test('admin login rejects incorrect password, missing secret, and persistent rate limit', async () => {
   const { createAdminLoginHandler } = await importBundled('lib/admin-auth.ts');
   const store = new FakeAdminStore();
@@ -125,6 +153,12 @@ test('legacy admin entry points route to the current staff portal', () => {
   assert.match(redirects, /^\/admin\s+\/admin\/dashboard\s+302!/m);
   assert.match(redirects, /^\/admin\/\s+\/admin\/dashboard\s+302!/m);
   assert.match(redirects, /^\/admin\/index\.html\s+\/admin\/dashboard\s+302!/m);
+});
+
+test('Netlify config does not shadow in-code API function routes', () => {
+  const config = fs.readFileSync(path.join(ROOT, 'netlify.toml'), 'utf-8');
+  assert.doesNotMatch(config, /from\s*=\s*["']\/api\/\*["']/);
+  assert.doesNotMatch(config, /to\s*=\s*["']\/\.netlify\/functions\/:splat["']/);
 });
 
 test('Netlify submission normalization handles event payloads robustly', async () => {
