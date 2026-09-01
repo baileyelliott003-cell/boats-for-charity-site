@@ -70,7 +70,7 @@ export default async (req: Request, context: Context) => {
     .metric-card .label { font-size: 0.82rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
     .metric-card .val { font-size: 1.8rem; font-weight: 800; color: var(--navy); margin-top: 4px; }
     
-    .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+    .tab-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; flex-wrap: wrap; }
     .tab-btn { padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; border: 0; background: transparent; color: #64748b; }
     .tab-btn.active { background: var(--teal); color: #fff; }
     
@@ -90,7 +90,7 @@ export default async (req: Request, context: Context) => {
     .badge-listed { background: #ffedd5; color: #9a3412; }
     .badge-sold { background: #ccfbf1; color: #0f766e; }
     
-    .btn-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; font-weight: 700; cursor: pointer; border: 1px solid #d1d5db; background: #fff; }
+    .btn-sm { padding: 6px 12px; font-size: 0.85rem; border-radius: 6px; font-weight: 700; cursor: pointer; border: 1px solid #d1d5db; background: #fff; text-decoration: none; display: inline-block; }
     .btn-sm.primary { background: var(--teal); color: #fff; border-color: var(--teal); }
     .btn-sm.action { background: #0b243b; color: #fff; border-color: #0b243b; }
     .source-tag { font-family: monospace; font-size: 0.82rem; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; }
@@ -126,12 +126,29 @@ export default async (req: Request, context: Context) => {
       <div class="metric-card"><div class="label">Lead-to-Sale CVR</div><div class="val" id="m-cvr">...</div></div>
     </div>
 
+    <!-- Google Ads Data Manager Live Integration Status Panel -->
+    <div class="section-box" style="border-left: 4px solid var(--teal);">
+      <h2>
+        <span>📊 Google Ads Data Manager Integration Status</span>
+        <span id="gads-config-badge" class="badge badge-new">Checking Feed...</span>
+      </h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 16px;">
+        <div><strong>Feed URL (HTTPS):</strong><br><code class="source-tag">/api/google-ads-conversions-feed.csv</code></div>
+        <div><strong>Authentication:</strong><br><span style="color:#1e40af; font-weight:700;">HTTP Basic Auth (Protected)</span></div>
+        <div><strong>Eligible Conversions:</strong><br><span id="gads-eligible-count" style="color:#059669; font-weight:800; font-size:1.1rem;">...</span></div>
+        <div><strong>Missing GCLID / Match Data:</strong><br><span id="gads-missing-gclid" style="color:#64748b; font-weight:700;">...</span></div>
+      </div>
+      <div id="gads-details-box" style="background:#f8fafc; padding:12px 16px; border-radius:8px; font-size:0.88rem; color:#475569;">
+        Loading Google Ads integration telemetry...
+      </div>
+    </div>
+
     <!-- Tab Navigation -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('leadsTab', this)">📋 Leads &amp; Intake</button>
       <button class="tab-btn" onclick="switchTab('callsTab', this)">📞 Phone Calls</button>
       <button class="tab-btn" onclick="switchTab('boatsTab', this)">⛵ Boats &amp; Pipeline</button>
-      <button class="tab-btn" onclick="switchTab('sourcesTab', this)">📊 Marketing Attribution</button>
+      <button class="tab-btn" onclick="switchTab('sourcesTab', this)">📈 Marketing Attribution</button>
       <button class="tab-btn" onclick="switchTab('auditTab', this)">🛡️ Audit Trail</button>
     </div>
 
@@ -317,6 +334,39 @@ export default async (req: Request, context: Context) => {
         }
       } catch (e) { console.error(e); }
 
+      // Google Ads Integration Status
+      try {
+        const res = await fetch('/api/dashboard?action=google_ads_status', { headers });
+        if (res.ok) {
+          const data = await res.json();
+          const feed = data.feed;
+          
+          const badge = document.getElementById('gads-config-badge');
+          if (feed.isConfigured) {
+            badge.className = 'badge badge-accepted';
+            badge.textContent = 'Basic Auth Configured';
+          } else {
+            badge.className = 'badge badge-listed';
+            badge.textContent = 'Env Vars Pending';
+          }
+          
+          document.getElementById('gads-eligible-count').textContent = feed.eligibleConversionsCount + ' queued (60d window)';
+          document.getElementById('gads-missing-gclid').textContent = feed.missingGclidCount + ' without GCLID (using Enhanced hash)';
+          
+          let details = '<strong>Queued by Action:</strong> ' +
+            'Donation_Accepted: ' + (feed.countsByType['Donation_Accepted'] || 0) + ' | ' +
+            'Qualified_Lead: ' + (feed.countsByType['Qualified_Lead'] || 0) + ' | ' +
+            'Boat_Sold: ' + (feed.countsByType['Boat_Sold'] || 0) + '<br>';
+            
+          if (feed.lastQueuedConversion) {
+            details += '<strong>Last Queued Event:</strong> ' + escapeHtml(feed.lastQueuedConversion.type) + ' (' + new Date(feed.lastQueuedConversion.time).toLocaleDateString() + ') — Order ID: ' + escapeHtml(feed.lastQueuedConversion.id);
+          } else {
+            details += 'No offline conversion events queued yet.';
+          }
+          document.getElementById('gads-details-box').innerHTML = details;
+        }
+      } catch (e) { console.error(e); }
+
       // Leads
       try {
         const res = await fetch('/api/dashboard?action=leads', { headers });
@@ -365,7 +415,7 @@ export default async (req: Request, context: Context) => {
         const name = (l.firstName + ' ' + l.lastName).trim() || 'Anonymous';
         const contact = l.email || l.phone || 'No contact';
         const gclid = l.gclid ? '<span class="source-tag" title="' + escapeHtml(l.gclid) + '">' + escapeHtml(l.gclid.slice(0, 10)) + '...</span>' : '<span style="color:#94a3b8">none</span>';
-        const sms = l.smsConsent ? '<span style="color:#166534;font-weight:700;">✓ Yes</span>' : '<span style="color:#64748b;">No</span>';
+        const sms = l.smsConsent ? '<span style="color:#166534;font-weight:700;">✔ Yes</span>' : '<span style="color:#64748b;">No</span>';
         
         let bClass = 'badge-new';
         if (l.stage === 'Contacted') bClass = 'badge-contacted';
@@ -375,7 +425,7 @@ export default async (req: Request, context: Context) => {
         if (l.stage === 'Sold') bClass = 'badge-sold';
 
         return '<tr>' +
-          '<td>#' + l.id + '<br><small style="color:#64748b">' + date + '</small></td>' +
+          '<td>#' + l.id + '<br><small style="color:#64748b;">' + date + '</small></td>' +
           '<td><strong>' + escapeHtml(name) + '</strong><br><small>' + escapeHtml(contact) + '</small></td>' +
           '<td><span class="source-tag">' + escapeHtml(l.firstTouchSource || 'direct') + '</span></td>' +
           '<td><span class="source-tag">' + escapeHtml(l.lastTouchSource || l.firstTouchSource || 'direct') + '</span></td>' +
@@ -392,7 +442,7 @@ export default async (req: Request, context: Context) => {
               '<option value="Sold">Sold</option>' +
             '</select> ' +
             '<button class="btn-sm" onclick="openAttributionModal(' + l.id + ')">✏️ Attr</button> ' +
-            (!l.boatId ? '<button class="btn-sm action" onclick="openCreateBoatForLead(' + l.id + ')">+ Boat</button>' : '<span style="color:#166534;font-size:0.8rem;font-weight:700;">✓ Boat #' + l.boatId + '</span>') +
+            (!l.boatId ? '<button class="btn-sm action" onclick="openCreateBoatForLead(' + l.id + ')">+ Boat</button>' : '<span style="color:#166534;font-size:0.8rem;font-weight:700;">✔ Boat #' + l.boatId + '</span>') +
           '</td>' +
         '</tr>';
       }).join('');
@@ -405,7 +455,7 @@ export default async (req: Request, context: Context) => {
         const date = new Date(c.callTime).toLocaleDateString() + ' ' + new Date(c.callTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const gclid = c.gclid ? '<span class="source-tag">' + escapeHtml(c.gclid.slice(0, 10)) + '...</span>' : '<span style="color:#94a3b8">none</span>';
         return '<tr>' +
-          '<td>#' + c.id + '<br><small style="color:#64748b">' + date + '</small></td>' +
+          '<td>#' + c.id + '<br><small style="color:#64748b;">' + date + '</small></td>' +
           '<td><strong>' + escapeHtml(c.callerNumber || 'Anonymous') + '</strong></td>' +
           '<td>' + c.callDurationSeconds + 's</td>' +
           '<td>' + escapeHtml(c.callStatus) + '</td>' +
@@ -683,7 +733,7 @@ export default async (req: Request, context: Context) => {
       if (res.ok) { closeModal(); loadData(); } else { const d = await res.json(); alert(d.error || 'Failed to record sale'); }
     }
 
-    // SECURE GOOGLE ADS CSV EXPORT (Uses session headers without query keys)
+    // SECURE GOOGLE ADS CSV EXPORT
     async function exportConversionsSecure() {
       try {
         const res = await fetch('/api/export-conversions?format=csv', { headers });
