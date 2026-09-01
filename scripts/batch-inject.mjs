@@ -21,7 +21,8 @@ const CLARITY_TAG = `<script>
   })(window, document, "clarity", "script", "x7aygvaxhx");
 </script>`;
 
-const PARTNER_TAG = `<script src="//s.ksrndkehqnwntyxlhgto.com/174339.js"></script>`;
+const PARTNER_TAG = `<script>var $wc_load=function(a){return JSON.parse(JSON.stringify(a))},$wc_leads=$wc_leads||{doc:{url:$wc_load(document.URL),ref:$wc_load(document.referrer),search:$wc_load(location.search),hash:$wc_load(location.hash)}};</script>
+  <script src="//s.ksrndkehqnwntyxlhgto.com/174339.js"></script>`;
 
 console.log("[batch-inject] Installing first-party tracking and Google Ads configuration across public HTML files...");
 
@@ -84,7 +85,9 @@ for (const file of htmlFiles) {
     analyticsNormalized++;
   }
 
-  const withoutPartnerTag = content.replace(/\s*<script\b[^>]*src=["'](?:https?:)?\/\/s\.ksrndkehqnwntyxlhgto\.com\/174339\.js["'][^>]*>\s*<\/script>/gi, "");
+  const withoutPartnerTag = content
+    .replace(/\s*<script\b(?![^>]*\bsrc=)[^>]*>\s*var\s+\$wc_load\s*=\s*function\s*\(a\)\s*\{[\s\S]*?\$wc_leads[\s\S]*?<\/script>/gi, "")
+    .replace(/\s*<script\b[^>]*src=["'](?:https?:)?\/\/s\.ksrndkehqnwntyxlhgto\.com\/174339\.js["'][^>]*>\s*<\/script>/gi, "");
   if (withoutPartnerTag !== content) {
     content = withoutPartnerTag;
     changed = true;
