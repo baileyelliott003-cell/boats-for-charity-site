@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "inject:tracker": "node scripts/batch-inject.mjs",
-    "test:attribution": "node scripts/test-attribution.mjs",
+    "test:attribution": "node --test tests/*.test.mjs",
     "seo:repair": "node scripts/repair-seo.mjs",
     "seo:refine-copy": "node scripts/refine-editorial-copy.mjs",
     "seo:audit": "node scripts/seo-audit.mjs",

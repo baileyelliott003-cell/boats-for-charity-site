@@ -4,8 +4,6 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const WHATCONVERTS_SNIPPET = `<script src="//tracking.whatconverts.com/scripts/wc.js" async></script>`;
-
 function listHtml(dir) {
   const files = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -19,11 +17,29 @@ function listHtml(dir) {
 
 const htmlFiles = listHtml(ROOT);
 let trackerUpdated = 0;
-let wcUpdated = 0;
+let placeholdersRemoved = 0;
 
 for (const file of htmlFiles) {
   let content = fs.readFileSync(file, "utf-8");
   let changed = false;
+  const relative = path.relative(ROOT, file).replaceAll(path.sep, "/");
+
+  const withoutPlaceholder = content.replace(/\s*<script[^>]+tracking\.whatconverts\.com\/scripts\/wc\.js[^>]*><\/script>/gi, "");
+  if (withoutPlaceholder !== content) {
+    content = withoutPlaceholder;
+    changed = true;
+    placeholdersRemoved++;
+  }
+
+  if (relative === "admin/index.html") {
+    const withoutTracker = content.replace(/\s*<script[^>]+src="\/tracker\.v1\.js"[^>]*><\/script>/gi, "");
+    if (withoutTracker !== content) {
+      content = withoutTracker;
+      changed = true;
+    }
+    if (changed) fs.writeFileSync(file, content, "utf-8");
+    continue;
+  }
 
   // 1. Ensure tracker.v1.js is included
   if (!content.includes('src="/tracker.v1.js"')) {
@@ -41,18 +57,9 @@ for (const file of htmlFiles) {
     }
   }
 
-  // 2. Ensure official WhatConverts script tag is installed in <head>
-  if (!content.includes('tracking.whatconverts.com/scripts/wc.js')) {
-    if (content.includes('</head>')) {
-      content = content.replace('</head>', `  ${WHATCONVERTS_SNIPPET}\n</head>`);
-      changed = true;
-      wcUpdated++;
-    }
-  }
-
   if (changed) {
     fs.writeFileSync(file, content, "utf-8");
   }
 }
 
-console.log(`[inject-tracker] Processed ${htmlFiles.length} HTML files: tracker updated in ${trackerUpdated}, WhatConverts script injected in ${wcUpdated}.`);
+console.log(`[inject-tracker] Processed ${htmlFiles.length} HTML files: tracker updated in ${trackerUpdated}; placeholders removed from ${placeholdersRemoved}.`);

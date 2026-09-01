@@ -350,6 +350,40 @@ export const auditHistory = pgTable(
   ]
 );
 
+export const adminSessions = pgTable(
+  "admin_sessions",
+  {
+    id: serial("id").primaryKey(),
+    tokenHash: text("token_hash").notNull(),
+    csrfHash: text("csrf_hash").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    lastUsedAt: timestamp("last_used_at", { withTimezone: true }).defaultNow().notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex("admin_sessions_token_hash_uniq").on(t.tokenHash),
+    index("admin_sessions_expires_at_idx").on(t.expiresAt),
+    index("admin_sessions_revoked_at_idx").on(t.revokedAt),
+  ]
+);
+
+export const abuseRateLimits = pgTable(
+  "abuse_rate_limits",
+  {
+    scope: text("scope").notNull(),
+    identifierHash: text("identifier_hash").notNull(),
+    windowStartedAt: timestamp("window_started_at", { withTimezone: true }).defaultNow().notNull(),
+    requestCount: integer("request_count").default(0).notNull(),
+    blockedUntil: timestamp("blocked_until", { withTimezone: true }),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    uniqueIndex("abuse_rate_limits_scope_identifier_uniq").on(t.scope, t.identifierHash),
+    index("abuse_rate_limits_updated_at_idx").on(t.updatedAt),
+  ]
+);
+
 // ==========================================
 // 10. PRESERVED LEGACY TABLES (Safely Hashed IP)
 // ==========================================

@@ -45,7 +45,7 @@ function text(value) {
 function editorialHtml(value) {
   return value
     .replace(/<form\b[\s\S]*?<\/form>/gi, " ")
-    .replace(/<section\b[^>]*class=["'][^"']*\bdonate\b[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, " ")
+    .replace(/<section\b[^>]*class=["'][^"']*\b(?:donate|cta-band)\b[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, " ")
     .replace(/<ul\b[^>]*class=["'][^"']*\btrust\b[^"']*["'][^>]*>[\s\S]*?<\/ul>/gi, " ")
     .replace(/<(p|div)\b[^>]*class=["'][^"']*\bprocess-note\b[^"']*["'][^>]*>[\s\S]*?<\/\1>/gi, " ");
 }

@@ -1,11 +1,11 @@
 /* Boats for Charity — mobile-first, accessible styles */
 :root{
   --navy:#0b243b;
-  --teal:#22a6a1;
+  --teal:#0f766e;
   --ink:#111827;
   --bg:#ffffff;
   --muted:#6b7280;
-  --ring: 0 0 0 3px rgba(34,166,161,.35);
+  --ring: 0 0 0 3px rgba(15,118,110,.35);
 }
 
 *{box-sizing:border-box}
@@ -13,6 +13,7 @@ html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.7
 img{max-width:100%;height:auto}
 a{color:var(--teal);text-decoration:none}
 a:hover{text-decoration:underline}
+.tiny a{text-decoration:underline;text-underline-offset:2px}
 .wrap{max-width:1100px;margin:auto;padding:0 20px}
 :focus-visible{outline:3px solid var(--teal); outline-offset:3px}
 
@@ -28,6 +29,7 @@ a:hover{text-decoration:underline}
 
 .nav[hidden]{display:block}
 .nav a{margin:0 10px;font-weight:600;color:var(--ink)}
+.nav a.btn-primary{color:#fff}
 .nav .btn{margin-left:10px}
 
 .hero{background:linear-gradient(180deg, #f8fbfb, #fff);padding:72px 0 56px;text-align:center}
