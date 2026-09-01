@@ -14,7 +14,7 @@ import {
   events
 } from "../../db/schema.js";
 import { runMigrations } from "../../db/migrate.js";
-import { verifyDashboardAuth, sha256 } from "../../lib/attribution.js";
+import { verifyDashboardAuth, hashEmail, hashPhone, sha256 } from "../../lib/attribution.js";
 import { desc, eq, sql, and, gte, lte } from "drizzle-orm";
 
 let migrated = false;
@@ -42,9 +42,9 @@ export default async (req: Request, context: Context) => {
   const action = url.searchParams.get("action") || "overview";
 
   try {
-    // ==========================================================
+    // ==========================================
     // GET REQUESTS: Data retrieval & reporting
-    // ==========================================================
+    // ==========================================
     if (req.method === "GET") {
       // Overview / Metrics & ROAS
       if (action === "overview") {
@@ -79,6 +79,60 @@ export default async (req: Request, context: Context) => {
             conversionRate: Number(totalLeadsRow?.count ? ((totalSalesRow?.count || 0) / totalLeadsRow.count * 100).toFixed(2) : 0)
           },
           sourceBreakdown: bySource
+        });
+      }
+
+      // Google Ads Integration Status
+      if (action === "google_ads_status") {
+        const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+        const allConvs = await db.select().from(conversionExports).orderBy(desc(conversionExports.conversionTime));
+
+        const countsByType: Record<string, number> = {};
+        let invalidOrMissingGclid = 0;
+        let matchableHashedData = 0;
+        let eligibleCount = 0;
+        let ineligibleCount = 0;
+
+        for (const c of allConvs) {
+          countsByType[c.conversionType] = (countsByType[c.conversionType] || 0) + 1;
+          const hasClickId = Boolean(c.gclid || c.gbraid || c.wbraid);
+          const hasHashed = Boolean(c.hashedEmail || c.hashedPhone);
+          
+          if (!hasClickId) invalidOrMissingGclid++;
+          if (hasHashed) matchableHashedData++;
+
+          const isWithinWindow = new Date(c.conversionTime) >= sixtyDaysAgo;
+          if ((hasClickId || hasHashed) && isWithinWindow) {
+            eligibleCount++;
+          } else {
+            ineligibleCount++;
+          }
+        }
+
+        const lastQueued = allConvs.length > 0 ? allConvs[0] : null;
+        const feedConfigured = Boolean(process.env.GOOGLE_ADS_FEED_USERNAME && process.env.GOOGLE_ADS_FEED_PASSWORD);
+
+        return Response.json({
+          feed: {
+            endpoint: "/api/google-ads-conversions-feed.csv",
+            authType: "HTTP Basic Authentication",
+            isConfigured: feedConfigured,
+            totalQueuedConversions: allConvs.length,
+            eligibleConversionsCount: eligibleCount,
+            ineligibleOrExpiredCount: ineligibleCount,
+            countsByType,
+            missingGclidCount: invalidOrMissingGclid,
+            matchableHashedCount: matchableHashedData,
+            lastQueuedConversion: lastQueued ? {
+              id: lastQueued.conversionId,
+              type: lastQueued.conversionType,
+              time: lastQueued.conversionTime,
+              value: lastQueued.conversionValue,
+              hasGclid: Boolean(lastQueued.gclid),
+              hasHashedEmail: Boolean(lastQueued.hashedEmail),
+              hasHashedPhone: Boolean(lastQueued.hashedPhone)
+            } : null
+          }
         });
       }
 
@@ -127,9 +181,9 @@ export default async (req: Request, context: Context) => {
       }
     }
 
-    // ==========================================================
+    // ==========================================
     // POST REQUESTS: Pipeline Actions & Attribution Corrections
-    // ==========================================================
+    // ==========================================
     if (req.method === "POST") {
       const body = await req.json();
       const actor = body.performed_by || "staff_user";
@@ -160,8 +214,8 @@ export default async (req: Request, context: Context) => {
             conversionTime: new Date(),
             conversionValue: "0.0",
             currency: "USD",
-            hashedEmail: sha256(existing.email),
-            hashedPhone: sha256(existing.phone),
+            hashedEmail: hashEmail(existing.email),
+            hashedPhone: hashPhone(existing.phone),
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -177,10 +231,10 @@ export default async (req: Request, context: Context) => {
             gbraid: existing.gbraid || "",
             wbraid: existing.wbraid || "",
             conversionTime: new Date(),
-            conversionValue: "1.0",
+            conversionValue: "0.0",
             currency: "USD",
-            hashedEmail: sha256(existing.email),
-            hashedPhone: sha256(existing.phone),
+            hashedEmail: hashEmail(existing.email),
+            hashedPhone: hashPhone(existing.phone),
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -213,7 +267,7 @@ export default async (req: Request, context: Context) => {
           updatedAt: sql`now()`
         }).where(eq(calls.id, Number(call_id))).returning();
 
-        if (stage === "Qualified" && existingCall.gclid) {
+        if (stage === "Qualified") {
           const convId = `conv_qual_call_${call_id}`;
           await db.insert(conversionExports).values({
             conversionId: convId,
@@ -224,7 +278,23 @@ export default async (req: Request, context: Context) => {
             conversionTime: new Date(),
             conversionValue: "0.0",
             currency: "USD",
-            hashedPhone: sha256(existingCall.callerNumber),
+            hashedPhone: hashPhone(existingCall.callerNumber),
+            exportStatus: "Pending"
+          }).onConflictDoNothing();
+        }
+
+        if (stage === "Donation Accepted") {
+          const convId = `conv_accept_call_${call_id}`;
+          await db.insert(conversionExports).values({
+            conversionId: convId,
+            conversionType: "Donation_Accepted",
+            callId: Number(call_id),
+            leadId: lead_id ? Number(lead_id) : null,
+            gclid: existingCall.gclid || "",
+            conversionTime: new Date(),
+            conversionValue: "0.0",
+            currency: "USD",
+            hashedPhone: hashPhone(existingCall.callerNumber),
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -362,10 +432,10 @@ export default async (req: Request, context: Context) => {
             gbraid: leadObj?.gbraid || "",
             wbraid: leadObj?.wbraid || "",
             conversionTime: new Date(),
-            conversionValue: "1.0",
+            conversionValue: "0.0",
             currency: "USD",
-            hashedEmail: leadObj?.email ? sha256(leadObj.email) : "",
-            hashedPhone: leadObj?.phone ? sha256(leadObj.phone) : "",
+            hashedEmail: leadObj?.email ? hashEmail(leadObj.email) : "",
+            hashedPhone: leadObj?.phone ? hashPhone(leadObj.phone) : "",
             exportStatus: "Pending"
           }).onConflictDoNothing();
         }
@@ -391,11 +461,9 @@ export default async (req: Request, context: Context) => {
         const { boat_id, ebay_item_id, listing_url, auction_start_date, starting_price, is_relist } = body;
         if (!boat_id || !ebay_item_id) return new Response("Missing boat_id or ebay_item_id", { status: 400 });
 
-        // Check existing listings for this boat to calculate relist count
         const priorListings = await db.select().from(ebayListings).where(eq(ebayListings.boatId, Number(boat_id)));
         const relistCount = priorListings.length;
 
-        // If this is a relist, mark previous active listings as 'Relisted'
         if (is_relist || priorListings.length > 0) {
           await db.update(ebayListings)
             .set({ listingStatus: "Relisted", isFinalSale: false, updatedAt: sql`now()` })
@@ -413,7 +481,6 @@ export default async (req: Request, context: Context) => {
           relistCount
         }).returning();
 
-        // Update boat status to Listed
         await db.update(boats).set({ status: "Listed", updatedAt: sql`now()` }).where(eq(boats.id, Number(boat_id)));
 
         await db.insert(auditHistory).values({
@@ -433,7 +500,6 @@ export default async (req: Request, context: Context) => {
         const { boat_id, listing_id, sale_amount, sale_date, buyer_payment_status, form_1098c_issued, notes } = body;
         if (!boat_id || !sale_amount) return new Response("Missing boat_id or sale_amount", { status: 400 });
 
-        // Enforce: Prevent relists/duplicate listings from creating multiple sales
         const [existingSale] = await db.select().from(sales).where(eq(sales.boatId, Number(boat_id))).limit(1);
         if (existingSale) {
           return new Response(JSON.stringify({ error: "Sale already recorded for this boat", sale: existingSale }), {
@@ -449,7 +515,6 @@ export default async (req: Request, context: Context) => {
           leadRecord = l;
         }
 
-        // Mark winning listing as final sale
         if (listing_id) {
           await db.update(ebayListings)
             .set({ isFinalSale: true, listingStatus: "Sold", updatedAt: sql`now()` })
@@ -468,13 +533,12 @@ export default async (req: Request, context: Context) => {
           notes: notes || ""
         }).returning();
 
-        // Update boat status to Sold
         await db.update(boats).set({ status: "Sold", updatedAt: sql`now()` }).where(eq(boats.id, Number(boat_id)));
         if (boatRecord?.leadId) {
           await db.update(leads).set({ stage: "Sold", updatedAt: sql`now()` }).where(eq(leads.id, boatRecord.leadId));
         }
 
-        // Auto-queue Value-based Boat_Sold conversion for Google Ads
+        // Auto-queue Value-based Boat_Sold conversion for Google Ads Data Manager
         const convId = `conv_sale_boat_${boat_id}`;
         await db.insert(conversionExports).values({
           conversionId: convId,
@@ -488,8 +552,8 @@ export default async (req: Request, context: Context) => {
           conversionTime: newSale.saleDate,
           conversionValue: String(sale_amount),
           currency: "USD",
-          hashedEmail: leadRecord?.email ? sha256(leadRecord.email) : "",
-          hashedPhone: leadRecord?.phone ? sha256(leadRecord.phone) : "",
+          hashedEmail: leadRecord?.email ? hashEmail(leadRecord.email) : "",
+          hashedPhone: leadRecord?.phone ? hashPhone(leadRecord.phone) : "",
           exportStatus: "Pending"
         }).onConflictDoNothing();
 
