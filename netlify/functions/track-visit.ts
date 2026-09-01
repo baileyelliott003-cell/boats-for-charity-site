@@ -1,14 +1,9 @@
-// Netlify Function: persist a single website page visit.
-//
-// Called only by the `track-visit` edge function, which captures every page
-// request at the edge and forwards the visitor's details here. The IP arrives
-// in the `x-visitor-ip` header (set server-side at the edge from Netlify's
-// trusted connection signals), so it reflects the real visitor rather than the
-// internal edge-to-function hop. Returns 204 and never blocks anything.
+// netlify/functions/track-visit.ts
 import type { Config, Context } from "@netlify/functions";
 import { db } from "../../db/index.js";
 import { visits } from "../../db/schema.js";
 import { looksLikeBot } from "../../lib/bot.js";
+import { sha256 } from "../../lib/attribution.js";
 
 export default async (req: Request, context: Context) => {
   if (req.method !== "POST") {
@@ -29,25 +24,23 @@ export default async (req: Request, context: Context) => {
       if (typeof data.country === "string") country = data.country.slice(0, 8);
     }
   } catch {
-    // Ignore malformed bodies — still record the visit with what we have.
+    // Ignore malformed bodies
   }
 
-  // IP forwarded from the edge (trusted, server-side). Fall back to this
-  // function's own connection signals if the header is ever absent.
-  const ip = (
+  const rawIp = (
     req.headers.get("x-visitor-ip") ||
     context.ip ||
     req.headers.get("x-nf-client-connection-ip") ||
     (req.headers.get("x-forwarded-for") || "").split(",")[0] ||
     ""
-  )
-    .trim()
-    .slice(0, 64);
+  ).trim();
 
+  // Hash raw IP address to protect privacy
+  const ipHash = sha256(rawIp);
   const isBot = looksLikeBot(userAgent);
 
   try {
-    await db.insert(visits).values({ path, ip, userAgent, isBot, country, referrer });
+    await db.insert(visits).values({ path, ipHash, userAgent, isBot, country, referrer });
   } catch (err) {
     console.error("track-visit: insert failed", err);
     return new Response("error", { status: 500 });
