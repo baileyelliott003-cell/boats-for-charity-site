@@ -107,12 +107,25 @@ const preferredHtml = listFiles(ROOT, (file) => file.endsWith(".html"))
   .map((file) => toPosix(path.relative(ROOT, file)))
   .filter((relative) => preferredRoute(relative));
 
+let gtagAdsUpdated = 0;
 let trackerInjected = 0;
 for (const relative of preferredHtml) {
   let html = read(relative);
   let modified = false;
 
-  // 1. Inject tracker.v1.js
+  // 1. Ensure Google Ads AW-18239894267 is configured on existing Google tag
+  if (!html.includes("gtag('config', 'AW-18239894267');")) {
+    if (html.includes("gtag('config', 'G-28FSWPQMQV');")) {
+      html = html.replace(
+        "gtag('config', 'G-28FSWPQMQV');",
+        "gtag('config', 'G-28FSWPQMQV');\n  gtag('config', 'AW-18239894267');"
+      );
+      modified = true;
+      gtagAdsUpdated++;
+    }
+  }
+
+  // 2. Inject tracker.v1.js
   if (!html.includes('src="/tracker.v1.js"')) {
     if (html.includes('src="/script.v123.js"')) {
       html = html.replace(
@@ -126,7 +139,7 @@ for (const relative of preferredHtml) {
     }
   }
 
-  // 2. Inject WhatConverts script
+  // 3. Inject WhatConverts script
   if (!html.includes('tracking.whatconverts.com/scripts/wc.js')) {
     if (html.includes('</head>')) {
       html = html.replace('</head>', `  ${WHATCONVERTS_TAG}\n</head>`);
@@ -140,4 +153,4 @@ for (const relative of preferredHtml) {
   }
 }
 
-console.log(`[repair-seo] Verified tracker, WhatConverts & SEO structure across ${preferredHtml.length} pages (${trackerInjected} updated).`);
+console.log(`[repair-seo] Verified Google tag (GA4 G-28FSWPQMQV + Google Ads AW-18239894267), WhatConverts & SEO structure across ${preferredHtml.length} pages (${gtagAdsUpdated} Google Ads configs added, ${trackerInjected} total updated).`);

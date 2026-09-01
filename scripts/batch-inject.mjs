@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-console.log("[batch-inject] Running comprehensive Sitewide Injection for tracker.v1.js & WhatConverts across all HTML files...");
+console.log("[batch-inject] Running comprehensive Sitewide Injection for Google tag (GA4 G-28FSWPQMQV + Google Ads AW-18239894267), tracker.v1.js & WhatConverts across all HTML files...");
 
 function listHtml(dir) {
   const files = [];
@@ -20,6 +20,7 @@ function listHtml(dir) {
 const htmlFiles = listHtml(ROOT);
 const WHATCONVERTS_TAG = `  <script src="//tracking.whatconverts.com/scripts/wc.js" async></script>`;
 
+let gtagAdsUpdated = 0;
 let trackerUpdated = 0;
 let wcUpdated = 0;
 
@@ -27,7 +28,19 @@ for (const file of htmlFiles) {
   let content = fs.readFileSync(file, "utf-8");
   let changed = false;
 
-  // 1. Inject tracker.v1.js
+  // 1. Ensure Google Ads AW-18239894267 is configured on the existing Google Tag (no duplicate loader)
+  if (!content.includes("gtag('config', 'AW-18239894267');")) {
+    if (content.includes("gtag('config', 'G-28FSWPQMQV');")) {
+      content = content.replace(
+        "gtag('config', 'G-28FSWPQMQV');",
+        "gtag('config', 'G-28FSWPQMQV');\n  gtag('config', 'AW-18239894267');"
+      );
+      changed = true;
+      gtagAdsUpdated++;
+    }
+  }
+
+  // 2. Inject tracker.v1.js
   if (!content.includes('src="/tracker.v1.js"')) {
     if (content.includes('src="/script.v123.js"')) {
       content = content.replace(
@@ -43,7 +56,7 @@ for (const file of htmlFiles) {
     }
   }
 
-  // 2. Inject WhatConverts official script in <head>
+  // 3. Inject WhatConverts official script in <head>
   if (!content.includes('tracking.whatconverts.com/scripts/wc.js')) {
     if (content.includes('</head>')) {
       content = content.replace('</head>', `${WHATCONVERTS_TAG}\n</head>`);
@@ -57,4 +70,4 @@ for (const file of htmlFiles) {
   }
 }
 
-console.log(`[batch-inject] Completed: Injected tracker into ${trackerUpdated} files, WhatConverts into ${wcUpdated} files across ${htmlFiles.length} total HTML pages.`);
+console.log(`[batch-inject] Completed: Google Ads tag added to ${gtagAdsUpdated} files, tracker to ${trackerUpdated} files, WhatConverts to ${wcUpdated} files across ${htmlFiles.length} total HTML pages.`);
