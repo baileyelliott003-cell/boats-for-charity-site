@@ -13,29 +13,18 @@ import {
   sessions,
   events
 } from "../../db/schema.js";
-import { runMigrations } from "../../db/migrate.js";
-import { verifyDashboardAuth, sha256 } from "../../lib/attribution.js";
+import { authorizeAdminRequest } from "../../lib/admin-auth.js";
+import { sha256 } from "../../lib/attribution.js";
+import { conversionId, selectLatestListingForFinalSale } from "../../lib/pipeline-rules.js";
 import { desc, eq, sql, and, gte, lte } from "drizzle-orm";
 
-let migrated = false;
-
 export default async (req: Request, context: Context) => {
-  // 1. Enforce Authentication on All Methods
-  const authHeader = req.headers.get("authorization") || req.headers.get("x-dashboard-key");
-  if (!verifyDashboardAuth(authHeader)) {
-    return new Response(JSON.stringify({ error: "Unauthorized access to internal dashboard" }), {
-      status: 401,
+  const authorization = await authorizeAdminRequest(req, { requireCsrf: req.method !== "GET" });
+  if (!authorization.authorized) {
+    return new Response(JSON.stringify({ error: authorization.error }), {
+      status: authorization.status,
       headers: { "Content-Type": "application/json" }
     });
-  }
-
-  if (!migrated) {
-    try {
-      await runMigrations();
-      migrated = true;
-    } catch (e) {
-      console.warn("[dashboard-api] migration warning:", e);
-    }
   }
 
   const url = new URL(req.url);
@@ -132,7 +121,7 @@ export default async (req: Request, context: Context) => {
     // ==========================================================
     if (req.method === "POST") {
       const body = await req.json();
-      const actor = body.performed_by || "staff_user";
+      const actor = "staff_user";
 
       // 1. Update Lead Status & Stage
       if (action === "update_lead_stage") {
@@ -149,7 +138,7 @@ export default async (req: Request, context: Context) => {
 
         // If stage updated to 'Qualified', auto-queue secondary Google Ads offline conversion
         if (stage === "Qualified") {
-          const convId = `conv_qual_lead_${lead_id}`;
+          const convId = conversionId("qualified-lead", lead_id);
           await db.insert(conversionExports).values({
             conversionId: convId,
             conversionType: "Qualified_Lead",
@@ -168,7 +157,7 @@ export default async (req: Request, context: Context) => {
 
         // If stage updated to 'Donation Accepted', auto-queue primary Google Ads offline conversion
         if (stage === "Donation Accepted") {
-          const convId = `conv_accept_lead_${lead_id}`;
+          const convId = conversionId("donation-accepted", lead_id);
           await db.insert(conversionExports).values({
             conversionId: convId,
             conversionType: "Donation_Accepted",
@@ -352,7 +341,7 @@ export default async (req: Request, context: Context) => {
           await db.update(leads).set({ boatId: newBoat.id, stage: "Donation Accepted", updatedAt: sql`now()` }).where(eq(leads.id, Number(lead_id)));
           
           // Auto-queue primary Google Ads offline conversion on boat creation/acceptance
-          const convId = `conv_accept_lead_${lead_id}`;
+          const convId = conversionId("donation-accepted", lead_id);
           await db.insert(conversionExports).values({
             conversionId: convId,
             conversionType: "Donation_Accepted",
@@ -449,16 +438,22 @@ export default async (req: Request, context: Context) => {
           leadRecord = l;
         }
 
-        // Mark winning listing as final sale
-        if (listing_id) {
+        const listingCandidates = await db.select().from(ebayListings)
+          .where(eq(ebayListings.boatId, Number(boat_id)));
+        const selectedListing = listing_id
+          ? listingCandidates.find((listing) => listing.id === Number(listing_id)) || null
+          : selectLatestListingForFinalSale(listingCandidates);
+
+        // Mark only the latest successful listing as the final sale.
+        if (selectedListing) {
           await db.update(ebayListings)
             .set({ isFinalSale: true, listingStatus: "Sold", updatedAt: sql`now()` })
-            .where(eq(ebayListings.id, Number(listing_id)));
+            .where(eq(ebayListings.id, selectedListing.id));
         }
 
         const [newSale] = await db.insert(sales).values({
           boatId: Number(boat_id),
-          listingId: listing_id ? Number(listing_id) : null,
+          listingId: selectedListing?.id || null,
           visitorId: boatRecord?.visitorId || null,
           leadId: boatRecord?.leadId || null,
           saleAmount: String(sale_amount),
@@ -475,7 +470,7 @@ export default async (req: Request, context: Context) => {
         }
 
         // Auto-queue Value-based Boat_Sold conversion for Google Ads
-        const convId = `conv_sale_boat_${boat_id}`;
+        const convId = conversionId("boat-sold", boat_id);
         await db.insert(conversionExports).values({
           conversionId: convId,
           conversionType: "Boat_Sold",

@@ -25,9 +25,17 @@
 
   // Generate safe random UUID
   function generateId(prefix) {
-    var d = Date.now().toString(36);
-    var r = Math.random().toString(36).substring(2, 10);
-    return (prefix || 'bfc') + '_' + d + '_' + r;
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return (prefix || 'bfc') + '_' + window.crypto.randomUUID().replace(/-/g, '');
+    }
+    var bytes = new Uint8Array(16);
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+      window.crypto.getRandomValues(bytes);
+      return (prefix || 'bfc') + '_' + Array.prototype.map.call(bytes, function (value) {
+        return value.toString(16).padStart(2, '0');
+      }).join('');
+    }
+    return (prefix || 'bfc') + '_' + Date.now().toString(36);
   }
 
   function getCookie(name) {
@@ -104,9 +112,21 @@
       }
     } catch (e) {}
 
+    var source = params.get('utm_source') || '';
+    var medium = params.get('utm_medium') || '';
+    if (!source && (params.get('gclid') || params.get('gbraid') || params.get('wbraid'))) source = 'google';
+    if (!source && params.get('msclkid')) source = 'bing';
+    if (!medium && source && (params.get('gclid') || params.get('gbraid') || params.get('wbraid') || params.get('msclkid'))) medium = 'cpc';
+    if (!source && refDomain && refDomain !== window.location.hostname.replace(/^www\./, '')) {
+      source = refDomain;
+      medium = 'referral';
+    }
+    if (!source) source = 'direct';
+    if (!medium) medium = '(none)';
+
     return {
-      utm_source: params.get('utm_source') || '',
-      utm_medium: params.get('utm_medium') || '',
+      utm_source: source,
+      utm_medium: medium,
       utm_campaign: params.get('utm_campaign') || '',
       utm_term: params.get('utm_term') || '',
       utm_content: params.get('utm_content') || '',
@@ -136,7 +156,7 @@
   // 3. Attribution Management (First Touch vs Last Non-Direct)
   var currentTouch = parseParams();
   var isMarketingTraffic = Boolean(
-    currentTouch.utm_source || 
+    currentTouch.utm_source !== 'direct' ||
     currentTouch.gclid || 
     currentTouch.gbraid || 
     currentTouch.wbraid || 
@@ -206,7 +226,7 @@
 
     var body = JSON.stringify(payload);
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('/api/track-event', body);
+      navigator.sendBeacon('/api/track-event', new Blob([body], { type: 'application/json' }));
     } else {
       fetch('/api/track-event', {
         method: 'POST',

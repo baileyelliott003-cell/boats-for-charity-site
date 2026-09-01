@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-console.log("[batch-inject] Running comprehensive Sitewide Injection for tracker.v1.js & WhatConverts across all HTML files...");
+console.log("[batch-inject] Installing first-party tracking across public HTML files...");
 
 function listHtml(dir) {
   const files = [];
@@ -18,14 +18,30 @@ function listHtml(dir) {
 }
 
 const htmlFiles = listHtml(ROOT);
-const WHATCONVERTS_TAG = `  <script src="//tracking.whatconverts.com/scripts/wc.js" async></script>`;
-
 let trackerUpdated = 0;
-let wcUpdated = 0;
+let placeholdersRemoved = 0;
 
 for (const file of htmlFiles) {
   let content = fs.readFileSync(file, "utf-8");
   let changed = false;
+  const relative = path.relative(ROOT, file).replaceAll(path.sep, "/");
+
+  const withoutPlaceholder = content.replace(/\s*<script[^>]+tracking\.whatconverts\.com\/scripts\/wc\.js[^>]*><\/script>/gi, "");
+  if (withoutPlaceholder !== content) {
+    content = withoutPlaceholder;
+    changed = true;
+    placeholdersRemoved++;
+  }
+
+  if (relative === "admin/index.html") {
+    const withoutTracker = content.replace(/\s*<script[^>]+src="\/tracker\.v1\.js"[^>]*><\/script>/gi, "");
+    if (withoutTracker !== content) {
+      content = withoutTracker;
+      changed = true;
+    }
+    if (changed) fs.writeFileSync(file, content, "utf-8");
+    continue;
+  }
 
   // 1. Inject tracker.v1.js
   if (!content.includes('src="/tracker.v1.js"')) {
@@ -43,18 +59,9 @@ for (const file of htmlFiles) {
     }
   }
 
-  // 2. Inject WhatConverts official script in <head>
-  if (!content.includes('tracking.whatconverts.com/scripts/wc.js')) {
-    if (content.includes('</head>')) {
-      content = content.replace('</head>', `${WHATCONVERTS_TAG}\n</head>`);
-      changed = true;
-      wcUpdated++;
-    }
-  }
-
   if (changed) {
     fs.writeFileSync(file, content, "utf-8");
   }
 }
 
-console.log(`[batch-inject] Completed: Injected tracker into ${trackerUpdated} files, WhatConverts into ${wcUpdated} files across ${htmlFiles.length} total HTML pages.`);
+console.log(`[batch-inject] Completed: tracker added to ${trackerUpdated} files; ${placeholdersRemoved} generic WhatConverts placeholders removed.`);

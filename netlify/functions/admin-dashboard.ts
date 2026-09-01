@@ -1,18 +1,15 @@
 // netlify/functions/admin-dashboard.ts
 import type { Config, Context } from "@netlify/functions";
-import { verifyDashboardAuth } from "../../lib/attribution.js";
+import { authorizeAdminRequest } from "../../lib/admin-auth.js";
+import { escapeHtml } from "../../lib/dashboard-view.js";
 
 /**
  * Protected Server-Rendered Staff Dashboard for Lead, Call, Boat, Listing & Sales Management
- * Uses session cookie / Authorization header authentication without exposing keys in export URLs.
+ * Uses a server-side session cookie without exposing credentials to browser code.
  */
 export default async (req: Request, context: Context) => {
-  const url = new URL(req.url);
-  const keyFromQuery = url.searchParams.get("key");
-  const authHeader = req.headers.get("authorization") || (keyFromQuery ? `Bearer ${keyFromQuery}` : null);
-
-  // Require authentication to access the portal
-  if (!verifyDashboardAuth(authHeader)) {
+  const authorization = await authorizeAdminRequest(req);
+  if (!authorization.authorized) {
     return new Response(
       `<!doctype html>
 <html lang="en">
@@ -35,21 +32,40 @@ export default async (req: Request, context: Context) => {
     <img src="/assets/logo.png" alt="Boats for Charity" style="max-height: 48px; margin: 0 auto 16px; display: block;">
     <h1>Staff Attribution Portal</h1>
     <p>Protected internal access for donation tracking & sales.</p>
-    <form method="GET" action="/admin/dashboard">
-      <input type="password" name="key" placeholder="Enter Staff Access Key" required autofocus>
+    <form id="loginForm" method="POST" action="/api/admin-login">
+      <input type="password" name="password" autocomplete="current-password" placeholder="Enter Staff Password" required autofocus>
       <button type="submit">Unlock Portal</button>
+      <p id="loginError" role="alert" style="color:#b91c1c;margin-top:12px;"></p>
     </form>
   </div>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const error = document.getElementById('loginError');
+      error.textContent = '';
+      const response = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ password: form.elements.password.value })
+      });
+      form.elements.password.value = '';
+      if (response.ok) {
+        window.location.replace('/admin/dashboard');
+        return;
+      }
+      error.textContent = response.status === 429 ? 'Too many attempts. Please wait and try again.' : 'Unable to sign in.';
+    });
+  </script>
 </body>
 </html>`,
       {
-        status: 401,
+        status: 200,
         headers: { "Content-Type": "text/html; charset=utf-8", "cache-control": "no-store" }
       }
     );
   }
-
-  const safeKey = (keyFromQuery || "").trim();
 
   const html = `<!doctype html>
 <html lang="en">
@@ -111,7 +127,8 @@ export default async (req: Request, context: Context) => {
     <h1>🚤 Boats for Charity — Pipeline &amp; Attribution Hub</h1>
     <div style="display: flex; gap: 10px;">
       <button class="btn-sm primary" onclick="exportConversionsSecure()">📥 Export Google Ads CSV</button>
-      <a href="/admin/dashboard?key=${encodeURIComponent(safeKey)}" class="btn-sm">🔄 Refresh</a>
+      <a href="/admin/dashboard" class="btn-sm">🔄 Refresh</a>
+      <button class="btn-sm" onclick="logout()">Sign Out</button>
     </div>
   </header>
 
@@ -265,21 +282,17 @@ export default async (req: Request, context: Context) => {
   </div>
 
   <script>
-    const AUTH_KEY = ${JSON.stringify(safeKey)};
-    const headers = { 'Authorization': 'Bearer ' + AUTH_KEY, 'Content-Type': 'application/json' };
+    function getCookie(name) {
+      const prefix = name + '=';
+      const value = document.cookie.split(';').map(part => part.trim()).find(part => part.startsWith(prefix));
+      return value ? decodeURIComponent(value.slice(prefix.length)) : '';
+    }
+    const headers = { 'Content-Type': 'application/json', 'X-CSRF-Token': getCookie('bfc_admin_csrf') };
     let allLeads = [];
     let allCalls = [];
     let allBoats = [];
 
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
+    ${escapeHtml.toString()}
 
     function switchTab(tabId, btn) {
       ['leadsTab', 'callsTab', 'boatsTab', 'sourcesTab', 'auditTab'].forEach(t => {
@@ -699,6 +712,11 @@ export default async (req: Request, context: Context) => {
       } catch (err) {
         alert('Failed to export conversions: ' + err.message);
       }
+    }
+
+    async function logout() {
+      await fetch('/api/admin-logout', { method: 'POST', headers, credentials: 'same-origin' });
+      window.location.replace('/admin/dashboard');
     }
 
     loadData();

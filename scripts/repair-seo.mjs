@@ -68,7 +68,6 @@ const ROOT_PAGES = new Map([
   ["thanks.html", "/thanks"],
 ]);
 
-const WHATCONVERTS_TAG = `<script src="//tracking.whatconverts.com/scripts/wc.js" async></script>`;
 
 const toPosix = (value) => value.split(path.sep).join("/");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -126,12 +125,10 @@ for (const relative of preferredHtml) {
     }
   }
 
-  // 2. Inject WhatConverts script
-  if (!html.includes('tracking.whatconverts.com/scripts/wc.js')) {
-    if (html.includes('</head>')) {
-      html = html.replace('</head>', `  ${WHATCONVERTS_TAG}\n</head>`);
-      modified = true;
-    }
+  const withoutPlaceholder = html.replace(/\s*<script[^>]+tracking\.whatconverts\.com\/scripts\/wc\.js[^>]*><\/script>/gi, '');
+  if (withoutPlaceholder !== html) {
+    html = withoutPlaceholder;
+    modified = true;
   }
 
   if (modified) {

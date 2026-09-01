@@ -61,30 +61,3 @@ export function getDeviceCategory(userAgent: string): "mobile" | "tablet" | "des
   }
   return "desktop";
 }
-
-/**
- * Authenticate staff dashboard requests using Netlify environment credentials.
- */
-export function verifyDashboardAuth(authHeader: string | null | undefined): boolean {
-  const secret = process.env.DASHBOARD_SECRET || process.env.ADMIN_KEY;
-  if (!secret) {
-    // In development or when unconfigured, require auth header
-    return false;
-  }
-  if (!authHeader) return false;
-  
-  // Support Bearer token or Basic auth or custom token
-  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
-  if (token === secret) return true;
-  
-  // Check if basic auth matches
-  try {
-    if (authHeader.startsWith("Basic ")) {
-      const decoded = Buffer.from(authHeader.slice(6), "base64").toString("utf-8");
-      const [, pass] = decoded.split(":");
-      if (pass === secret || decoded === secret) return true;
-    }
-  } catch {}
-  
-  return false;
-}

@@ -2,33 +2,21 @@
 import type { Config, Context } from "@netlify/functions";
 import { db } from "../../db/index.js";
 import { conversionExports, auditHistory } from "../../db/schema.js";
-import { runMigrations } from "../../db/migrate.js";
-import { verifyDashboardAuth } from "../../lib/attribution.js";
+import { authorizeAdminRequest } from "../../lib/admin-auth.js";
 import { eq, and, isNotNull } from "drizzle-orm";
-
-let migrated = false;
 
 /**
  * Google Ads Enhanced & Offline Conversion Export Helper
- * Securely authenticated via Authorization / session headers (without query string keys)
+ * Securely authenticated by the server-side dashboard session cookie.
  * Delivers conversion data ready for Google Ads Offline Conversions API / Bulk Upload
  */
 export default async (req: Request, context: Context) => {
-  const authHeader = req.headers.get("authorization") || req.headers.get("x-dashboard-key");
-  if (!verifyDashboardAuth(authHeader)) {
-    return new Response(JSON.stringify({ error: "Unauthorized access to conversion exports" }), {
-      status: 401,
+  const authorization = await authorizeAdminRequest(req);
+  if (!authorization.authorized) {
+    return new Response(JSON.stringify({ error: authorization.error }), {
+      status: authorization.status,
       headers: { "Content-Type": "application/json" }
     });
-  }
-
-  if (!migrated) {
-    try {
-      await runMigrations();
-      migrated = true;
-    } catch (e) {
-      console.warn("[export-conversions] migration warning:", e);
-    }
   }
 
   const url = new URL(req.url);
