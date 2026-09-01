@@ -2,12 +2,25 @@
 import type { Config, Context } from "@netlify/functions";
 import { authorizeAdminRequest } from "../../lib/admin-auth.js";
 import { escapeHtml } from "../../lib/dashboard-view.js";
+import { runMigrations } from "../../db/migrate.js";
+
+let migrated = false;
 
 /**
  * Protected Server-Rendered Staff Dashboard for Lead, Call, Boat, Listing & Sales Management
  * Uses a server-side session cookie without exposing credentials to browser code.
  */
 export default async (req: Request, context: Context) => {
+  // Ensure migrations run on startup/request
+  if (!migrated) {
+    try {
+      await runMigrations();
+      migrated = true;
+    } catch (e) {
+      console.warn("[admin-dashboard] migration warning:", e);
+    }
+  }
+
   const authorization = await authorizeAdminRequest(req);
   if (!authorization.authorized) {
     return new Response(
@@ -31,7 +44,7 @@ export default async (req: Request, context: Context) => {
   <div class="login-card">
     <img src="/assets/logo.png" alt="Boats for Charity" style="max-height: 48px; margin: 0 auto 16px; display: block;">
     <h1>Staff Attribution Portal</h1>
-    <p>Protected internal access for donation tracking & sales.</p>
+    <p>Protected internal access for donation tracking &amp; sales.</p>
     <form id="loginForm" method="POST" action="/api/admin-login">
       <input type="password" name="password" autocomplete="current-password" placeholder="Enter Staff Password" required autofocus>
       <button type="submit">Unlock Portal</button>
