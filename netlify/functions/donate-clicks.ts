@@ -1,14 +1,20 @@
-// Netlify Function: report how many times the "Donate" buttons have been clicked.
-// GET /api/donate-clicks ->
-//   { total, humans, bots, uniqueIps, last24h, last7d, bySource, topIps }
-// The human/bot split and per-IP counts let the team judge whether the raw
-// click total reflects real visitors or automated traffic.
-import type { Config } from "@netlify/functions";
+// netlify/functions/donate-clicks.ts
+import type { Config, Context } from "@netlify/functions";
 import { sql, gte, eq, desc } from "drizzle-orm";
 import { db } from "../../db/index.js";
 import { donateClicks } from "../../db/schema.js";
+import { verifyDashboardAuth } from "../../lib/attribution.js";
 
-export default async () => {
+export default async (req: Request, context: Context) => {
+  // Protect endpoint: Require staff dashboard authentication
+  const authHeader = req.headers.get("authorization") || req.headers.get("x-dashboard-key");
+  if (!verifyDashboardAuth(authHeader)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json", "cache-control": "no-store" },
+    });
+  }
+
   const grouped = await db
     .select({
       source: donateClicks.source,
@@ -25,33 +31,17 @@ export default async () => {
     total += n;
   }
 
-  // How many clicks came from real visitors vs. clients flagged as bots, and
-  // how many distinct IPs are behind all of them.
   const [[botRow], [uniqueRow]] = await Promise.all([
     db
       .select({ count: sql<number>`count(*)::int` })
       .from(donateClicks)
       .where(eq(donateClicks.isBot, true)),
     db
-      .select({ count: sql<number>`count(distinct ${donateClicks.ip})::int` })
+      .select({ count: sql<number>`count(distinct ${donateClicks.ipHash})::int` })
       .from(donateClicks)
-      .where(sql`${donateClicks.ip} <> ''`),
+      .where(sql`${donateClicks.ipHash} <> ''`),
   ]);
   const bots = Number(botRow?.count ?? 0);
-
-  // The IPs responsible for the most clicks — a single IP with an outsized
-  // share is a strong bot/abuse signal.
-  const topIps = await db
-    .select({
-      ip: donateClicks.ip,
-      count: sql<number>`count(*)::int`,
-      bot: sql<boolean>`bool_or(${donateClicks.isBot})`,
-    })
-    .from(donateClicks)
-    .where(sql`${donateClicks.ip} <> ''`)
-    .groupBy(donateClicks.ip)
-    .orderBy(desc(sql`count(*)`))
-    .limit(10);
 
   const since = (days: number) =>
     db
@@ -66,15 +56,10 @@ export default async () => {
       total,
       humans: total - bots,
       bots,
-      uniqueIps: Number(uniqueRow?.count ?? 0),
+      uniqueVisitors: Number(uniqueRow?.count ?? 0),
       last24h: Number(d1?.count ?? 0),
       last7d: Number(d7?.count ?? 0),
       bySource,
-      topIps: topIps.map((r) => ({
-        ip: r.ip,
-        count: Number(r.count),
-        bot: Boolean(r.bot),
-      })),
     },
     { headers: { "cache-control": "no-store" } },
   );
