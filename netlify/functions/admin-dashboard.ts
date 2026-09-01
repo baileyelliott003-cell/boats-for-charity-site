@@ -1,7 +1,6 @@
 // netlify/functions/admin-dashboard.ts
 import type { Config, Context } from "@netlify/functions";
 import { authorizeAdminRequest } from "../../lib/admin-auth.js";
-import { escapeHtml } from "../../lib/dashboard-view.js";
 import { runMigrations } from "../../db/migrate.js";
 
 let migrated = false;
@@ -329,7 +328,15 @@ export default async (req: Request, context: Context) => {
     let allCalls = [];
     let allBoats = [];
 
-    ${escapeHtml.toString()}
+    function escapeHtml(value) {
+      if (value === null || value === undefined) return '';
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
     function switchTab(tabId, btn) {
       ['leadsTab', 'callsTab', 'boatsTab', 'sourcesTab', 'auditTab'].forEach(t => {
@@ -820,10 +827,15 @@ export default async (req: Request, context: Context) => {
 </html>`;
 
   return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8", "cache-control": "no-store" }
+    headers: { 
+      "Content-Type": "text/html; charset=utf-8", 
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    }
   });
 };
 
 export const config: Config = {
-  path: "/admin/dashboard",
+  path: ["/admin/dashboard", "/admin/dashboard/*", "/staff/dashboard", "/staff/dashboard/*"],
 };
