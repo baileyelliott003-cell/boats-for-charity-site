@@ -16,7 +16,12 @@ import {
 import { authorizeAdminRequest } from "../../lib/admin-auth.js";
 import { hashEmail, hashPhone, sha256 } from "../../lib/attribution.js";
 import { conversionId, selectLatestListingForFinalSale } from "../../lib/pipeline-rules.js";
+import { postgresNetlifySubmissionRepository } from "../../lib/netlify-submission.js";
+import { getRuntimeEnv } from "../../lib/runtime-env.js";
+import { runMigrations } from "../../db/migrate.js";
 import { desc, eq, sql, and, gte, lte } from "drizzle-orm";
+
+let migrated = false;
 
 export default async (req: Request, context: Context) => {
   const authorization = await authorizeAdminRequest(req, { requireCsrf: req.method !== "GET" });
@@ -25,6 +30,15 @@ export default async (req: Request, context: Context) => {
       status: authorization.status,
       headers: { "Content-Type": "application/json" }
     });
+  }
+
+  if (!migrated) {
+    try {
+      await runMigrations();
+      migrated = true;
+    } catch (e) {
+      console.warn("[dashboard-api] migration warning:", e);
+    }
   }
 
   const url = new URL(req.url);
@@ -176,6 +190,17 @@ export default async (req: Request, context: Context) => {
     if (req.method === "POST") {
       const body = await req.json();
       const actor = "staff_user";
+
+      // 0. Manual / Admin Lead Direct Ingestion (for syncing verified submissions)
+      if (action === "ingest_lead") {
+        const { submission } = body;
+        if (!submission || !submission.netlifySubmissionId) {
+          return new Response(JSON.stringify({ error: "Missing submission object or netlifySubmissionId" }), { status: 400 });
+        }
+
+        const result = await postgresNetlifySubmissionRepository.createLead(submission);
+        return Response.json({ success: true, created: result.created, leadId: result.leadId });
+      }
 
       // 1. Update Lead Status & Stage
       if (action === "update_lead_stage") {
