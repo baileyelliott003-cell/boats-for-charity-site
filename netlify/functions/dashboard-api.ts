@@ -147,6 +147,25 @@ export default async (req: Request, context: Context) => {
           .where(eq(leads.id, Number(lead_id)))
           .returning();
 
+        // If stage updated to 'Qualified', auto-queue secondary Google Ads offline conversion
+        if (stage === "Qualified") {
+          const convId = `conv_qual_lead_${lead_id}`;
+          await db.insert(conversionExports).values({
+            conversionId: convId,
+            conversionType: "Qualified_Lead",
+            leadId: Number(lead_id),
+            gclid: existing.gclid || "",
+            gbraid: existing.gbraid || "",
+            wbraid: existing.wbraid || "",
+            conversionTime: new Date(),
+            conversionValue: "0.0",
+            currency: "USD",
+            hashedEmail: sha256(existing.email),
+            hashedPhone: sha256(existing.phone),
+            exportStatus: "Pending"
+          }).onConflictDoNothing();
+        }
+
         // If stage updated to 'Donation Accepted', auto-queue primary Google Ads offline conversion
         if (stage === "Donation Accepted") {
           const convId = `conv_accept_lead_${lead_id}`;
@@ -180,7 +199,50 @@ export default async (req: Request, context: Context) => {
         return Response.json({ success: true, lead: updated });
       }
 
-      // 2. Manual Attribution Correction with Audit Trail
+      // 2. Connect Call to Lead & Update Call Status
+      if (action === "connect_call") {
+        const { call_id, lead_id, stage, notes } = body;
+        if (!call_id) return new Response("Missing call_id", { status: 400 });
+
+        const [existingCall] = await db.select().from(calls).where(eq(calls.id, Number(call_id))).limit(1);
+        if (!existingCall) return new Response("Call not found", { status: 404 });
+
+        const [updatedCall] = await db.update(calls).set({
+          leadId: lead_id ? Number(lead_id) : existingCall.leadId,
+          stage: stage || existingCall.stage,
+          updatedAt: sql`now()`
+        }).where(eq(calls.id, Number(call_id))).returning();
+
+        if (stage === "Qualified" && existingCall.gclid) {
+          const convId = `conv_qual_call_${call_id}`;
+          await db.insert(conversionExports).values({
+            conversionId: convId,
+            conversionType: "Qualified_Lead",
+            callId: Number(call_id),
+            leadId: lead_id ? Number(lead_id) : null,
+            gclid: existingCall.gclid || "",
+            conversionTime: new Date(),
+            conversionValue: "0.0",
+            currency: "USD",
+            hashedPhone: sha256(existingCall.callerNumber),
+            exportStatus: "Pending"
+          }).onConflictDoNothing();
+        }
+
+        await db.insert(auditHistory).values({
+          entityType: "call",
+          entityId: String(call_id),
+          action: "connect_call",
+          performedBy: actor,
+          previousState: existingCall,
+          newState: updatedCall,
+          notes: notes || `Connected call ${call_id} to lead ${lead_id || 'none'}`
+        });
+
+        return Response.json({ success: true, call: updatedCall });
+      }
+
+      // 3. Manual Attribution Correction with Audit Trail
       if (action === "correct_attribution") {
         const { lead_id, last_touch_source, last_touch_medium, last_touch_campaign, gclid, notes } = body;
         if (!lead_id) return new Response("Missing lead_id", { status: 400 });
@@ -219,14 +281,50 @@ export default async (req: Request, context: Context) => {
         return Response.json({ success: true, lead: updated });
       }
 
-      // 3. Connect Lead/Call to Accepted Boat
-      if (action === "create_boat") {
-        const { lead_id, call_id, title, hin, year, make, model, length_ft, vessel_type, condition, location_city, location_state, notes } = body;
+      // 4. Create or Edit Boat & Queue Primary Conversion
+      if (action === "create_boat" || action === "edit_boat") {
+        const { boat_id, lead_id, call_id, title, hin, year, make, model, length_ft, vessel_type, condition, location_city, location_state, status, notes } = body;
         
+        if (action === "edit_boat") {
+          if (!boat_id) return new Response("Missing boat_id for edit", { status: 400 });
+          const [existingBoat] = await db.select().from(boats).where(eq(boats.id, Number(boat_id))).limit(1);
+          if (!existingBoat) return new Response("Boat not found", { status: 404 });
+
+          const [updatedBoat] = await db.update(boats).set({
+            title: title ?? existingBoat.title,
+            hin: hin ?? existingBoat.hin,
+            year: year ? parseInt(year, 10) : existingBoat.year,
+            make: make ?? existingBoat.make,
+            model: model ?? existingBoat.model,
+            lengthFt: length_ft ? String(length_ft) : existingBoat.lengthFt,
+            vesselType: vessel_type ?? existingBoat.vesselType,
+            condition: condition ?? existingBoat.condition,
+            locationCity: location_city ?? existingBoat.locationCity,
+            locationState: location_state ?? existingBoat.locationState,
+            status: status ?? existingBoat.status,
+            notes: notes ?? existingBoat.notes,
+            updatedAt: sql`now()`
+          }).where(eq(boats.id, Number(boat_id))).returning();
+
+          await db.insert(auditHistory).values({
+            entityType: "boat",
+            entityId: String(boat_id),
+            action: "edit_boat",
+            performedBy: actor,
+            previousState: existingBoat,
+            newState: updatedBoat,
+            notes: notes || "Updated boat details"
+          });
+
+          return Response.json({ success: true, boat: updatedBoat });
+        }
+
+        // Create Boat Path
         let visitorId = null;
+        let leadObj: any = null;
         if (lead_id) {
           const [l] = await db.select().from(leads).where(eq(leads.id, Number(lead_id))).limit(1);
-          if (l) visitorId = l.visitorId;
+          if (l) { visitorId = l.visitorId; leadObj = l; }
         } else if (call_id) {
           const [c] = await db.select().from(calls).where(eq(calls.id, Number(call_id))).limit(1);
           if (c) visitorId = c.visitorId;
@@ -251,10 +349,29 @@ export default async (req: Request, context: Context) => {
         }).returning();
 
         if (lead_id) {
-          await db.update(leads).set({ boatId: newBoat.id, stage: "Donation Accepted" }).where(eq(leads.id, Number(lead_id)));
+          await db.update(leads).set({ boatId: newBoat.id, stage: "Donation Accepted", updatedAt: sql`now()` }).where(eq(leads.id, Number(lead_id)));
+          
+          // Auto-queue primary Google Ads offline conversion on boat creation/acceptance
+          const convId = `conv_accept_lead_${lead_id}`;
+          await db.insert(conversionExports).values({
+            conversionId: convId,
+            conversionType: "Donation_Accepted",
+            leadId: Number(lead_id),
+            boatId: newBoat.id,
+            gclid: leadObj?.gclid || "",
+            gbraid: leadObj?.gbraid || "",
+            wbraid: leadObj?.wbraid || "",
+            conversionTime: new Date(),
+            conversionValue: "1.0",
+            currency: "USD",
+            hashedEmail: leadObj?.email ? sha256(leadObj.email) : "",
+            hashedPhone: leadObj?.phone ? sha256(leadObj.phone) : "",
+            exportStatus: "Pending"
+          }).onConflictDoNothing();
         }
+
         if (call_id) {
-          await db.update(calls).set({ boatId: newBoat.id, stage: "Donation Accepted" }).where(eq(calls.id, Number(call_id)));
+          await db.update(calls).set({ boatId: newBoat.id, stage: "Donation Accepted", updatedAt: sql`now()` }).where(eq(calls.id, Number(call_id)));
         }
 
         await db.insert(auditHistory).values({
@@ -269,7 +386,7 @@ export default async (req: Request, context: Context) => {
         return Response.json({ success: true, boat: newBoat });
       }
 
-      // 4. Create or Relist eBay Listing
+      // 5. Create or Relist eBay Listing
       if (action === "add_ebay_listing") {
         const { boat_id, ebay_item_id, listing_url, auction_start_date, starting_price, is_relist } = body;
         if (!boat_id || !ebay_item_id) return new Response("Missing boat_id or ebay_item_id", { status: 400 });
@@ -299,10 +416,19 @@ export default async (req: Request, context: Context) => {
         // Update boat status to Listed
         await db.update(boats).set({ status: "Listed", updatedAt: sql`now()` }).where(eq(boats.id, Number(boat_id)));
 
+        await db.insert(auditHistory).values({
+          entityType: "listing",
+          entityId: String(newListing.id),
+          action: is_relist ? "relist_ebay" : "add_ebay_listing",
+          performedBy: actor,
+          newState: newListing,
+          notes: `eBay Item ID ${ebay_item_id} (relist count: ${relistCount})`
+        });
+
         return Response.json({ success: true, listing: newListing });
       }
 
-      // 5. Record Final eBay Sale (Deduplicated — exactly ONE final sale per boat)
+      // 6. Record Final eBay Sale (Deduplicated — exactly ONE final sale per boat)
       if (action === "record_sale") {
         const { boat_id, listing_id, sale_amount, sale_date, buyer_payment_status, form_1098c_issued, notes } = body;
         if (!boat_id || !sale_amount) return new Response("Missing boat_id or sale_amount", { status: 400 });
@@ -317,7 +443,7 @@ export default async (req: Request, context: Context) => {
         }
 
         const [boatRecord] = await db.select().from(boats).where(eq(boats.id, Number(boat_id))).limit(1);
-        let leadRecord = null;
+        let leadRecord: any = null;
         if (boatRecord?.leadId) {
           const [l] = await db.select().from(leads).where(eq(leads.id, boatRecord.leadId)).limit(1);
           leadRecord = l;
