@@ -10,12 +10,13 @@ let migrated = false;
 
 /**
  * Google Ads Enhanced & Offline Conversion Export Helper
- * Formats and delivers conversion data ready for Google Ads Offline Conversions API / Bulk Upload
+ * Securely authenticated via Authorization / session headers (without query string keys)
+ * Delivers conversion data ready for Google Ads Offline Conversions API / Bulk Upload
  */
 export default async (req: Request, context: Context) => {
   const authHeader = req.headers.get("authorization") || req.headers.get("x-dashboard-key");
   if (!verifyDashboardAuth(authHeader)) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    return new Response(JSON.stringify({ error: "Unauthorized access to conversion exports" }), {
       status: 401,
       headers: { "Content-Type": "application/json" }
     });
