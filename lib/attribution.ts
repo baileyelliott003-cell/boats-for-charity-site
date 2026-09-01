@@ -7,9 +7,13 @@ import crypto from "node:crypto";
  * - Remove all whitespace
  * - If already a 64-character hex SHA-256 string, avoid double-hashing
  */
+export function normalizeEmail(val: string | null | undefined): string {
+  return String(val || "").trim().toLowerCase().replace(/\s+/g, "");
+}
+
 export function hashEmail(val: string | null | undefined): string {
   if (!val) return "";
-  const clean = val.trim().toLowerCase();
+  const clean = normalizeEmail(val);
   if (!clean) return "";
   if (/^[a-f0-9]{64}$/i.test(clean)) {
     return clean; // Already hashed, avoid double-hashing
@@ -23,6 +27,16 @@ export function hashEmail(val: string | null | undefined): string {
  * - If US number missing country code, prepend +1
  * - If already a 64-character hex SHA-256 string, avoid double-hashing
  */
+export function normalizePhoneE164(val: string | null | undefined): string {
+  if (!val) return "";
+  const clean = val.trim();
+  const digits = clean.replace(/\D/g, "");
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  if ((clean.startsWith("+") || clean.startsWith("00")) && digits.length >= 8 && digits.length <= 15) return `+${digits}`;
+  return "";
+}
+
 export function hashPhone(val: string | null | undefined): string {
   if (!val) return "";
   const clean = val.trim();
@@ -30,20 +44,8 @@ export function hashPhone(val: string | null | undefined): string {
   if (/^[a-f0-9]{64}$/i.test(clean)) {
     return clean; // Already hashed, avoid double-hashing
   }
-  const digits = clean.replace(/\D/g, "");
-  if (!digits) return "";
-  
-  let e164 = "";
-  if (clean.startsWith("+")) {
-    e164 = "+" + digits;
-  } else if (digits.length === 10) {
-    e164 = "+1" + digits; // Standard 10-digit US
-  } else if (digits.length === 11 && digits.startsWith("1")) {
-    e164 = "+" + digits; // 11-digit US with leading 1
-  } else {
-    e164 = "+" + digits;
-  }
-  
+  const e164 = normalizePhoneE164(clean);
+  if (!e164) return "";
   return crypto.createHash("sha256").update(e164).digest("hex");
 }
 

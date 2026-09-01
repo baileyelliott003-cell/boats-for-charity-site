@@ -5,6 +5,15 @@ import { fileURLToPath } from "node:url";
 const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT = path.resolve(process.argv[2] ?? SCRIPT_ROOT);
 const ORIGIN = "https://boatsforcharity.org";
+const GOOGLE_TAG = `<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-28FSWPQMQV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-28FSWPQMQV');
+  gtag('config', 'AW-18239894267');
+</script>`;
 
 const STATE_NAMES = {
   alabama: "Alabama",
@@ -68,7 +77,6 @@ const ROOT_PAGES = new Map([
   ["thanks.html", "/thanks"],
 ]);
 
-const WHATCONVERTS_TAG = `<script src="//tracking.whatconverts.com/scripts/wc.js" async></script>`;
 
 const toPosix = (value) => value.split(path.sep).join("/");
 const read = (relative) => fs.readFileSync(path.join(ROOT, relative), "utf8");
@@ -107,25 +115,29 @@ const preferredHtml = listFiles(ROOT, (file) => file.endsWith(".html"))
   .map((file) => toPosix(path.relative(ROOT, file)))
   .filter((relative) => preferredRoute(relative));
 
-let gtagAdsUpdated = 0;
+let googleAdsUpdated = 0;
+let googleTagInjected = 0;
 let trackerInjected = 0;
 for (const relative of preferredHtml) {
   let html = read(relative);
   let modified = false;
 
-  // 1. Ensure Google Ads AW-18239894267 is configured on existing Google tag
-  if (!html.includes("gtag('config', 'AW-18239894267');")) {
-    if (html.includes("gtag('config', 'G-28FSWPQMQV');")) {
-      html = html.replace(
-        "gtag('config', 'G-28FSWPQMQV');",
-        "gtag('config', 'G-28FSWPQMQV');\n  gtag('config', 'AW-18239894267');"
-      );
-      modified = true;
-      gtagAdsUpdated++;
-    }
+  if (!html.includes("googletagmanager.com/gtag/js") && html.includes("<head>")) {
+    html = html.replace("<head>", `<head>\n${GOOGLE_TAG}`);
+    modified = true;
+    googleTagInjected++;
   }
 
-  // 2. Inject tracker.v1.js
+  if (!html.includes("gtag('config', 'AW-18239894267');") && html.includes("gtag('config', 'G-28FSWPQMQV');")) {
+    html = html.replace(
+      "gtag('config', 'G-28FSWPQMQV');",
+      "gtag('config', 'G-28FSWPQMQV');\n  gtag('config', 'AW-18239894267');"
+    );
+    modified = true;
+    googleAdsUpdated++;
+  }
+
+  // 1. Inject tracker.v1.js
   if (!html.includes('src="/tracker.v1.js"')) {
     if (html.includes('src="/script.v123.js"')) {
       html = html.replace(
@@ -139,12 +151,10 @@ for (const relative of preferredHtml) {
     }
   }
 
-  // 3. Inject WhatConverts script
-  if (!html.includes('tracking.whatconverts.com/scripts/wc.js')) {
-    if (html.includes('</head>')) {
-      html = html.replace('</head>', `  ${WHATCONVERTS_TAG}\n</head>`);
-      modified = true;
-    }
+  const withoutPlaceholder = html.replace(/\s*<script[^>]+tracking\.whatconverts\.com\/scripts\/wc\.js[^>]*><\/script>/gi, '');
+  if (withoutPlaceholder !== html) {
+    html = withoutPlaceholder;
+    modified = true;
   }
 
   if (modified) {
@@ -153,4 +163,4 @@ for (const relative of preferredHtml) {
   }
 }
 
-console.log(`[repair-seo] Verified Google tag (GA4 G-28FSWPQMQV + Google Ads AW-18239894267), WhatConverts & SEO structure across ${preferredHtml.length} pages (${gtagAdsUpdated} Google Ads configs added, ${trackerInjected} total updated).`);
+console.log(`[repair-seo] Verified Google tag, first-party tracking, and SEO structure across ${preferredHtml.length} pages (${googleTagInjected} Google tags added, ${googleAdsUpdated} Google Ads configs added, ${trackerInjected} total updated).`);

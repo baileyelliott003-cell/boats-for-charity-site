@@ -16,6 +16,9 @@
 (function () {
   'use strict';
 
+  if (window.__BFC_TRACKER_INITIALIZED__) return;
+  window.__BFC_TRACKER_INITIALIZED__ = true;
+
   var SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
   var VISITOR_COOKIE_NAME = 'bfc_vid';
   var SESSION_COOKIE_NAME = 'bfc_sid';
@@ -25,9 +28,17 @@
 
   // Generate safe random UUID
   function generateId(prefix) {
-    var d = Date.now().toString(36);
-    var r = Math.random().toString(36).substring(2, 10);
-    return (prefix || 'bfc') + '_' + d + '_' + r;
+    if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+      return (prefix || 'bfc') + '_' + window.crypto.randomUUID().replace(/-/g, '');
+    }
+    var bytes = new Uint8Array(16);
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+      window.crypto.getRandomValues(bytes);
+      return (prefix || 'bfc') + '_' + Array.prototype.map.call(bytes, function (value) {
+        return value.toString(16).padStart(2, '0');
+      }).join('');
+    }
+    return (prefix || 'bfc') + '_' + Date.now().toString(36);
   }
 
   function getCookie(name) {
@@ -104,9 +115,21 @@
       }
     } catch (e) {}
 
+    var source = params.get('utm_source') || '';
+    var medium = params.get('utm_medium') || '';
+    if (!source && (params.get('gclid') || params.get('gbraid') || params.get('wbraid'))) source = 'google';
+    if (!source && params.get('msclkid')) source = 'bing';
+    if (!medium && source && (params.get('gclid') || params.get('gbraid') || params.get('wbraid') || params.get('msclkid'))) medium = 'cpc';
+    if (!source && refDomain && refDomain !== window.location.hostname.replace(/^www\./, '')) {
+      source = refDomain;
+      medium = 'referral';
+    }
+    if (!source) source = 'direct';
+    if (!medium) medium = '(none)';
+
     return {
-      utm_source: params.get('utm_source') || '',
-      utm_medium: params.get('utm_medium') || '',
+      utm_source: source,
+      utm_medium: medium,
       utm_campaign: params.get('utm_campaign') || '',
       utm_term: params.get('utm_term') || '',
       utm_content: params.get('utm_content') || '',
@@ -136,7 +159,7 @@
   // 3. Attribution Management (First Touch vs Last Non-Direct)
   var currentTouch = parseParams();
   var isMarketingTraffic = Boolean(
-    currentTouch.utm_source || 
+    currentTouch.utm_source !== 'direct' ||
     currentTouch.gclid || 
     currentTouch.gbraid || 
     currentTouch.wbraid || 
@@ -206,7 +229,7 @@
 
     var body = JSON.stringify(payload);
     if (navigator.sendBeacon) {
-      navigator.sendBeacon('/api/track-event', body);
+      navigator.sendBeacon('/api/track-event', new Blob([body], { type: 'application/json' }));
     } else {
       fetch('/api/track-event', {
         method: 'POST',
@@ -256,6 +279,82 @@
     });
   }
 
+  function normalizeLeadEmail(value) {
+    return String(value || '').trim().toLowerCase().replace(/\s+/g, '');
+  }
+
+  function normalizeLeadPhone(value) {
+    var raw = String(value || '').trim();
+    var digits = raw.replace(/\D/g, '');
+    if (digits.length === 10) return '+1' + digits;
+    if (digits.length === 11 && digits.charAt(0) === '1') return '+' + digits;
+    if ((raw.charAt(0) === '+' || raw.slice(0, 2) === '00') && digits.length >= 8 && digits.length <= 15) return '+' + digits;
+    return '';
+  }
+
+  function sha256(value) {
+    if (!value || !window.crypto || !window.crypto.subtle || typeof TextEncoder !== 'function') return Promise.resolve('');
+    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(value)).then(function (buffer) {
+      return Array.prototype.map.call(new Uint8Array(buffer), function (byte) {
+        return byte.toString(16).padStart(2, '0');
+      }).join('');
+    }).catch(function () { return ''; });
+  }
+
+  function setEnhancedLeadData(form) {
+    return Promise.resolve().then(function () {
+      if (typeof window.gtag !== 'function') return;
+      var emailField = form.querySelector('input[type="email"], input[name="email"]');
+      var phoneField = form.querySelector('input[type="tel"], input[name="phone"]');
+      var email = normalizeLeadEmail(emailField && emailField.value);
+      var phone = normalizeLeadPhone(phoneField && phoneField.value);
+      return Promise.all([sha256(email), sha256(phone)]).then(function (hashes) {
+        var userData = {};
+        if (hashes[0]) userData.sha256_email_address = hashes[0];
+        if (hashes[1]) userData.sha256_phone_number = hashes[1];
+        if (Object.keys(userData).length) window.gtag('set', 'user_data', userData);
+      });
+    }).catch(function () {});
+  }
+
+  function restoreFailedSubmission(form, submitButton, wasDisabled) {
+    delete form.dataset.bfcSubmitting;
+    if (submitButton) submitButton.disabled = wasDisabled;
+  }
+
+  function completeNativeSubmission(form, submitButton, wasDisabled) {
+    try {
+      HTMLFormElement.prototype.submit.call(form);
+    } catch (error) {
+      restoreFailedSubmission(form, submitButton, wasDisabled);
+    }
+  }
+
+  function handleValidSubmission(form, formName, event) {
+    if (event.defaultPrevented) return;
+    if (typeof form.checkValidity === 'function' && !form.checkValidity()) return;
+    if (form.dataset.bfcSubmitting === 'true') {
+      event.preventDefault();
+      return;
+    }
+
+    event.preventDefault();
+    form.dataset.bfcSubmitting = 'true';
+    var submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+    var wasDisabled = Boolean(submitButton && submitButton.disabled);
+    if (submitButton) submitButton.disabled = true;
+
+    var gaInput = form.querySelector('input[name="ga_client_id"]');
+    if (gaInput) gaInput.value = getGaClientId();
+    sendEvent('form_submit_attempt', { form_name: formName });
+
+    setEnhancedLeadData(form).then(function () {
+      completeNativeSubmission(form, submitButton, wasDisabled);
+    }, function () {
+      completeNativeSubmission(form, submitButton, wasDisabled);
+    });
+  }
+
   // 7. Bind DOM Events
   function initTracker() {
     // Record page view event
@@ -278,11 +377,8 @@
       });
 
       // Track form submit attempt
-      form.addEventListener('submit', function () {
-        // Refresh ga_client_id just before sending
-        var gaInput = form.querySelector('input[name="ga_client_id"]');
-        if (gaInput) gaInput.value = getGaClientId();
-        sendEvent('form_submit_attempt', { form_name: formName });
+      form.addEventListener('submit', function (event) {
+        handleValidSubmission(form, formName, event);
       });
     });
 
@@ -320,6 +416,7 @@
     getFirstTouch: function () { return firstTouch; },
     getLastTouch: function () { return lastTouch; },
     sendEvent: sendEvent,
-    injectHiddenFields: injectHiddenFields
+    injectHiddenFields: injectHiddenFields,
+    setEnhancedLeadData: setEnhancedLeadData
   };
 })();

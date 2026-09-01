@@ -3,14 +3,13 @@ import type { Config, Context } from "@netlify/functions";
 import { sql, gte, eq, desc } from "drizzle-orm";
 import { db } from "../../db/index.js";
 import { visits } from "../../db/schema.js";
-import { verifyDashboardAuth } from "../../lib/attribution.js";
+import { authorizeAdminRequest } from "../../lib/admin-auth.js";
 
 export default async (req: Request, context: Context) => {
-  // Protect endpoint: Require staff dashboard authentication
-  const authHeader = req.headers.get("authorization") || req.headers.get("x-dashboard-key");
-  if (!verifyDashboardAuth(authHeader)) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
+  const authorization = await authorizeAdminRequest(req);
+  if (!authorization.authorized) {
+    return new Response(JSON.stringify({ error: authorization.error }), {
+      status: authorization.status,
       headers: { "Content-Type": "application/json", "cache-control": "no-store" },
     });
   }

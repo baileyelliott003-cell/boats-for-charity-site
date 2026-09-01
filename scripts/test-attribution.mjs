@@ -1,10 +1,10 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import crypto from "node:crypto";
+import { spawnSync } from "node:child_process";
 
-const SCRIPT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const ROOT = path.resolve(process.argv[2] ?? SCRIPT_ROOT);
+const result = spawnSync(process.execPath, ["--test", "tests/*.test.mjs"], {
+  cwd: new URL("..", import.meta.url),
+  stdio: "inherit",
+  shell: true
+});
 
 console.log("[test-attribution-behavioral] Starting deep behavioral test suite...");
 
