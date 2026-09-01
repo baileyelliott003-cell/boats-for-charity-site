@@ -4,18 +4,6 @@
   command = "npm test"
   publish = "."
 
-[[redirects]]
-  from = "/api/google-ads-conversions-feed.csv"
-  to = "/.netlify/functions/google-ads-conversions-feed"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-  force = true
-
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
