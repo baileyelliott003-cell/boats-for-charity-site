@@ -56,13 +56,20 @@ export interface NormalizedSubmission {
 }
 
 export function normalizeNetlifySubmission(rawBody: string): NormalizedSubmission {
-  const payload = JSON.parse(rawBody || "{}");
-  const submission = payload?.payload;
-  if (!submission || typeof submission !== "object" || Array.isArray(submission)) throw new Error("Invalid Netlify submission");
-  const data = submission.data;
-  if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Invalid Netlify form data");
-  const formName = text(submission.form_name || data["form-name"] || "donationForm", 100);
-  const netlifySubmissionId = text(submission.id || data.id, 200) || deterministicSubmissionId(submission, data);
+  let payload: any = {};
+  try {
+    payload = typeof rawBody === "string" ? JSON.parse(rawBody || "{}") : rawBody;
+  } catch {
+    payload = {};
+  }
+  
+  // Netlify Forms event payload format: { payload: { id: ..., form_name: ..., data: { ... } } } OR direct { id: ..., data: { ... } }
+  const submission = payload?.payload || payload;
+  if (!submission || typeof submission !== "object") throw new Error("Invalid Netlify submission");
+  const data = submission.data || submission.human_fields || submission.ordered_human_fields?.reduce((acc: any, f: any) => ({ ...acc, [f.name]: f.value }), {}) || {};
+  if (!data || typeof data !== "object") throw new Error("Invalid Netlify form data");
+  const formName = text(submission.form_name || data["form-name"] || submission.name || "donationForm", 100);
+  const netlifySubmissionId = text(submission.id || data.id || submission.number, 200) || deterministicSubmissionId(submission, data);
   const visitorId = trackingId(data.visitor_id);
   const sessionId = visitorId ? trackingId(data.session_id) : "";
   return {
@@ -70,23 +77,23 @@ export function normalizeNetlifySubmission(rawBody: string): NormalizedSubmissio
     formName,
     visitorId,
     sessionId,
-    firstName: text(data.first_name || data.name, 150),
-    lastName: text(data.last_name, 150),
-    email: text(data.email, 320).toLowerCase(),
-    phone: text(data.phone, 50),
-    smsConsent: data.sms_consent === true || data.sms_consent === "true" || data.sms_consent === "yes",
-    boatDetails: text(data.boat_details || data.details || data.notes, 5000),
-    pageContext: text(data.page_context, 500),
+    firstName: text(data.first_name || data.name || data["First Name"], 150),
+    lastName: text(data.last_name || data["Last Name"], 150),
+    email: text(data.email || data["Email"], 320).toLowerCase(),
+    phone: text(data.phone || data["Phone"], 50),
+    smsConsent: data.sms_consent === true || data.sms_consent === "true" || data.sms_consent === "yes" || data["SMS Consent"] === "yes",
+    boatDetails: text(data.boat_details || data.details || data.notes || data["Boat Details"] || data["Details"], 5000),
+    pageContext: text(data.page_context || data["Page Context"], 500),
     firstTouchSource: text(data.first_touch_source, 150),
     firstTouchMedium: text(data.first_touch_medium, 150),
     firstTouchCampaign: text(data.first_touch_campaign, 150),
     firstTouchLandingPage: text(data.first_touch_landing_page, 500),
-    lastTouchSource: text(data.last_touch_source || data.utm_source, 150),
+    lastTouchSource: text(data.last_touch_source || data.utm_source || "direct", 150),
     lastTouchMedium: text(data.last_touch_medium || data.utm_medium, 150),
     lastTouchCampaign: text(data.last_touch_campaign || data.utm_campaign, 150),
     lastTouchTerm: text(data.last_touch_term || data.utm_term, 150),
     lastTouchContent: text(data.last_touch_content || data.utm_content, 150),
-    lastLandingPage: text(data.last_landing_page, 500),
+    lastLandingPage: text(data.last_landing_page || "/", 500),
     lastReferrer: text(data.last_referrer, 500),
     gclid: text(data.gclid, 200),
     gbraid: text(data.gbraid, 150),
@@ -206,11 +213,13 @@ export function createNetlifySubmissionHandler(overrides: Partial<NetlifySubmiss
     sendAcknowledgment: sendResendAcknowledgment,
     ...overrides,
   };
-  return async (event: { body?: string | null }) => {
+  return async (event: { body?: string | null } | any) => {
     let submission: NormalizedSubmission;
     try {
-      submission = normalizeNetlifySubmission(event.body || "");
-    } catch {
+      const raw = typeof event?.body === "string" ? event.body : JSON.stringify(event?.body || event || {});
+      submission = normalizeNetlifySubmission(raw);
+    } catch (err) {
+      console.error("[submission-created] normalizeNetlifySubmission parsing error:", err);
       return { statusCode: 400, body: "Invalid submission" };
     }
     try {
