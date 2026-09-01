@@ -1,12 +1,10 @@
-// netlify/functions/submission-created.ts
-import type { Handler } from "@netlify/functions";
 import { createNetlifySubmissionHandler } from "../../lib/netlify-submission.js";
 import { runMigrations } from "../../db/migrate.js";
 
 let migrated = false;
 const baseHandler = createNetlifySubmissionHandler();
 
-export const handler: Handler = async (event, context) => {
+export default async (req: Request) => {
   if (!migrated) {
     try {
       await runMigrations();
@@ -15,5 +13,10 @@ export const handler: Handler = async (event, context) => {
       console.warn("[submission-created] migration warning:", err);
     }
   }
-  return baseHandler(event, context);
+
+  const result = await baseHandler({ body: await req.text() });
+  return new Response(result.body, {
+    status: result.statusCode,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
 };

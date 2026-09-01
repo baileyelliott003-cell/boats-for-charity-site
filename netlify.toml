@@ -5,18 +5,6 @@
   publish = "."
 
 [[redirects]]
-  from = "/admin/dashboard"
-  to = "/.netlify/functions/admin-dashboard"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/admin/dashboard/*"
-  to = "/.netlify/functions/admin-dashboard"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/api/google-ads-conversions-feed.csv"
   to = "/.netlify/functions/google-ads-conversions-feed"
   status = 200
