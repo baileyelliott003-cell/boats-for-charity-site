@@ -74,7 +74,8 @@ for (const file of htmlFiles) {
       if (body.includes("gtag('js', new Date())") && body.includes("function gtag")) return "";
       if (body.includes("clarity.ms/tag/") && body.includes('"x7aygvaxhx"')) return "";
       return match;
-    });
+    })
+    .replace(/\s*<!--\s*Google tag \(gtag\.js\)\s*-->/gi, "");
   if (withoutAnalytics !== content) {
     content = withoutAnalytics;
     changed = true;
