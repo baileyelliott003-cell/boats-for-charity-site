@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Send Boats for Charity your boat photos with your name and contact information.">
+  <title>Upload your boat photos | Boats for Charity</title>
+  <link rel="canonical" href="https://boatsforcharity.org/upload/">
+  <link rel="stylesheet" href="/upload/upload.css">
+  <script src="/upload/upload.js" defer></script>
+</head>
+<body>
+<header><a href="/" aria-label="Boats for Charity home"><img src="/assets/logo.png" width="210" height="60" alt="Boats for Charity"></a><a href="tel:+18555573703">Need help? (855) 557-3703</a></header>
+<main>
+  <p class="eyebrow">YOUR NEXT STEP</p>
+  <h1>Let’s see your boat.</h1>
+  <p class="intro">Add your photos and contact details below. We’ll keep them together so our team knows which boat is yours.</p>
+  <form id="photo-form" name="boatPhotoUpload" method="POST" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="bot-field" action="/upload/">
+    <input type="hidden" name="form-name" value="boatPhotoUpload">
+    <input type="hidden" name="page_context" value="boat-photo-upload">
+    <input type="hidden" name="upload_id" id="upload-id">
+    <input type="hidden" name="photo_count" id="photo-count">
+    <input type="hidden" name="photo_manifest" id="photo-manifest">
+    <p hidden><label>Leave this blank <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+    <fieldset id="fields">
+      <legend class="sr-only">Your contact details and photos</legend>
+      <h2><span>1</span> Tell us who you are</h2>
+      <div class="columns">
+        <label>First name <input name="first_name" autocomplete="given-name" maxlength="100" required></label>
+        <label>Last name <input name="last_name" autocomplete="family-name" maxlength="100" required></label>
+      </div>
+      <label>Phone number <input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" required aria-describedby="phone-help"></label>
+      <p class="hint" id="phone-help">Use the number you gave us when you contacted Boats for Charity.</p>
+      <label>Email <span class="optional">(optional)</span><input name="email" type="email" autocomplete="email" maxlength="254"></label>
+      <label>Which boat are these photos for? <input name="boat_details" maxlength="300" placeholder="Example: 2006 Crest pontoon in Butler, NJ" required></label>
+      <h2><span>2</span> Add your boat photos</h2>
+      <p>Helpful photos include both sides, the front and back, interior, motor, trailer, and any damage. Please send photos of <strong>one boat at a time.</strong></p>
+      <div class="picker"><label for="photos" class="choose">Choose photos</label><input id="photos" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif" multiple><p class="hint">Choose up to 20 photos. You can add more before sending.</p></div>
+      <p class="hint">Boat photos only—please don’t upload titles, identification, or tax paperwork here.</p>
+      <p id="selection-status" role="status" aria-live="polite">No photos added yet.</p>
+      <ul id="previews" aria-label="Selected photos"></ul>
+      <label>Anything else we should know? <span class="optional">(optional)</span><textarea name="notes" maxlength="2000" rows="3"></textarea></label>
+      <p class="hint">Your contact details help us match these photos to your donation.</p>
+      <button type="submit" id="send" disabled>Send my photos</button>
+    </fieldset>
+    <div id="progress-wrap" hidden><label for="progress">Sending your photos… Keep this page open.</label><progress id="progress" max="100" value="0"></progress></div>
+    <p id="message" role="status" aria-live="polite" tabindex="-1"></p>
+    <noscript><p>Please enable JavaScript to select and send photos, or call <a href="tel:+18555573703">(855) 557-3703</a> for help.</p></noscript>
+    <!-- One file per named field is required by Netlify Forms. JS builds these fields from the photo picker. -->
+    <input hidden type="file" name="photo_01" tabindex="-1">
+    <input hidden type="file" name="photo_02" tabindex="-1">
+    <input hidden type="file" name="photo_03" tabindex="-1">
+    <input hidden type="file" name="photo_04" tabindex="-1">
+    <input hidden type="file" name="photo_05" tabindex="-1">
+    <input hidden type="file" name="photo_06" tabindex="-1">
+    <input hidden type="file" name="photo_07" tabindex="-1">
+    <input hidden type="file" name="photo_08" tabindex="-1">
+    <input hidden type="file" name="photo_09" tabindex="-1">
+    <input hidden type="file" name="photo_10" tabindex="-1">
+    <input hidden type="file" name="photo_11" tabindex="-1">
+    <input hidden type="file" name="photo_12" tabindex="-1">
+    <input hidden type="file" name="photo_13" tabindex="-1">
+    <input hidden type="file" name="photo_14" tabindex="-1">
+    <input hidden type="file" name="photo_15" tabindex="-1">
+    <input hidden type="file" name="photo_16" tabindex="-1">
+    <input hidden type="file" name="photo_17" tabindex="-1">
+    <input hidden type="file" name="photo_18" tabindex="-1">
+    <input hidden type="file" name="photo_19" tabindex="-1">
+    <input hidden type="file" name="photo_20" tabindex="-1">
+  </form>
+  <section id="success" hidden tabindex="-1"><div class="check">✓</div><h2>Thanks! Your photos have been submitted.</h2><p>Your contact details and photos were sent together for our team to review.</p><p id="receipt"></p><button type="button" id="more">Send more photos</button></section>
+  <footer>Questions? <a href="tel:+18555573703">Call (855) 557-3703</a></footer>
+</main>
+</body>
+</html>
