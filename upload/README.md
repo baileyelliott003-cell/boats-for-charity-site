@@ -17,8 +17,8 @@ JPEG/PNG/WebP and browser-decodable HEIC images are converted to JPEG, resized t
 1. Enable Forms > Enable form detection if it is not already enabled. The form is in static HTML and must be detected on a deployment.
 2. Review this branch using the existing site's deploy-preview process. Do NOT deploy this folder by itself over the production site: Netlify deployments replace the site's entire deployed file set.
 3. Verify the new form boatPhotoUpload appears in Forms and has all donor metadata and 20 file fields.
-4. In project Configuration > Notifications > Form submission notifications, add an email notification for **boatPhotoUpload** to **info.boatsforcharity@gmail.com**. Notifications are configured in Netlify, not by the HTML. Verify the recipient and form filter. A global notification may already cover it; avoid duplicate notifications.
-5. Submit a real end-to-end sample on the preview, check the verified/spam lists, count and open every photo, and confirm the inbox receives the name, phone, boat details, and photo links. Email notifications use links, not necessarily attachments. Local browser testing cannot verify this.
+4. Set RESEND_API_KEY and FROM_EMAIL in Netlify runtime environment variables. The photo-upload-notification event function emails info.boatsforcharity@gmail.com with donor details and remote photo attachments when Netlify verifies a photo upload. A separate standard Netlify notification is optional and would produce an additional link-only email.
+5. Submit a real end-to-end sample on the preview, check the verified/spam lists, count and open every photo, and confirm the inbox receives the name, phone, boat details, and photo links. The Resend notification includes attachments plus the original links. Explicit attachment rejection falls back to a clearly labeled link-only notification. Local browser testing cannot verify this.
 6. Check existing plan/usage limits in Netlify. No additional upload vendor is needed, but Netlify usage may be billable under the account's plan.
 7. Before merging, review the existing build behavior described below and confirm the preview works. After an authorized production merge, verify /upload and /upload/ and send one production test.
 
@@ -37,3 +37,11 @@ See PR description for completed checks. Test request failures, retry, duplicate
 - https://docs.netlify.com/manage/forms/setup/
 - https://docs.netlify.com/manage/forms/notifications/
 - https://docs.netlify.com/manage/forms/usage-and-billing/
+
+## Attachment notification implementation
+
+netlify/functions/photo-upload-notification.ts subscribes to Netlify's signed formSubmitted event independently of submission-created. It filters on page_context=boat-photo-upload, validates the UUID and 1–20 photo count, and invokes lib/photo-upload-email.ts. Existing intake, database and donor acknowledgment code is unchanged. Resend downloads remote attachments via its documented path parameter; our function never downloads donor-supplied URLs. Invalid/missing file URLs are flagged in the email instead of silently claiming every photo was attached.
+
+The recipient is fixed to info.boatsforcharity@gmail.com. Sender and API key come only from runtime settings. No API keys appear in the page or repository. Transient network/429/5xx failures have bounded retries with a stable content-derived Resend idempotency key; Resend retains keys for 24 hours. Only explicit attachment rejection triggers link fallback. Provider/configuration failures are thrown for visibility in function logs. No claim of a durable delivery queue or guaranteed platform retries is made. Historical submissions are not automatically resent. A real new submission must verify deployed event behavior and inbox delivery.
+
+Run focused tests with node --test tests/photo-upload-email.test.mjs. Tests use a mocked email provider and cover routing, donor/photo association, configuration, unsafe URL formats, missing photos, idempotency, transient retries, fallback, and hard failures.
