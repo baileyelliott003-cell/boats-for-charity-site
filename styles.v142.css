@@ -696,3 +696,42 @@ section.donate .wrap > p { margin-bottom:12px }
   .local-hero .hero-cta{display:grid;grid-template-columns:1fr}
   .local-panel{text-align:left}
 }
+
+/* BFC visual polish: shared typography and a restrained nautical palette. */
+:root{
+  --navy:#102f43;
+  --teal:#126e73;
+  --ink:#263e4b;
+  --muted:#526672;
+  --ring:0 0 0 3px rgba(18,110,115,.2);
+}
+html{font-family:Arial,"Helvetica Neue",Helvetica,sans-serif;line-height:1.65}
+body{color:var(--ink)}
+button,input,select,textarea{font-family:inherit}
+h1,h2,h3{color:var(--navy);line-height:1.25}
+h1{letter-spacing:-.025em}
+.section h2{letter-spacing:-.02em}
+h3{letter-spacing:-.01em}
+a{color:var(--teal)}
+.btn{font-family:inherit;font-weight:600;border-radius:10px;line-height:1.4}
+.btn-primary,.btn-primary:visited{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn-primary:hover{background:#0d565b;border-color:#0d565b;filter:none}
+.btn-primary:focus-visible{outline:3px solid var(--navy);outline-offset:4px}
+.nav a{font-size:.94rem;font-weight:600}
+.nav-phone{font-weight:600}
+.phone-icon{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.18em;flex-shrink:0;margin-right:.35em}
+.call-now{font-size:1.05rem;box-shadow:0 4px 12px rgba(16,47,67,.1);border-radius:10px}
+.call-cta-or{color:var(--muted);font-weight:400;font-size:.95rem}
+.eyebrow{background:#eaf3f3;color:var(--teal);font-weight:700;letter-spacing:.07em}
+.section.alt,.breadcrumbs{background:#f4f7f8}
+.card,.ebay-panel,.donated-item img{border-color:#dce5e8;box-shadow:0 4px 16px rgba(16,47,67,.045)}
+.btn-ebay{box-shadow:0 4px 12px rgba(16,47,67,.1);font-weight:600}
+.local-hero{background:#f4f8f8}
+form#donationForm label{font-weight:600;color:var(--navy)}
+form#donationForm .btn.btn-primary{font-weight:600}
+form#donationForm input:not([type="checkbox"]),form#donationForm textarea{border-color:#cbd8dd;border-width:1px}
+form#donationForm input:not([type="checkbox"]):focus,form#donationForm textarea:focus{border-color:var(--teal);box-shadow:var(--ring)}
+.cta-band{background:var(--navy)}
+.trust span:last-child,.cta-band p{color:#dce8ed}
+
+.brand-icon{display:inline-block;width:1.2em;height:1.2em;vertical-align:-.2em;margin-right:.25em}.trust-num .brand-icon{width:26px;height:26px;color:#dce8ed}
