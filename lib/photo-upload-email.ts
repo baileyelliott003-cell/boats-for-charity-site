@@ -8,6 +8,10 @@ const clean = (value: unknown, max = 300) => typeof value === 'string' ? value.t
 
 // Resend retrieves remote attachments. Never fetch donor-supplied URLs on our server.
 export function photoUrl(value: unknown): string | null {
+  if (value && typeof value === 'object' && !Array.isArray(value)) value = (value as Record<string, unknown>).url;
+  if (typeof value === 'string' && value.trim().startsWith('{')) {
+    try { value = JSON.parse(value).url; } catch { return null; }
+  }
   if (typeof value !== 'string' || value.length > 4096) return null;
   try {
     const url = new URL(value);

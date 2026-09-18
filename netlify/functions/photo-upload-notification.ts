@@ -1,11 +1,19 @@
 import type { FormSubmittedEvent } from '@netlify/functions';
 import { sendPhotoUploadEmail } from '../../lib/photo-upload-email.js';
+import { resolvePhotoUploadFiles } from '../../lib/photo-upload-files.js';
 
-// Netlify verifies event signatures before invoking this event-only handler.
-// Separate from the existing submission-created hook, so database errors cannot
-// prevent upload notifications and existing donor acknowledgment logic is unchanged.
 export default {
   async formSubmitted(event: FormSubmittedEvent) {
-    await sendPhotoUploadEmail(event.data);
+    if (event.data.page_context !== 'boat-photo-upload') return;
+    let data: Record<string, unknown> = event.data;
+    try {
+      data = await resolvePhotoUploadFiles(event.data);
+    } catch (error) {
+      // Preserve the donor notification even if file lookup needs configuration.
+      // Emit an actionable code without logging credentials, URLs or donor data.
+      const detail = error instanceof Error && error.message.startsWith('PHOTO_LOOKUP_') ? error.message : 'PHOTO_LOOKUP_FAILED';
+      console.error('[photo-upload-notification]', detail);
+    }
+    await sendPhotoUploadEmail(data);
   },
 };
