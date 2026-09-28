@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { patchForms } from "./patlive-form-fields.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const GOOGLE_TAG = `<!-- Google tag (gtag.js) -->
@@ -47,6 +48,12 @@ for (const file of htmlFiles) {
   let content = fs.readFileSync(file, "utf-8");
   let changed = false;
   const relative = path.relative(ROOT, file).replaceAll(path.sep, "/");
+  const patlive = patchForms(content, [{name:'campaign_id',value:'YQHYVVOD'},{name:'time_zone',value:'Not detected'}]);
+  if (patlive.count) {
+    let updated = patlive.html;
+    if (!updated.includes('src="/patlive-fields.v1.js"')) updated = updated.replace('</body>', '<script defer src="/patlive-fields.v1.js"></script>\n</body>');
+    if (updated !== content) { content = updated; changed = true; }
+  }
 
   const withoutPlaceholder = content.replace(/\s*<script[^>]+tracking\.whatconverts\.com\/scripts\/wc\.js[^>]*><\/script>/gi, "");
   if (withoutPlaceholder !== content) {

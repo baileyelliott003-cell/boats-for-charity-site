@@ -27,6 +27,7 @@ async function importBundled(relativePath) {
         name: 'stub-runtime-database',
         setup(buildContext) {
           buildContext.onResolve({ filter: /db\/index\.js$/ }, () => ({ path: 'runtime-database', namespace: 'test-stub' }));
+          buildContext.onResolve({ filter: /^\.\/index\.js$/ }, args => /[\\/]db[\\/]migrate\.ts$/.test(args.importer) ? ({ path: 'runtime-database', namespace: 'test-stub' }) : undefined);
           buildContext.onLoad({ filter: /.*/, namespace: 'test-stub' }, () => ({ contents: 'export const db = {};', loader: 'js' }));
         },
       }],
