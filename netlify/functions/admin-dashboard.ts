@@ -772,7 +772,11 @@ export default async (req: Request, context: Context) => {
         '<form onsubmit="submitRecordSale(event, ' + boatId + ')">' +
           '<label>Final Gross Sale Amount ($)</label><input type="number" id="s_amount" step="0.01" placeholder="e.g. 4500.00" required>' +
           '<label>Sale Date</label><input type="date" id="s_date" value="' + new Date().toISOString().slice(0, 10) + '">' +
-          '<label><input type="checkbox" id="s_1098c" checked> IRS Form 1098-C Issued</label>' +
+          '<label><input type="checkbox" id="s_paid"> Full sale amount received and verified (not just a deposit)</label>' +
+          '<label>Cleared-payment date</label><input type="date" id="s_paid_date">' +
+          '<label>Payment receipt/reference (no card or bank account numbers)</label><input type="text" id="s_payment_reference">' +
+          '<p>Only verified full payments are eligible for paid-sale ad reporting. Leave unchecked for unpaid auction results.</p>' +
+          '<label><input type="checkbox" id="s_1098c"> IRS Form 1098-C Issued</label>' +
           '<label>Notes</label><textarea id="s_notes"></textarea>' +
           '<div class="modal-actions">' +
             '<button type="button" class="btn-sm" onclick="closeModal()">Cancel</button>' +
@@ -791,6 +795,9 @@ export default async (req: Request, context: Context) => {
           boat_id: boatId,
           sale_amount: document.getElementById('s_amount').value,
           sale_date: document.getElementById('s_date').value,
+          buyer_payment_status: document.getElementById('s_paid').checked ? 'Paid' : 'Pending',
+          payment_verified_at: document.getElementById('s_paid_date').value,
+          payment_reference: document.getElementById('s_payment_reference').value,
           form_1098c_issued: document.getElementById('s_1098c').checked,
           notes: document.getElementById('s_notes').value
         })

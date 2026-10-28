@@ -19,6 +19,7 @@ import { conversionId, selectLatestListingForFinalSale } from "../../lib/pipelin
 import { postgresNetlifySubmissionRepository } from "../../lib/netlify-submission.js";
 import { getRuntimeEnv } from "../../lib/runtime-env.js";
 import { runMigrations } from "../../db/migrate.js";
+import { validateSaleInput, verifiedPaidSale } from "../../lib/paid-sale.js";
 import { desc, eq, sql, and, gte, lte } from "drizzle-orm";
 
 let migrated = false;
@@ -512,7 +513,8 @@ export default async (req: Request, context: Context) => {
       // 6. Record Final eBay Sale (Deduplicated — exactly ONE final sale per boat)
       if (action === "record_sale") {
         const { boat_id, listing_id, sale_amount, sale_date, buyer_payment_status, form_1098c_issued, notes } = body;
-        if (!boat_id || !sale_amount) return new Response("Missing boat_id or sale_amount", { status: 400 });
+        const saleError = validateSaleInput(body);
+        if (saleError) return Response.json({ error: saleError }, { status: 400 });
 
         const [existingSale] = await db.select().from(sales).where(eq(sales.boatId, Number(boat_id))).limit(1);
         if (existingSale) {
@@ -523,6 +525,7 @@ export default async (req: Request, context: Context) => {
         }
 
         const [boatRecord] = await db.select().from(boats).where(eq(boats.id, Number(boat_id))).limit(1);
+        if (!boatRecord) return Response.json({ error: "Boat not found" }, { status: 404 });
         let leadRecord: any = null;
         if (boatRecord?.leadId) {
           const [l] = await db.select().from(leads).where(eq(leads.id, boatRecord.leadId)).limit(1);
@@ -549,7 +552,9 @@ export default async (req: Request, context: Context) => {
           leadId: boatRecord?.leadId || null,
           saleAmount: String(sale_amount),
           saleDate: sale_date ? new Date(sale_date) : new Date(),
-          buyerPaymentStatus: buyer_payment_status || "Paid",
+          buyerPaymentStatus: buyer_payment_status === "Paid" ? "Paid" : "Pending",
+          paymentVerifiedAt: buyer_payment_status === "Paid" ? new Date(body.payment_verified_at) : null,
+          paymentReference: buyer_payment_status === "Paid" ? body.payment_reference.trim().slice(0, 500) : "",
           form1098cIssued: Boolean(form_1098c_issued),
           notes: notes || ""
         }).returning();
@@ -559,8 +564,9 @@ export default async (req: Request, context: Context) => {
           await db.update(leads).set({ stage: "Sold", updatedAt: sql`now()` }).where(eq(leads.id, boatRecord.leadId));
         }
 
-        // Auto-queue Value-based Boat_Sold conversion for Google Ads Data Manager
+        // Queue only confirmed full payment. Auction wins and deposits are not paid sales.
         const convId = conversionId("boat-sold", boat_id);
+        if (verifiedPaidSale(newSale)) {
         await db.insert(conversionExports).values({
           conversionId: convId,
           conversionType: "Boat_Sold",
@@ -570,13 +576,14 @@ export default async (req: Request, context: Context) => {
           gclid: leadRecord?.gclid || "",
           gbraid: leadRecord?.gbraid || "",
           wbraid: leadRecord?.wbraid || "",
-          conversionTime: newSale.saleDate,
+          conversionTime: newSale.paymentVerifiedAt!,
           conversionValue: String(sale_amount),
           currency: "USD",
           hashedEmail: leadRecord?.email ? hashEmail(leadRecord.email) : "",
           hashedPhone: leadRecord?.phone ? hashPhone(leadRecord.phone) : "",
           exportStatus: "Pending"
         }).onConflictDoNothing();
+        }
 
         await db.insert(auditHistory).values({
           entityType: "sale",

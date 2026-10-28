@@ -1,0 +1,17 @@
+.donor-offer { background: #edf4f6; }
+.donor-offer .wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2.5rem; align-items: center; }
+.donor-offer figure { margin: 0; }
+.donor-offer img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 18px; }
+.donor-offer figcaption { color: #3e5667; font-size: .85rem; margin-top: .6rem; }
+.donor-offer h1 { max-width: 18ch; }
+.donor-offer .eyebrow { color: #275d70; font-weight: 700; letter-spacing: .06em; }
+.review-fields { border: 1px solid #ccdbe2; border-radius: 12px; margin: 1.2rem 0; padding: 1rem; }
+.review-fields legend { font-weight: 700; padding: 0 .35rem; }
+.review-fields .grid { margin: .5rem 0; }
+.review-fields input, .review-fields select { box-sizing: border-box; width: 100%; min-height: 44px; padding: .65rem; border: 1px solid #aebfc9; border-radius: 6px; background: white; color: #172e40; font: inherit; }
+.review-fields details { margin-top: .8rem; }
+.review-fields summary { cursor: pointer; padding: .5rem 0; font-weight: 600; }
+.review-fields .tiny { margin: .4rem 0; }
+.service-proof { border-left: 4px solid #b58b43; padding: 1rem 1.2rem; background: #f6f4ee; margin-top: 1.5rem; }
+.service-proof p { margin: .4rem 0; }
+@media (max-width: 760px) { .donor-offer .wrap { grid-template-columns: 1fr; gap: 1.5rem; } .donor-offer h1 { max-width: none; } .donor-offer figure { max-width: 580px; } }

@@ -1,3 +1,4 @@
+import { boatIntakeDetails } from "./boat-intake.js";
 import { sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { events, leads, sessions, visitors } from "../db/schema.js";
@@ -82,7 +83,7 @@ export function normalizeNetlifySubmission(rawBody: string): NormalizedSubmissio
     email: text(data.email || data["Email"], 320).toLowerCase(),
     phone: text(data.phone || data["Phone"], 50),
     smsConsent: data.sms_consent === true || data.sms_consent === "true" || data.sms_consent === "yes" || data["SMS Consent"] === "yes",
-    boatDetails: text(data.boat_details || data.details || data.notes || data["Boat Details"] || data["Details"], 5000),
+    boatDetails: boatIntakeDetails(data),
     pageContext: text(data.page_context || data["Page Context"], 500),
     firstTouchSource: text(data.first_touch_source, 150),
     firstTouchMedium: text(data.first_touch_medium, 150),

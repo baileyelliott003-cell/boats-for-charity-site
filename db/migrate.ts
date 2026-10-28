@@ -225,7 +225,7 @@ export async function runMigrations() {
       lead_id integer REFERENCES leads(id) ON DELETE SET NULL,
       sale_amount numeric NOT NULL,
       sale_date timestamp with time zone DEFAULT now() NOT NULL,
-      buyer_payment_status text DEFAULT 'Paid' NOT NULL,
+      buyer_payment_status text DEFAULT 'Pending' NOT NULL,
       form_1098c_issued boolean DEFAULT false NOT NULL,
       notes text DEFAULT '',
       created_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -235,6 +235,9 @@ export async function runMigrations() {
     CREATE INDEX IF NOT EXISTS sales_visitor_id_idx ON sales(visitor_id);
     CREATE INDEX IF NOT EXISTS sales_lead_id_idx ON sales(lead_id);
     CREATE INDEX IF NOT EXISTS sales_sale_date_idx ON sales(sale_date);
+    ALTER TABLE sales ADD COLUMN IF NOT EXISTS payment_verified_at timestamp with time zone;
+    ALTER TABLE sales ADD COLUMN IF NOT EXISTS payment_reference text DEFAULT '';
+    ALTER TABLE sales ALTER COLUMN buyer_payment_status SET DEFAULT 'Pending';
   `);
 
   // 9. Conversion Exports

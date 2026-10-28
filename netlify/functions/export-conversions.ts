@@ -1,7 +1,9 @@
 // netlify/functions/export-conversions.ts
 import type { Config, Context } from "@netlify/functions";
 import { db } from "../../db/index.js";
-import { conversionExports, auditHistory } from "../../db/schema.js";
+import { conversionExports, sales } from "../../db/schema.js";
+import { verifiedPaidSale } from "../../lib/paid-sale.js";
+import { buildGoogleAdsDataManagerCsv } from "./google-ads-conversions-feed.js";
 import { authorizeAdminRequest } from "../../lib/admin-auth.js";
 import { eq, and, isNotNull } from "drizzle-orm";
 
@@ -24,44 +26,19 @@ export default async (req: Request, context: Context) => {
 
   try {
     // Fetch pending conversions
-    const pending = await db
-      .select()
+    const pendingRows = await db
+      .select({ conversion: conversionExports, sale: sales })
       .from(conversionExports)
+      .leftJoin(sales, eq(conversionExports.saleId, sales.id))
       .where(eq(conversionExports.exportStatus, "Pending"));
+    const pending = pendingRows.map(({ conversion, sale }) => ({ ...conversion,
+      paymentVerified: verifiedPaidSale(sale) && sale?.boatId === conversion.boatId
+        && Number(sale.saleAmount) === Number(conversion.conversionValue),
+    })).filter(c => c.conversionType !== 'Boat_Sold' || c.paymentVerified);
 
     if (format === "csv") {
-      // Google Ads Offline Conversion CSV Template Standard
-      const headers = [
-        "Google Click ID",
-        "Conversion Name",
-        "Conversion Time",
-        "Conversion Value",
-        "Conversion Currency",
-        "GBRAID",
-        "WBRAID",
-        "Order ID / Conversion ID",
-        "Hashed Email",
-        "Hashed Phone"
-      ];
-
-      const rows = pending.map((c) => [
-        c.gclid || "",
-        c.conversionType === "Donation_Accepted" ? "Donation Accepted (Primary)" : (c.conversionType === "Boat_Sold" ? "Boat Sold (Value)" : "Qualified Lead"),
-        c.conversionTime.toISOString().replace(/T/, " ").replace(/\..+/, "+0000"),
-        c.conversionValue || "1.0",
-        c.currency || "USD",
-        c.gbraid || "",
-        c.wbraid || "",
-        c.conversionId,
-        c.hashedEmail || "",
-        c.hashedPhone || ""
-      ]);
-
-      const csvContent = [
-        "Parameters:TimeZone=UTC",
-        headers.join(","),
-        ...rows.map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
-      ].join("\r\n");
+      // Same names, values and payment gates as the scheduled feed.
+      const csvContent = buildGoogleAdsDataManagerCsv(pending);
 
       return new Response(csvContent, {
         headers: {

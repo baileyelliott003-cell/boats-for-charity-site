@@ -1,10 +1,11 @@
 // netlify/functions/google-ads-conversions-feed.ts
 import type { Config, Context } from "@netlify/functions";
 import { db } from "../../db/index.js";
-import { conversionExports } from "../../db/schema.js";
+import { conversionExports, sales } from "../../db/schema.js";
+import { verifiedPaidSale } from "../../lib/paid-sale.js";
 import { runMigrations } from "../../db/migrate.js";
 import { verifyGoogleAdsFeedAuth, hashEmail, hashPhone } from "../../lib/attribution.js";
-import { desc, gte } from "drizzle-orm";
+import { desc, gte, eq } from "drizzle-orm";
 
 let migrated = false;
 const ALLOWED_CONVERSION_TYPES = new Set(["Donation_Accepted", "Qualified_Lead", "Boat_Sold"]);
@@ -14,7 +15,7 @@ const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
 };
 
-type FeedConversion = typeof conversionExports.$inferSelect;
+type FeedConversion = typeof conversionExports.$inferSelect & { paymentVerified?: boolean };
 interface FeedDependencies {
   verifyAuth: (authorization: string | null) => boolean;
   migrate: () => Promise<void>;
@@ -29,7 +30,7 @@ function eligibleConversion(conversion: FeedConversion) {
   if (!conversion.conversionId || !ALLOWED_CONVERSION_TYPES.has(conversion.conversionType)) return false;
   if (!(conversion.conversionTime instanceof Date) || Number.isNaN(conversion.conversionTime.getTime())) return false;
   if (conversion.currency !== "USD") return false;
-  if (conversion.conversionType === "Boat_Sold" && (!conversion.boatId || !conversion.saleId || Number(conversion.conversionValue) <= 0)) return false;
+  if (conversion.conversionType === "Boat_Sold" && (!conversion.paymentVerified || !conversion.boatId || !conversion.saleId || !Number.isFinite(Number(conversion.conversionValue)) || Number(conversion.conversionValue) <= 0)) return false;
   if (conversion.conversionType !== "Boat_Sold" && !conversion.leadId && !conversion.callId) return false;
   return Boolean(conversion.gclid || conversion.gbraid || conversion.wbraid || validHash(conversion.hashedEmail) || validHash(conversion.hashedPhone));
 }
@@ -133,11 +134,16 @@ export function createGoogleAdsFeedHandler(dependencies: FeedDependencies) {
 export default createGoogleAdsFeedHandler({
   verifyAuth: verifyGoogleAdsFeedAuth,
   migrate: runMigrations,
-  loadConversions: (since) => db
-    .select()
+  loadConversions: async (since) => (await db
+    .select({ conversion: conversionExports, sale: sales })
     .from(conversionExports)
+    .leftJoin(sales, eq(conversionExports.saleId, sales.id))
     .where(gte(conversionExports.conversionTime, since))
-    .orderBy(desc(conversionExports.conversionTime)),
+    .orderBy(desc(conversionExports.conversionTime))).map(({ conversion, sale }) => ({
+      ...conversion,
+      paymentVerified: verifiedPaidSale(sale) && sale?.boatId === conversion.boatId
+        && Number(sale.saleAmount) === Number(conversion.conversionValue),
+    })),
 });
 
 export const config: Config = {

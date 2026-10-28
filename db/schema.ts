@@ -275,7 +275,9 @@ export const sales = pgTable(
     
     saleAmount: numeric("sale_amount").notNull(), // Final Gross sale value
     saleDate: timestamp("sale_date", { withTimezone: true }).defaultNow().notNull(),
-    buyerPaymentStatus: text("buyer_payment_status").notNull().default("Paid"), // Pending, Paid, Refunded
+    buyerPaymentStatus: text("buyer_payment_status").notNull().default("Pending"), // Pending, Paid, Refunded
+    paymentVerifiedAt: timestamp("payment_verified_at", { withTimezone: true }),
+    paymentReference: text("payment_reference").default(""),
     form1098cIssued: boolean("form_1098c_issued").default(false).notNull(),
     notes: text("notes").default(""),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

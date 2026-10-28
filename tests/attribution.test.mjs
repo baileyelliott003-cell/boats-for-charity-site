@@ -40,6 +40,49 @@ async function importBundled(relativePath) {
 
 after(() => fs.rmSync(OUT, { recursive: true, force: true }));
 
+test('structured vessel details survive normalization alongside free text and attribution', async () => {
+  const { normalizeNetlifySubmission } = await importBundled('lib/netlify-submission.ts');
+  const actual = normalizeNetlifySubmission({ id: 'vessel-test', data: {
+    first_name: 'Test', last_name: 'Donor', phone: '5555550100', gclid: 'test-click',
+    boat_year: '2004', boat_make_model: 'Cruiser', boat_length: '34', boat_location: 'Test city',
+    boat_condition: 'Runs', boat_ownership: 'Title available', boat_timeline: 'This month',
+    boat_trailer: 'At marina', boat_details: 'Engine needs service; survey available.',
+  }});
+  assert.match(actual.boatDetails, /Year: 2004/);
+  assert.match(actual.boatDetails, /Length \(ft\): 34/);
+  assert.match(actual.boatDetails, /Engine needs service; survey available/);
+  assert.equal(actual.gclid, 'test-click');
+});
+
+test('paid-sale verification excludes unpaid, deposit-only, refunded and legacy assumed-paid records', async () => {
+  const { verifiedPaidSale, validateSaleInput } = await importBundled('lib/paid-sale.ts');
+  const sale = { buyerPaymentStatus: 'Paid', paymentVerifiedAt: new Date('2026-10-16T12:00:00Z'), paymentReference: 'test-receipt', saleAmount: '760.00' };
+  assert.equal(verifiedPaidSale(sale), true);
+  for (const status of ['Pending', 'Deposit', 'Refunded']) assert.equal(verifiedPaidSale({ ...sale, buyerPaymentStatus: status }), false);
+  assert.equal(verifiedPaidSale({ ...sale, paymentVerifiedAt: null }), false);
+  assert.equal(verifiedPaidSale({ ...sale, paymentReference: '' }), false);
+  assert.equal(verifiedPaidSale({ ...sale, saleAmount: 'NaN' }), false);
+  assert.ok(validateSaleInput({ boat_id: 1, sale_amount: -1 }));
+  assert.ok(validateSaleInput({ boat_id: 1, sale_amount: 760, buyer_payment_status: 'Paid' }));
+  assert.equal(validateSaleInput({ boat_id: 1, sale_amount: 760, buyer_payment_status: 'Pending' }), null);
+});
+
+test('Google value export deduplicates paid boats and refuses unverified or nonfinite values', async () => {
+  const { buildGoogleAdsDataManagerCsv } = await importBundled('netlify/functions/google-ads-conversions-feed.ts');
+  const paid = { conversionId: 'boat-test', conversionType: 'Boat_Sold', boatId: 1, saleId: 1, leadId: 1,
+    conversionTime: new Date('2026-10-16T12:00:00Z'), conversionValue: '760', currency: 'USD', gclid: 'test-click', paymentVerified: true };
+  const csv = buildGoogleAdsDataManagerCsv([paid, paid,
+    { ...paid, conversionId: 'unpaid', paymentVerified: false },
+    { ...paid, conversionId: 'legacy', paymentVerified: undefined },
+    { ...paid, conversionId: 'invalid', conversionValue: 'Infinity' },
+    { ...paid, conversionId: 'inquiry', conversionType: 'Qualified_Lead', conversionValue: '999' },
+  ]);
+  assert.equal((csv.match(/"boat-test"/g) || []).length, 1);
+  assert.match(csv, /"760.00","USD"/);
+  assert.doesNotMatch(csv, /"unpaid"|"legacy"|"invalid"|999/);
+  assert.match(csv, /"Qualified_Lead".*"0.00","USD"/);
+});
+
 class FakeAdminStore {
   constructor() {
     this.sessions = new Map();
