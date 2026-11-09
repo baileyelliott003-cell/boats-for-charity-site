@@ -1,7 +1,7 @@
 // db/migrate.ts
 import { sql } from "drizzle-orm";
 import { db } from "./index.js";
-import { ACK_SCHEMA_SQL } from "../lib/acknowledgment-outbox.js";
+import { ACK_SCHEMA_STATEMENTS } from "../lib/acknowledgment-outbox.js";
 
 /**
  * Safe, reversible, non-destructive migration helper.
@@ -11,6 +11,8 @@ import { ACK_SCHEMA_SQL } from "../lib/acknowledgment-outbox.js";
 export async function runMigrations() {
   console.log("[db:migrate] Starting safe database migrations...");
 
+  // The hosted prepared-query transport accepts one statement per request.
+  // Keep procedural DO blocks intact and execute DDL sequentially.
   // 1. Visitors
   await db.execute(sql`
     CREATE TABLE IF NOT EXISTS visitors (
@@ -35,8 +37,14 @@ export async function runMigrations() {
       created_at timestamp with time zone DEFAULT now() NOT NULL,
       updated_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS visitors_first_seen_idx ON visitors(first_seen_at);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS visitors_last_seen_idx ON visitors(last_seen_at);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS visitors_ga_client_id_idx ON visitors(ga_client_id);
   `);
 
@@ -64,8 +72,14 @@ export async function runMigrations() {
       is_bot boolean DEFAULT false NOT NULL,
       created_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS sessions_visitor_id_idx ON sessions(visitor_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS sessions_started_at_idx ON sessions(started_at);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS sessions_last_activity_idx ON sessions(last_activity_at);
   `);
 
@@ -82,9 +96,17 @@ export async function runMigrations() {
       is_bot boolean DEFAULT false NOT NULL,
       created_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS events_visitor_id_idx ON events(visitor_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS events_session_id_idx ON events(session_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS events_event_name_idx ON events(event_name);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS events_created_at_idx ON events(created_at);
   `);
 
@@ -125,10 +147,20 @@ export async function runMigrations() {
       created_at timestamp with time zone DEFAULT now() NOT NULL,
       updated_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE UNIQUE INDEX IF NOT EXISTS leads_netlify_submission_id_uniq ON leads(netlify_submission_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS leads_visitor_id_idx ON leads(visitor_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS leads_session_id_idx ON leads(session_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS leads_stage_idx ON leads(stage);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS leads_created_at_idx ON leads(created_at);
   `);
 
@@ -160,9 +192,17 @@ export async function runMigrations() {
       created_at timestamp with time zone DEFAULT now() NOT NULL,
       updated_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE UNIQUE INDEX IF NOT EXISTS calls_call_id_uniq ON calls(call_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS calls_visitor_id_idx ON calls(visitor_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS calls_caller_number_idx ON calls(caller_number);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS calls_created_at_idx ON calls(created_at);
   `);
 
@@ -189,8 +229,14 @@ export async function runMigrations() {
       created_at timestamp with time zone DEFAULT now() NOT NULL,
       updated_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS boats_lead_id_idx ON boats(lead_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS boats_visitor_id_idx ON boats(visitor_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS boats_status_idx ON boats(status);
   `);
 
@@ -211,8 +257,14 @@ export async function runMigrations() {
       created_at timestamp with time zone DEFAULT now() NOT NULL,
       updated_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE UNIQUE INDEX IF NOT EXISTS ebay_listings_item_id_uniq ON ebay_listings(ebay_item_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS ebay_listings_boat_id_idx ON ebay_listings(boat_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS ebay_listings_is_final_sale_idx ON ebay_listings(is_final_sale);
   `);
 
@@ -232,12 +284,26 @@ export async function runMigrations() {
       created_at timestamp with time zone DEFAULT now() NOT NULL,
       updated_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE UNIQUE INDEX IF NOT EXISTS sales_boat_id_uniq ON sales(boat_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS sales_visitor_id_idx ON sales(visitor_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS sales_lead_id_idx ON sales(lead_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS sales_sale_date_idx ON sales(sale_date);
+  `);
+  await db.execute(sql`
     ALTER TABLE sales ADD COLUMN IF NOT EXISTS payment_verified_at timestamp with time zone;
+  `);
+  await db.execute(sql`
     ALTER TABLE sales ADD COLUMN IF NOT EXISTS payment_reference text DEFAULT '';
+  `);
+  await db.execute(sql`
     ALTER TABLE sales ALTER COLUMN buyer_payment_status SET DEFAULT 'Pending';
   `);
 
@@ -264,8 +330,14 @@ export async function runMigrations() {
       response_details jsonb DEFAULT '{}'::jsonb,
       created_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE UNIQUE INDEX IF NOT EXISTS conversion_exports_conv_id_uniq ON conversion_exports(conversion_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS conversion_exports_type_idx ON conversion_exports(conversion_type);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS conversion_exports_status_idx ON conversion_exports(export_status);
   `);
 
@@ -282,7 +354,11 @@ export async function runMigrations() {
       notes text DEFAULT '',
       created_at timestamp with time zone DEFAULT now() NOT NULL
     );
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS audit_history_entity_idx ON audit_history(entity_type, entity_id);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS audit_history_created_at_idx ON audit_history(created_at);
   `);
 
@@ -296,6 +372,8 @@ export async function runMigrations() {
       last_used_at timestamp with time zone DEFAULT now() NOT NULL,
       revoked_at timestamp with time zone
     );
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS admin_sessions_expires_idx ON admin_sessions(expires_at);
   `);
 
@@ -310,7 +388,11 @@ export async function runMigrations() {
       last_hit_at timestamp with time zone DEFAULT now() NOT NULL,
       blocked_until timestamp with time zone
     );
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS persistent_rate_limits_action_idx ON persistent_rate_limits(action);
+  `);
+  await db.execute(sql`
     CREATE INDEX IF NOT EXISTS persistent_rate_limits_blocked_idx ON persistent_rate_limits(blocked_until);
   `);
 
@@ -371,6 +453,6 @@ export async function runMigrations() {
     END $$;
   `);
 
-  await db.execute(sql.raw(ACK_SCHEMA_SQL));
+  for (const statement of ACK_SCHEMA_STATEMENTS) await db.execute(sql.raw(statement));
   console.log("[db:migrate] All migrations applied successfully.");
 }
