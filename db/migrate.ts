@@ -1,6 +1,7 @@
 // db/migrate.ts
 import { sql } from "drizzle-orm";
 import { db } from "./index.js";
+import { ACK_SCHEMA_SQL } from "../lib/acknowledgment-outbox.js";
 
 /**
  * Safe, reversible, non-destructive migration helper.
@@ -370,5 +371,6 @@ export async function runMigrations() {
     END $$;
   `);
 
+  await db.execute(sql.raw(ACK_SCHEMA_SQL));
   console.log("[db:migrate] All migrations applied successfully.");
 }
