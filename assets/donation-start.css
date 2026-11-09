@@ -1,0 +1,6 @@
+/* Donation links land on the form heading; the campaign page starts with the form. */
+#donate{scroll-margin-top:16px;margin:0 0 10px;color:var(--navy);font-size:clamp(28px,5vw,40px);line-height:1.2;text-align:center}
+.donation-page main>.local-donate{padding-top:24px}
+.donation-page .local-donate .wrap>p{max-width:720px;text-align:center}
+.donation-page .donor-offer h2{font-size:clamp(28px,5vw,44px);margin:0 0 8px;color:var(--navy);letter-spacing:-.02em}
+@media(max-width:640px){.donation-page main>.local-donate{padding-top:18px}.donation-page .local-donate .call-cta{font-size:.9rem}}
