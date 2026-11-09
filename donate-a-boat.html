@@ -30,6 +30,7 @@
   <meta name="keywords" content="donate a boat, donate your boat, boat donation program, donate boat to charity near me, boat donation tax deduction">
   <link rel="stylesheet" href="/styles.v142.css">
   <link rel="stylesheet" href="/assets/donor-review.css">
+  <link rel="stylesheet" href="/assets/donation-start.css">
   <link rel="stylesheet" href="/assets/vessel-trust.css?v=20261027-organized">
   <script defer src="/script.v123.js"></script>
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -169,33 +170,11 @@
 <main id="main">
   <nav class="breadcrumbs" aria-label="Breadcrumb"><div class="wrap"><a href="/">Home</a><span aria-hidden="true">/</span><span>Donate a Boat</span></div></nav>
 
-    <section class="hero donor-offer">
-      <div class="wrap">
-        <div>
-          <p class="eyebrow">BOATS FOR CHARITY · 501(c)(3) NONPROFIT</p>
-          <h1>Donate Your Boat. Let Us Handle the Sale.</h1>
-          <p class="sub">Your boat has more to give. When you are ready to move on, turn a cruiser, yacht, sailboat or newer powerboat into a charitable contribution—with help handling the marketing, buyer questions and handoff.</p>
-          <div class="hero-cta"><a href="#donate" class="btn btn-primary">Talk Through My Donation</a><a href="tel:+18555573703" class="btn btn-ghost">Call (855) 557-3703</a></div>
-          <p class="tiny">Free, no-obligation review. Smaller and non-running boats are also considered individually.</p>
-        </div>
-        <div class="hero-proof">
-          <figure class="hero-vessel">
-            <span class="vessel-status">Recently donated</span>
-            <img src="/assets/featured-chris-craft-catalina-41.jpg" width="480" height="320" alt="1987 Chris Craft Catalina 41 donated through Boats for Charity" fetchpriority="high">
-            <figcaption>1987 Chris Craft Catalina 41</figcaption>
-          </figure>
-          <figure class="hero-review" aria-label="Five-star Google donor review">
-            <a class="review-source" href="https://www.google.com/maps/place/Boats+for+Charity/data=!4m2!3m1!1s0x0:0x9966725ed9a72922" target="_blank" rel="noopener"><span class="review-stars" aria-hidden="true">★★★★★</span> 5-star Google review ↗</a>
-            <blockquote>“Bailey was so responsive and thorough in every aspect of my donation. So friendly and thoughtful.”</blockquote>
-            <figcaption>David Clark · Boat donor</figcaption>
-          </figure>
-        </div>
-      </div>
-    </section>
 
-  <section id="donate" class="section donate local-donate">
+
+  <section aria-labelledby="donate" class="section donate local-donate">
     <div class="wrap">
-      <h2>Start Your Free Boat Donation Review</h2>
+      <h1 id="donate">Let’s Talk About Your Boat</h1>
       <p>Share the basics now. Our team reviews your vessel, answers questions, and explains exact next steps.</p>
       <p class="call-cta"><a href="tel:+18555573703" class="btn btn-primary call-now">Call Toll-Free: (855) 557-3703</a> <span class="call-cta-or">or complete the fast intake form:</span></p>
       <form name="donationForm" id="donationForm" method="POST" data-netlify="true" netlify-honeypot="bot-field" action="/thanks" novalidate>
@@ -230,7 +209,7 @@
             <label>Length in feet<input type="number" name="boat_length" min="1" max="300" step="0.1" placeholder="e.g. 32" inputmode="decimal"></label>
             <label>Boat city and state<input type="text" name="boat_location" maxlength="150" placeholder="e.g. San Diego, CA"></label>
           </div>
-          <details>
+          <details open>
             <summary>Condition, paperwork and your timeline</summary>
             <div class="grid">
               <label>Current condition<select name="boat_condition"><option value="">Select if known</option><option>Used recently / running</option><option>Runs, but needs work</option><option>Not running</option><option>Condition unknown</option></select></label>
@@ -255,6 +234,30 @@
       </form>
     </div>
   </section>
+
+    <section class="hero donor-offer">
+      <div class="wrap">
+        <div>
+          <p class="eyebrow">BOATS FOR CHARITY · 501(c)(3) NONPROFIT</p>
+          <h2>Donate Your Boat. Let Us Handle the Sale.</h2>
+          <p class="sub">Your boat has more to give. When you are ready to move on, turn a cruiser, yacht, sailboat or newer powerboat into a charitable contribution—with help handling the marketing, buyer questions and handoff.</p>
+          <div class="hero-cta"><a href="#donate" class="btn btn-primary">Start My Donation</a><a href="tel:+18555573703" class="btn btn-ghost">Call (855) 557-3703</a></div>
+          <p class="tiny">Free, no-obligation review. Smaller and non-running boats are also considered individually.</p>
+        </div>
+        <div class="hero-proof">
+          <figure class="hero-vessel">
+            <span class="vessel-status">Recently donated</span>
+            <img src="/assets/featured-chris-craft-catalina-41.jpg" width="480" height="320" alt="1987 Chris Craft Catalina 41 donated through Boats for Charity" fetchpriority="high">
+            <figcaption>1987 Chris Craft Catalina 41</figcaption>
+          </figure>
+          <figure class="hero-review" aria-label="Five-star Google donor review">
+            <a class="review-source" href="https://www.google.com/maps/place/Boats+for+Charity/data=!4m2!3m1!1s0x0:0x9966725ed9a72922" target="_blank" rel="noopener"><span class="review-stars" aria-hidden="true">★★★★★</span> 5-star Google review ↗</a>
+            <blockquote>“Bailey was so responsive and thorough in every aspect of my donation. So friendly and thoughtful.”</blockquote>
+            <figcaption>David Clark · Boat donor</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
 
     <section id="recently-donated" class="section vessel-trust" aria-labelledby="vessel-trust-title">
       <div class="wrap">
