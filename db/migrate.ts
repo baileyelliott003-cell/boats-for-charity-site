@@ -440,8 +440,8 @@ export async function runMigrations() {
           l.created_at,
           '0.0',
           'USD',
-          case when l.email <> '' then encode(digest(lower(trim(l.email)), 'sha256'), 'hex') else '' end,
-          case when l.phone <> '' then encode(digest(regexp_replace(l.phone, '\D', '', 'g'), 'sha256'), 'hex') else '' end,
+          case when l.email <> '' then encode(sha256(convert_to(lower(trim(l.email)), 'UTF8')), 'hex') else '' end,
+          case when l.phone <> '' then encode(sha256(convert_to(regexp_replace(l.phone, '[^0-9]', '', 'g'), 'UTF8')), 'hex') else '' end,
           'Pending'
         FROM leads l
         WHERE l.stage IN ('Donation Accepted', 'Listed', 'Sold')
