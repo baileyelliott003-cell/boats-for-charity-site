@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {PGlite} from '@electric-sql/pglite';
 import {drizzle} from 'drizzle-orm/pglite';
@@ -14,9 +15,6 @@ await build({entryPoints:[path.join(root,'db/migrate.ts')],outfile:entry,bundle:
 test('hosted single-prepared-command migrations initialize and reopen schema without changing existing form records',async t=>{
   const pg=new PGlite();await pg.waitReady;t.after(()=>pg.close());
   const db=drizzle({client:pg});let calls=0;
-  // PostgreSQL digest is supplied by pgcrypto in hosting. A SQL equivalent keeps
-  // the isolated test independent of optional WebAssembly extensions.
-  await pg.exec("CREATE FUNCTION digest(text,text) RETURNS bytea LANGUAGE SQL IMMUTABLE AS 'SELECT sha256(convert_to($1, ''UTF8''))';");
   const dialect=new PgDialect();
   globalThis[Symbol.for('bfc.test.migration.database')]={execute:async q=>{
     const text=dialect.sqlToQuery(q).sql.trim();
@@ -30,10 +28,17 @@ test('hosted single-prepared-command migrations initialize and reopen schema wit
   const tables=await pg.query("SELECT table_name FROM information_schema.tables WHERE table_schema='public'");
   for(const name of ['leads','website_ack_outbox','website_ack_events','website_ack_webhooks'])assert(tables.rows.some(r=>r.table_name===name));
   await pg.query("INSERT INTO leads(netlify_submission_id,email,raw_form_data) VALUES('synthetic-preserved','synthetic@example.test','{\"boat_details\":\"original\"}')");
+  await pg.query("INSERT INTO leads(netlify_submission_id,email,phone,stage,first_touch_source,created_at) VALUES('synthetic-qualified',' SYNTHETIC@EXAMPLE.TEST ','+1 (555) 000-1111','Donation Accepted','google','2026-11-01T00:00:00Z')");
   await runMigrations();
   const r=await pg.query("SELECT raw_form_data FROM leads WHERE netlify_submission_id='synthetic-preserved'");
   assert.deepEqual(r.rows[0].raw_form_data,{boat_details:'original'});
   assert(calls>100);
   assert.equal((await pg.query('SELECT count(*)::int AS n FROM website_ack_outbox')).rows[0].n,0);
+  const conversions=await pg.query('SELECT hashed_email,hashed_phone FROM conversion_exports');
+  assert.equal(conversions.rows.length,1);
+  assert.equal(conversions.rows[0].hashed_email,createHash('sha256').update('synthetic@example.test').digest('hex'));
+  assert.equal(conversions.rows[0].hashed_phone,createHash('sha256').update('15550001111').digest('hex'));
+  await runMigrations();
+  assert.equal((await pg.query('SELECT count(*)::int AS n FROM conversion_exports')).rows[0].n,1);
 });
 test.after(async()=>{delete globalThis[Symbol.for('bfc.test.migration.database')];await fs.rm(folder,{recursive:true,force:true});});
