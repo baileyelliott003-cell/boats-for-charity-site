@@ -1,7 +1,19 @@
 import { sql } from 'drizzle-orm';
 import { ACK_CONTRACT, acknowledgmentSourceHash, acknowledgmentMessageHash } from './acknowledgment-outbox.js';
+import { sha256Value, timingSafeEqualText } from './security.js';
 
 export const WEBSITE_CONTACT_HISTORY_CONTRACT = 'exact-submission-website-contact-history-v1';
+export const WEBSITE_HISTORY_READ_ORIGIN='https://boatsforcharity.org';
+const historyActions=new Set(['website-history-connection','submission-contact-history','submission-contact-history-by-controls']);
+export function websiteHistoryTokenAuthorization(request:Request,expectedHash:string|undefined) {
+  const url=new URL(request.url),action=url.searchParams.get('action'),authorization=request.headers.get('authorization');
+  const attempted=!!authorization&&(historyActions.has(action||'')||/^Bearer bfc_hist_/.test(authorization));
+  if(!attempted)return null;
+  const match=/^Bearer (bfc_hist_[A-Za-z0-9_-]{43})$/.exec(authorization||'');
+  const method=action==='submission-contact-history-by-controls'?'POST':'GET';
+  const authorized=url.origin===WEBSITE_HISTORY_READ_ORIGIN&&historyActions.has(action||'')&&request.method===method&&!!match&&typeof expectedHash==='string'&&/^[a-f0-9]{64}$/.test(expectedHash)&&timingSafeEqualText(sha256Value(match[1]),expectedHash);
+  return{authorized,status:authorized?200:401,error:authorized?'':'Authentication required',scope:'website_contact_history_read_only'};
+}
 const sourceFields = [
   ['campaign','campaign_id'],['time zone','time_zone'],['page context','page_context'],
   ['first name','first_name'],['last name','last_name'],['email','email'],['phone','phone'],
