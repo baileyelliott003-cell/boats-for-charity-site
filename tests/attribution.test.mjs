@@ -38,7 +38,7 @@ async function importBundled(relativePath) {
   return bundles.get(relativePath);
 }
 
-after(() => fs.rmSync(OUT, { recursive: true, force: true }));
+after(() => {if(path.dirname(path.resolve(OUT))!==path.resolve(CACHE_ROOT)||!path.basename(OUT).startsWith('bfc-attribution-tests-'))throw Error('Unexpected test cleanup target');fs.rmSync(OUT, { recursive: true, force: true });});
 
 test('structured vessel details survive normalization alongside free text and attribution', async () => {
   const { normalizeNetlifySubmission } = await importBundled('lib/netlify-submission.ts');

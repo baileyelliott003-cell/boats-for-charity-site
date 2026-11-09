@@ -8,7 +8,7 @@ import {build} from 'esbuild';
 const dir=await fs.mkdtemp(path.join(os.tmpdir(),'bfc-file-lookup-'));
 await build({entryPoints:[fileURLToPath(new URL('../lib/photo-upload-files.ts',import.meta.url))],outfile:path.join(dir,'files.mjs'),bundle:true,platform:'node',format:'esm',logLevel:'silent'});
 const {resolvePhotoUploadFiles}=await import(pathToFileURL(path.join(dir,'files.mjs')));
-await fs.rm(dir,{recursive:true,force:true});
+if(path.dirname(path.resolve(dir))!==path.resolve(os.tmpdir())||!path.basename(dir).startsWith('bfc-file-lookup-'))throw Error('Unexpected test cleanup target');await fs.rm(dir,{recursive:true,force:true});
 const id='eae47d60-6c45-4bfd-86e5-a180be107808';
 const url=`https://d33wubrfki0l68.cloudfront.net/example/${id}-01.jpg`;
 const data={page_context:'boat-photo-upload',upload_id:id,photo_count:'1',first_name:'Test',last_name:'Donor',phone:'5551234567',boat_details:'Test boat',photo_01:id+'-01.jpg'};

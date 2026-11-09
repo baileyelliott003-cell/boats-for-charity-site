@@ -4,6 +4,14 @@ import { db } from "../db/index.js";
 import { events, leads, sessions, visitors } from "../db/schema.js";
 import { getRuntimeEnv } from "./runtime-env.js";
 import { sha256Value } from "./security.js";
+import { WebsiteAcknowledgmentOutbox, deliverWebsiteAcknowledgment, type AckMessage } from "./acknowledgment-outbox.js";
+
+export const websiteAcknowledgments = new WebsiteAcknowledgmentOutbox(db);
+export const acknowledgmentConfiguration = () => ({
+  key: getRuntimeEnv("RESEND_API_KEY"),
+  from: getRuntimeEnv("FROM_EMAIL") || "Boats for Charity <no-reply@boatsforcharity.org>",
+  paused: getRuntimeEnv("WEBSITE_ACK_PAUSED") === "true",
+});
 
 const TRACKING_ID_PATTERN = /^(?:bfc_)?(?:vid|sid)_[a-z0-9_-]{6,92}$/i;
 
@@ -106,12 +114,12 @@ export function normalizeNetlifySubmission(rawBody: string): NormalizedSubmissio
 }
 
 export interface NetlifySubmissionRepository {
-  createLead(submission: NormalizedSubmission): Promise<{ created: boolean; leadId: number }>;
+  createLead(submission: NormalizedSubmission, options?: { acknowledgment?: AckMessage }): Promise<{ created: boolean; leadId: number; acknowledgmentId?: string }>;
   recordVerifiedLead(submission: NormalizedSubmission, leadId: number): Promise<void>;
 }
 
 export const postgresNetlifySubmissionRepository: NetlifySubmissionRepository = {
-  async createLead(submission) {
+  async createLead(submission, options) {
     return db.transaction(async (transaction) => {
       if (submission.visitorId) {
         await transaction.insert(visitors).values({
@@ -149,11 +157,15 @@ export const postgresNetlifySubmissionRepository: NetlifySubmissionRepository = 
         sessionId: submission.sessionId || null,
         stage: "New",
       }).onConflictDoNothing({ target: leads.netlifySubmissionId }).returning({ id: leads.id });
-      if (created) return { created: true, leadId: created.id };
+      if (created) {
+        const acknowledgmentId = options?.acknowledgment ? await websiteAcknowledgments.prepare(transaction, submission, created.id, true, options.acknowledgment) : undefined;
+        return { created: true, leadId: created.id, acknowledgmentId };
+      }
       const [existing] = await transaction.select({ id: leads.id }).from(leads)
         .where(sql`${leads.netlifySubmissionId} = ${submission.netlifySubmissionId}`).limit(1);
       if (!existing) throw new Error("Unable to resolve existing lead");
-      return { created: false, leadId: existing.id };
+      const acknowledgmentId = options?.acknowledgment ? await websiteAcknowledgments.prepare(transaction, submission, existing.id, false, options.acknowledgment) : undefined;
+      return { created: false, leadId: existing.id, acknowledgmentId };
     });
   },
   async recordVerifiedLead(submission, leadId) {
@@ -175,20 +187,6 @@ export interface AcknowledgmentMessage {
   html: string;
 }
 
-export async function sendResendAcknowledgment(message: AcknowledgmentMessage): Promise<void> {
-  const apiKey = getRuntimeEnv("RESEND_API_KEY");
-  if (!apiKey) return;
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-    body: JSON.stringify({
-      from: getRuntimeEnv("FROM_EMAIL") || "Boats for Charity <no-reply@boatsforcharity.org>",
-      ...message,
-    }),
-  });
-  if (!response.ok) throw new Error(`Resend request failed with status ${response.status}`);
-}
-
 function acknowledgmentFor(submission: NormalizedSubmission): AcknowledgmentMessage | null {
   if (!submission.email || !["donationForm", "boatValuation"].includes(submission.formName)) return null;
   const isValuation = submission.formName === "boatValuation";
@@ -205,13 +203,15 @@ function acknowledgmentFor(submission: NormalizedSubmission): AcknowledgmentMess
 
 export interface NetlifySubmissionDependencies {
   repository: NetlifySubmissionRepository;
-  sendAcknowledgment: (message: AcknowledgmentMessage) => Promise<void>;
+  deliverAcknowledgment: (id: string) => Promise<{ state: string }>;
+  configuration: typeof acknowledgmentConfiguration;
 }
 
 export function createNetlifySubmissionHandler(overrides: Partial<NetlifySubmissionDependencies> = {}) {
   const dependencies: NetlifySubmissionDependencies = {
     repository: postgresNetlifySubmissionRepository,
-    sendAcknowledgment: sendResendAcknowledgment,
+    deliverAcknowledgment: (id) => deliverWebsiteAcknowledgment(websiteAcknowledgments, id, { configuration: acknowledgmentConfiguration }),
+    configuration: acknowledgmentConfiguration,
     ...overrides,
   };
   return async (event: { body?: string | null } | any) => {
@@ -224,15 +224,18 @@ export function createNetlifySubmissionHandler(overrides: Partial<NetlifySubmiss
       return { statusCode: 400, body: "Invalid submission" };
     }
     try {
-      const result = await dependencies.repository.createLead(submission);
-      if (!result.created) return { statusCode: 200, body: JSON.stringify({ duplicate: true, leadId: result.leadId }) };
-      await Promise.allSettled([
-        dependencies.repository.recordVerifiedLead(submission, result.leadId),
-        ...(acknowledgmentFor(submission) ? [dependencies.sendAcknowledgment(acknowledgmentFor(submission)!)] : []),
+      const acknowledgment = acknowledgmentFor(submission);
+      const result = await dependencies.repository.createLead(submission, acknowledgment ? { acknowledgment: { from: dependencies.configuration().from, ...acknowledgment } } : undefined);
+      const work = await Promise.allSettled([
+        result.created ? dependencies.repository.recordVerifiedLead(submission, result.leadId) : Promise.resolve(),
+        result.acknowledgmentId ? dependencies.deliverAcknowledgment(result.acknowledgmentId) : Promise.resolve({ state: 'not_applicable' }),
       ]);
-      return { statusCode: 200, body: JSON.stringify({ created: true, leadId: result.leadId }) };
+      // Saving the donor's lead succeeds independently of a provider outage.
+      // A failed delivery step is already durable and is exposed separately.
+      const delivery = work[1];
+      return { statusCode: 200, body: JSON.stringify({ [result.created ? 'created' : 'duplicate']: true, leadId: result.leadId, acknowledgment: delivery.status === 'fulfilled' ? delivery.value?.state : 'saved_requires_review' }) };
     } catch (error) {
-      console.error("[submission-created] lead creation failed", error);
+      console.error("[submission-created] lead transaction failed; request can be retried");
       return { statusCode: 500, body: "Internal Server Error" };
     }
   };

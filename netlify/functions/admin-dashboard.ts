@@ -174,6 +174,14 @@ export default async (req: Request, context: Context) => {
       </div>
     </div>
 
+    <details class="section-box">
+      <summary style="cursor:pointer;font-weight:700;">Website acknowledgment emails</summary>
+      <p>Shows saved email requests and provider acceptance. Acceptance does not confirm delivery. Uncertain sends stay held for review.</p>
+      <button class="btn-sm" onclick="loadAcknowledgmentStatus()">Refresh email status</button>
+      <p id="ack-summary" role="status" aria-live="polite">Open this section and refresh to check email status.</p>
+      <div style="overflow-x:auto;"><table><thead><tr><th>Lead</th><th>Status</th><th>Review reason</th><th>Provider check</th><th>Attempts</th><th>Last updated</th></tr></thead><tbody id="ack-rows"></tbody></table></div>
+    </details>
+
     <!-- Tab Navigation -->
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('leadsTab', this)">📋 Leads &amp; Intake</button>
@@ -336,6 +344,34 @@ export default async (req: Request, context: Context) => {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    async function loadAcknowledgmentStatus() {
+      const summary = document.getElementById('ack-summary');
+      const rows = document.getElementById('ack-rows');
+      summary.textContent = 'Checking saved acknowledgment requests…';
+      rows.innerHTML = '';
+      try {
+        const response = await fetch('/api/dashboard?action=acknowledgment-status', { headers, cache: 'no-store' });
+        if (!response.ok) throw new Error('Status unavailable');
+        const data = await response.json();
+        const counts = { ready: 0, attempting: 0, accepted: 0, uncertain: 0, blocked: 0 };
+        for (const item of data.counts) {
+          const kind = item.blocked_reason ? 'blocked' : item.state;
+          if (Object.prototype.hasOwnProperty.call(counts, kind)) counts[kind] += Number(item.count) || 0;
+        }
+        summary.textContent = counts.ready + ' waiting; ' + counts.attempting + ' in progress; ' + counts.accepted + ' accepted by provider; ' + (counts.uncertain + counts.blocked) + ' need review. Latest ' + data.items.length + ' requests shown.';
+        const readIssues = (data.providerReadbackCounts || []).filter(item => item.state === 'requires_review').reduce((count, item) => count + (Number(item.count) || 0), 0);
+        summary.textContent += ' ' + readIssues + ' provider checks need review; ' + (Number(data.providerHistoryAlerts) || 0) + ' requests have provider history alerts.';
+        const labels = { ready: 'Waiting', attempting: 'In progress', accepted: 'Accepted by provider', uncertain: 'Outcome uncertain', blocked: 'Held for review' };
+        rows.innerHTML = data.items.map(item => {
+          const proof = item.provider_readback;
+          const provider = proof ? ['verified','event_verified'].includes(proof.state) ? 'Provider reports ' + proof.providerEvent + (proof.contentReadbackVerified ? ' · content checked' : ' · signed event only') + ' · ' + (proof.providerEventAt || proof.checkedAt) : 'Read needs review: ' + proof.errorCode : 'Not checked';
+          return '<tr><td>' + escapeHtml(item.lead_id) + '</td><td>' + escapeHtml(item.blocked_reason ? 'Held for review' : labels[item.state] || 'Needs review') + '</td><td>' + escapeHtml(item.blocked_reason || item.last_error_code || (item.provider_history_alert ? 'Provider history needs review' : '—')) + '</td><td>' + escapeHtml(provider) + '</td><td>' + escapeHtml(item.attempt_count) + '</td><td>' + escapeHtml(item.updated_at) + '</td></tr>';
+        }).join('');
+      } catch {
+        summary.textContent = 'Email status is unavailable. Sign in again if your session expired, then refresh. No emails were retried.';
+      }
     }
 
     function switchTab(tabId, btn) {

@@ -13,9 +13,11 @@
   },
   "dependencies": {
     "@netlify/database": "latest",
-    "drizzle-orm": "beta"
+    "drizzle-orm": "beta",
+    "svix": "2.9.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.2.17",
     "@netlify/edge-functions": "latest",
     "@netlify/functions": "latest",
     "drizzle-kit": "beta"

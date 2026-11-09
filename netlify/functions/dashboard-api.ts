@@ -14,9 +14,10 @@ import {
   events
 } from "../../db/schema.js";
 import { authorizeAdminRequest } from "../../lib/admin-auth.js";
+import { readWebsiteContactHistory, readWebsiteContactHistoryForControls } from "../../lib/website-contact-history.js";
 import { hashEmail, hashPhone, sha256 } from "../../lib/attribution.js";
 import { conversionId, selectLatestListingForFinalSale } from "../../lib/pipeline-rules.js";
-import { postgresNetlifySubmissionRepository } from "../../lib/netlify-submission.js";
+import { postgresNetlifySubmissionRepository, websiteAcknowledgments } from "../../lib/netlify-submission.js";
 import { getRuntimeEnv } from "../../lib/runtime-env.js";
 import { runMigrations } from "../../db/migrate.js";
 import { validateSaleInput, verifiedPaidSale } from "../../lib/paid-sale.js";
@@ -31,6 +32,30 @@ export default async (req: Request, context: Context) => {
       status: authorization.status,
       headers: { "Content-Type": "application/json" }
     });
+  }
+
+  // Exact-source readback must not run the dashboard's schema migrations.
+  const historyUrl = new URL(req.url);
+  if (historyUrl.searchParams.get('action') === 'submission-contact-history-by-controls') {
+    const headers = { 'Cache-Control': 'no-store' };
+    if (req.method !== 'POST') return Response.json({error:'Read query requires POST body'}, {status:405,headers:{...headers,Allow:'POST'}});
+    let controls:Record<string,string>;
+    try {
+      if (!(req.headers.get('content-type')||'').startsWith('application/json')) throw Error('JSON required');
+      const text=await req.text();if(Buffer.byteLength(text)>32000)throw Error('Bounded query required');
+      const body=JSON.parse(text);if(!body||Object.keys(body).join(',')!=='controls'||!body.controls||typeof body.controls!=='object'||Array.isArray(body.controls))throw Error('Controls required');
+      controls=body.controls;
+    } catch { return Response.json({error:'Complete bounded form controls required'}, {status:400,headers}); }
+    try { return Response.json(await readWebsiteContactHistoryForControls(db,controls), {headers}); }
+    catch(error) { return Response.json({error:'Website contact history unavailable',historyComplete:false}, {status:error instanceof Error&&error.message==='WEBSITE_HISTORY_COMPLETE_CONTROLS'?400:503,headers}); }
+  }
+  if (historyUrl.searchParams.get("action") === "submission-contact-history") {
+    const headers = { 'Cache-Control': 'no-store' };
+    if (req.method !== 'GET') return Response.json({error:'Method not allowed'}, {status:405,headers:{...headers,Allow:'GET'}});
+    const ids = historyUrl.searchParams.getAll('submissionId');
+    if (ids.length !== 1 || !/^[A-Za-z0-9_-]{1,160}$/.test(ids[0])) return Response.json({error:'Exact submission ID required'}, {status:400,headers});
+    try { return Response.json(await readWebsiteContactHistory(db,ids[0]), {headers}); }
+    catch { return Response.json({error:'Website contact history unavailable',historyComplete:false}, {status:503,headers}); }
   }
 
   if (!migrated) {
@@ -50,6 +75,7 @@ export default async (req: Request, context: Context) => {
     // GET REQUESTS: Data retrieval & reporting
     // ==========================================
     if (req.method === "GET") {
+      if (action === "acknowledgment-status") return Response.json(await websiteAcknowledgments.status(), { headers: { 'Cache-Control': 'no-store' } });
       // Overview / Metrics & ROAS
       if (action === "overview") {
         const [totalLeadsRow] = await db.select({ count: sql<number>`count(*)::int` }).from(leads);

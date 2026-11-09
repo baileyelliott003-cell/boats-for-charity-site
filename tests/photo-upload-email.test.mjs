@@ -9,7 +9,7 @@ const out = await fs.mkdtemp(path.join(os.tmpdir(), 'bfc-photo-email-'));
 const filename = path.join(out, 'email.mjs');
 await build({entryPoints:[fileURLToPath(new URL('../lib/photo-upload-email.ts', import.meta.url))],outfile:filename,bundle:true,platform:'node',format:'esm',logLevel:'silent'});
 const {buildPhotoEmail,sendPhotoUploadEmail,photoUrl}=await import(pathToFileURL(filename));
-await fs.rm(out,{recursive:true,force:true});
+if(path.dirname(path.resolve(out))!==path.resolve(os.tmpdir())||!path.basename(out).startsWith('bfc-photo-email-'))throw Error('Unexpected test cleanup target');await fs.rm(out,{recursive:true,force:true});
 const data={page_context:'boat-photo-upload',upload_id:'eae47d60-6c45-4bfd-86e5-a180be107808',photo_count:'2',first_name:'Bailey',last_name:'Test',phone:'5551234567',email:'donor@example.com',boat_details:'2006 Crest',photo_01:'https://files.example.com/one.jpg',photo_02:'https://files.example.com/two.heic'};
 const env=k=>({RESEND_API_KEY:'test-key',FROM_EMAIL:'BFC <photos@boatsforcharity.org>'})[k];
 const pause=async()=>{};
