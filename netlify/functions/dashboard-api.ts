@@ -14,7 +14,7 @@ import {
   events
 } from "../../db/schema.js";
 import { authorizeAdminRequest } from "../../lib/admin-auth.js";
-import { readWebsiteContactHistory, readWebsiteContactHistoryForControls } from "../../lib/website-contact-history.js";
+import { readWebsiteContactHistory, readWebsiteContactHistoryForControls, websiteHistoryTokenAuthorization, WEBSITE_HISTORY_READ_ORIGIN } from "../../lib/website-contact-history.js";
 import { hashEmail, hashPhone, sha256 } from "../../lib/attribution.js";
 import { conversionId, selectLatestListingForFinalSale } from "../../lib/pipeline-rules.js";
 import { postgresNetlifySubmissionRepository, websiteAcknowledgments } from "../../lib/netlify-submission.js";
@@ -26,7 +26,7 @@ import { desc, eq, sql, and, gte, lte } from "drizzle-orm";
 let migrated = false;
 
 export default async (req: Request, context: Context) => {
-  const authorization = await authorizeAdminRequest(req, { requireCsrf: req.method !== "GET" });
+  const authorization = websiteHistoryTokenAuthorization(req,getRuntimeEnv('BFC_LOCAL_HISTORY_TOKEN_SHA256')) ?? await authorizeAdminRequest(req, { requireCsrf: req.method !== "GET" });
   if (!authorization.authorized) {
     return new Response(JSON.stringify({ error: authorization.error }), {
       status: authorization.status,
@@ -36,6 +36,10 @@ export default async (req: Request, context: Context) => {
 
   // Exact-source readback must not run the dashboard's schema migrations.
   const historyUrl = new URL(req.url);
+  if(historyUrl.searchParams.get('action')==='website-history-connection') {
+    if(req.method!=='GET')return Response.json({error:'Method not allowed'},{status:405,headers:{'Cache-Control':'no-store',Allow:'GET'}});
+    return Response.json({contract:'bfc-local-website-history-read-connection-v1',origin:WEBSITE_HISTORY_READ_ORIGIN,scope:'website_contact_history_read_only',customerActionsEnabled:false},{headers:{'Cache-Control':'no-store'}});
+  }
   if (historyUrl.searchParams.get('action') === 'submission-contact-history-by-controls') {
     const headers = { 'Cache-Control': 'no-store' };
     if (req.method !== 'POST') return Response.json({error:'Read query requires POST body'}, {status:405,headers:{...headers,Allow:'POST'}});
