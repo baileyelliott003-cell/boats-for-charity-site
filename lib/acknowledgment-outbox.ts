@@ -28,8 +28,8 @@ export function acknowledgmentMessageHash(message: AckMessage) {
 
 // No source/recipient/body is placed in diagnostic events. Message bodies remain
 // within the existing protected website database and authenticated admin view.
-export const ACK_SCHEMA_SQL = `
-CREATE TABLE IF NOT EXISTS website_ack_outbox (
+export const ACK_SCHEMA_STATEMENTS = [
+`CREATE TABLE IF NOT EXISTS website_ack_outbox (
  id text PRIMARY KEY, lead_id integer NOT NULL REFERENCES leads(id) ON DELETE RESTRICT,
  submission_id text NOT NULL UNIQUE, contract text NOT NULL, source_hash text NOT NULL,
  message_hash text NOT NULL, message jsonb NOT NULL,
@@ -37,20 +37,22 @@ CREATE TABLE IF NOT EXISTS website_ack_outbox (
  blocked_reason text, last_error_code text, attempt_token text, attempt_count integer NOT NULL DEFAULT 0,
  lease_until timestamptz, request_started_at timestamptz, provider_id text UNIQUE,
  accepted_at timestamptz, created_at timestamptz NOT NULL, updated_at timestamptz NOT NULL
-);
-CREATE INDEX IF NOT EXISTS website_ack_pending_idx ON website_ack_outbox(state, created_at);
-CREATE TABLE IF NOT EXISTS website_ack_events (
+);`,
+`CREATE INDEX IF NOT EXISTS website_ack_pending_idx ON website_ack_outbox(state, created_at);`,
+`CREATE TABLE IF NOT EXISTS website_ack_events (
  id bigserial PRIMARY KEY, outbox_id text NOT NULL REFERENCES website_ack_outbox(id) ON DELETE RESTRICT,
  attempt_token text, event text NOT NULL, error_code text, observed_at timestamptz NOT NULL
-);
-ALTER TABLE website_ack_events ADD COLUMN IF NOT EXISTS observation jsonb;
-ALTER TABLE website_ack_outbox ADD COLUMN IF NOT EXISTS wire_contract text;
-ALTER TABLE website_ack_outbox ADD COLUMN IF NOT EXISTS wire_hash text;
-CREATE UNIQUE INDEX IF NOT EXISTS website_ack_attempt_idx ON website_ack_outbox(attempt_token) WHERE attempt_token IS NOT NULL;
-CREATE TABLE IF NOT EXISTS website_ack_webhooks (
+);`,
+`ALTER TABLE website_ack_events ADD COLUMN IF NOT EXISTS observation jsonb;`,
+`ALTER TABLE website_ack_outbox ADD COLUMN IF NOT EXISTS wire_contract text;`,
+`ALTER TABLE website_ack_outbox ADD COLUMN IF NOT EXISTS wire_hash text;`,
+`CREATE UNIQUE INDEX IF NOT EXISTS website_ack_attempt_idx ON website_ack_outbox(attempt_token) WHERE attempt_token IS NOT NULL;`,
+`CREATE TABLE IF NOT EXISTS website_ack_webhooks (
  id text PRIMARY KEY, outbox_id text NOT NULL REFERENCES website_ack_outbox(id) ON DELETE RESTRICT,
  payload_hash text NOT NULL, signature_hash text NOT NULL, observed_at timestamptz NOT NULL
-);`;
+);`
+] as const;
+export const ACK_SCHEMA_SQL = ACK_SCHEMA_STATEMENTS.join("\n");
 
 export class WebsiteAcknowledgmentOutbox {
   constructor(readonly database: Database, readonly clock: () => number = Date.now) {}
